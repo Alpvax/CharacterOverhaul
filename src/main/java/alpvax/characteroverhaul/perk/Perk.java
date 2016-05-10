@@ -116,10 +116,11 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 
 	/**
 	 * Apply any changes to the character when they achieve the perk.
-	 * @param levelUnlocked the new level (Could be lower than previously).
+	 * @param oldLevel the previous perk level of the character.
+	 * @param newLevel the new level (Could be lower than the old level).
 	 * @param character the character affected.
 	 */
-	public abstract void onLevelChange(int levelUnlocked, ICharacter character);
+	public abstract void onLevelChange(int oldLevel, int newLevel, ICharacter character);
 
 	protected PerkRequirement getRequirements(int level, ICharacter character)
 	{

@@ -20,8 +20,9 @@ public class CharacterBase implements ICharacter
 	@Override
 	public void setPerkLevel(Perk perk, int level)
 	{
+		int oldLevel = getPerkLevel(perk);
 		perks.put(perk.getRegistryName(), Integer.valueOf(level));
-		perk.onLevelChange(level, this);
+		perk.onLevelChange(oldLevel, level, this);
 	}
 
 }
