@@ -1,6 +1,9 @@
 package alpvax.characteroverhaul.character;
 
 import alpvax.characteroverhaul.api.perk.Perk;
+import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
+import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public interface ICharacter
 {
@@ -11,4 +14,30 @@ public interface ICharacter
 	public int getPerkLevel(Perk perk);
 
 	public void setPerkLevel(Perk perk, int level);
+
+	/**
+	 * Gets the object this Character represents.
+	 * @return
+	 */
+	public <T extends ICapabilityProvider> T getAttachedObject();
+
+	/**
+	 * Utility method to provide a shortcut to the AttributeMap.<br>
+	 * May return null if Attributes aren't supported on this object;
+	 * @return
+	 */
+	public AbstractAttributeMap getAttributeMap();
+
+	/**
+	 * Utility method for the character's position.
+	 * @return
+	 */
+	public Vec3d getPosition();
+
+	/**
+	 * Utility method for the direction the character is facing.<br>
+	 * Should return {@link Vec3d#ZERO} if the character doesn't have an orientation (e.g. most TileEntities).
+	 * @return
+	 */
+	public Vec3d getDirection();
 }
