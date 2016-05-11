@@ -5,7 +5,6 @@ import java.util.concurrent.Callable;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.character.CharacterBase;
 import alpvax.characteroverhaul.character.ICharacter;
-import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -13,7 +12,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants.NBT;
 
 public class CapabilityCharacterHandler
@@ -70,20 +68,7 @@ public class CapabilityCharacterHandler
 			@Override
 			public ICharacter call() throws Exception
 			{
-				return new CharacterBase()
-				{
-					@Override
-					public <T extends ICapabilityProvider> T getAttachedObject()
-					{
-						return null;
-					}
-
-					@Override
-					public AbstractAttributeMap getAttributeMap()
-					{
-						return null;
-					}
-				};
+				return new CharacterBase(null);
 			}
 		});
 	}

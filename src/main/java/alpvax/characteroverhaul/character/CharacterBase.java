@@ -2,11 +2,13 @@ package alpvax.characteroverhaul.character;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import alpvax.characteroverhaul.api.perk.Perk;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -17,6 +19,13 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 public /*abstract/**/ class CharacterBase implements ICharacter
 {
 	private Map<ResourceLocation, Integer> perks = new HashMap<>();
+	private Map<UUID, CharacterModifier> modifiers = new HashMap<>();
+	private final ICapabilityProvider attached;
+
+	public CharacterBase(ICapabilityProvider object)
+	{
+		attached = object;
+	}
 
 	@Override
 	public int getPerkLevel(Perk perk)
@@ -33,18 +42,18 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		perk.onLevelChange(oldLevel, level, this);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ICapabilityProvider> T getAttachedObject()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return (T)attached;
 	}
 
 	@Override
 	public AbstractAttributeMap getAttributeMap()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		ICapabilityProvider o = getAttachedObject();
+		return o instanceof EntityLivingBase ? ((EntityLivingBase)o).getAttributeMap() : null;
 	}
 
 	@Override
@@ -81,5 +90,40 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 			}
 		}
 		return Vec3d.ZERO;
+	}
+
+	@Override
+	public void applyModifier(CharacterModifier modifier)
+	{
+		modifiers.put(modifier.getID(), modifier);
+		modifier.apply(this);
+	}
+
+	@Override
+	public void removeModifier(CharacterModifier modifier)
+	{
+		modifiers.remove(modifier.getID(), modifier);
+		modifier.remove(this);
+	}
+
+	@Override
+	public void cloneTo(ICharacter newCharacter)
+	{
+		for(Perk perk : Perk.registry.getValues())
+		{
+			int l = getPerkLevel(perk);
+			if(l != 0)
+			{
+				newCharacter.setPerkLevel(perk, l);
+			}
+		}
+		for(CharacterModifier m : modifiers.values())
+		{
+			if(m.persistAcrossDeath())
+			{
+				newCharacter.applyModifier(m);
+			}
+		}
+		//TODO:Complete cloning
 	}
 }

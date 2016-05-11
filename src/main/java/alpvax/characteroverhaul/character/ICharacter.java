@@ -28,6 +28,10 @@ public interface ICharacter
 	 */
 	public AbstractAttributeMap getAttributeMap();
 
+	public void removeModifier(CharacterModifier modifier);
+
+	public void applyModifier(CharacterModifier modifier);
+
 	/**
 	 * Utility method for the character's position.
 	 * @return
@@ -40,4 +44,11 @@ public interface ICharacter
 	 * @return
 	 */
 	public Vec3d getDirection();
+
+
+	/**
+	 * Used to copy data from this to a new Character upon player respawn.
+	 * @param newCharacter
+	 */
+	public void cloneTo(ICharacter newCharacter);
 }
