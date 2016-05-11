@@ -1,6 +1,6 @@
 package alpvax.characteroverhaul.character;
 
-import alpvax.characteroverhaul.perk.Perk;
+import alpvax.characteroverhaul.api.perk.Perk;
 
 public interface ICharacter
 {

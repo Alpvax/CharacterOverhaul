@@ -1,4 +1,4 @@
-package alpvax.characteroverhaul.perk;
+package alpvax.characteroverhaul.api.perk;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

@@ -3,7 +3,7 @@ package alpvax.characteroverhaul.character;
 import java.util.HashMap;
 import java.util.Map;
 
-import alpvax.characteroverhaul.perk.Perk;
+import alpvax.characteroverhaul.api.perk.Perk;
 import net.minecraft.util.ResourceLocation;
 
 public class CharacterBase implements ICharacter

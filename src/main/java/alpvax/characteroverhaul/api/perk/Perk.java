@@ -1,17 +1,26 @@
-package alpvax.characteroverhaul.perk;
+package alpvax.characteroverhaul.api.perk;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import alpvax.characteroverhaul.api.Reference;
+import alpvax.characteroverhaul.api.perk.requirement.PerkRequirement;
+import alpvax.characteroverhaul.api.perk.requirement.PerkRequirementPerk;
 import alpvax.characteroverhaul.character.ICharacter;
-import alpvax.characteroverhaul.perk.requirement.PerkRequirement;
-import alpvax.characteroverhaul.perk.requirement.PerkRequirementPerk;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.fml.common.registry.PersistentRegistryManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+/**
+ * All perks must be registered with {@link GameRegistry#register(perk)}.
+ */
 public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 {
 	private final Perk parent;
@@ -125,5 +134,28 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 	protected PerkRequirement getRequirements(int level, ICharacter character)
 	{
 		return new PerkRequirementPerk(parent, 1);
+	}
+
+	/**
+	 * Change this value in order to allow for more/fewer perks.
+	 */
+	private static final int MAX_PERK_ID = 0xff;
+
+	public static final FMLControlledNamespacedRegistry<Perk> registry = PersistentRegistryManager.createRegistry(new ResourceLocation(Reference.MOD_ID, "perks"), Perk.class, null, 0, MAX_PERK_ID, true, null, null, null);
+
+	/**
+	 * @return a list of {@linkplain RootPerk RootPerks} (i.e. a list of perk trees).
+	 */
+	public static List<RootPerk> getRootPerks()
+	{
+		List<RootPerk> list = new ArrayList<>();
+		for(Perk p : registry.getValues())
+		{
+			if(p instanceof RootPerk)
+			{
+				list.add((RootPerk)p);
+			}
+		}
+		return list;
 	}
 }

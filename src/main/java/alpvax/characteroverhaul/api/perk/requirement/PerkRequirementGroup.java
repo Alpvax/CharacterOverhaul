@@ -1,4 +1,4 @@
-package alpvax.characteroverhaul.perk.requirement;
+package alpvax.characteroverhaul.api.perk.requirement;
 
 import alpvax.characteroverhaul.character.ICharacter;
 
