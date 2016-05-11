@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
 import alpvax.characteroverhaul.api.Reference;
 import alpvax.characteroverhaul.api.perk.requirement.PerkRequirement;
 import alpvax.characteroverhaul.api.perk.requirement.PerkRequirementPerk;
@@ -28,7 +31,9 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 
 	public Perk(String id, Perk parent)
 	{
+		Preconditions.checkArgument(Strings.isNullOrEmpty(id), "Attempted instantiation of perk \"%s\" with no id", toString());
 		setRegistryName(id);
+		Preconditions.checkArgument(parent != null || this instanceof RootPerk, "Attempted instantiation of perk \"%s\" with no parent. If you want to create a new tree, you need to extend %s", getRegistryName(), RootPerk.class.getName());
 		this.parent = parent;
 	}
 
