@@ -1,4 +1,4 @@
-package alpvax.characteroverhaul.character;
+package alpvax.characteroverhaul.api.character;
 
 import alpvax.characteroverhaul.api.perk.Perk;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;

@@ -2,10 +2,10 @@ package alpvax.characteroverhaul.core;
 
 import static alpvax.characteroverhaul.api.Reference.CAPABILITY_CHARACTER_KEY;
 
+import alpvax.characteroverhaul.api.character.CharacterBase;
+import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.capabilities.CapabilityCharacterHandler;
 import alpvax.characteroverhaul.capabilities.SerializeableCapabilityProvider;
-import alpvax.characteroverhaul.character.CharacterBase;
-import alpvax.characteroverhaul.character.ICharacter;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;

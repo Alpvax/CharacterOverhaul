@@ -1,6 +1,6 @@
 package alpvax.characteroverhaul.api.perk.requirement;
 
-import alpvax.characteroverhaul.character.ICharacter;
+import alpvax.characteroverhaul.api.character.ICharacter;
 
 public class PerkRequirementGroup extends PerkRequirement
 {

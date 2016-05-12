@@ -2,9 +2,9 @@ package alpvax.characteroverhaul.capabilities;
 
 import java.util.concurrent.Callable;
 
+import alpvax.characteroverhaul.api.character.CharacterBase;
+import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.perk.Perk;
-import alpvax.characteroverhaul.character.CharacterBase;
-import alpvax.characteroverhaul.character.ICharacter;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;

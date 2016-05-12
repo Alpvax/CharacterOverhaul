@@ -9,9 +9,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import alpvax.characteroverhaul.api.Reference;
+import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.perk.requirement.PerkRequirement;
 import alpvax.characteroverhaul.api.perk.requirement.PerkRequirementPerk;
-import alpvax.characteroverhaul.character.ICharacter;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;

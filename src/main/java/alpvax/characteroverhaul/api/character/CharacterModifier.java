@@ -1,4 +1,4 @@
-package alpvax.characteroverhaul.character;
+package alpvax.characteroverhaul.api.character;
 
 import java.util.HashMap;
 import java.util.HashSet;

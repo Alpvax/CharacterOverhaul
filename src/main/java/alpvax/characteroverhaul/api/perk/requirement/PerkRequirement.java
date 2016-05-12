@@ -2,7 +2,7 @@ package alpvax.characteroverhaul.api.perk.requirement;
 
 import java.util.Iterator;
 
-import alpvax.characteroverhaul.character.ICharacter;
+import alpvax.characteroverhaul.api.character.ICharacter;
 
 public abstract class PerkRequirement implements Iterable<PerkRequirement>
 {
