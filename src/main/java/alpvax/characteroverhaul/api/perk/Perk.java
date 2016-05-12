@@ -48,9 +48,9 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 	}
 
 	@SideOnly(Side.CLIENT)
-	public boolean shouldDisplay()
+	public boolean shouldDisplay(boolean parentDisplayed)
 	{
-		return getParent().shouldDisplay();
+		return parentDisplayed;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -80,7 +80,7 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 	 * Simplified version of {@link #getUnlockCostForDisplay(int, ICharacter)}
 	 */
 	@SideOnly(Side.CLIENT)
-	public String getUnlockCostForDisplay(ICharacter character)
+	public final String getUnlockCostForDisplay(ICharacter character)
 	{
 		return getUnlockCostForDisplay(getLevel(character), character);
 	}
@@ -138,14 +138,7 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 
 	protected PerkRequirement getRequirements(int level, ICharacter character)
 	{
-		return this instanceof RootPerk ? new PerkRequirement()
-		{
-			@Override
-			public boolean checkRequirement(ICharacter character)
-			{
-				return true;
-			}
-		} : new PerkRequirementPerk(parent, 1);
+		return new PerkRequirementPerk(parent, 1);
 	}
 
 	/**
