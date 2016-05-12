@@ -31,7 +31,7 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 
 	public Perk(String id, Perk parent)
 	{
-		Preconditions.checkArgument(Strings.isNullOrEmpty(id), "Attempted instantiation of perk \"%s\" with no id", toString());
+		Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "Attempted instantiation of perk \"%s\" with no id", toString());
 		setRegistryName(id);
 		Preconditions.checkArgument(parent != null || this instanceof RootPerk, "Attempted instantiation of perk \"%s\" with no parent. If you want to create a new tree, you need to extend %s", getRegistryName(), RootPerk.class.getName());
 		this.parent = parent;
@@ -111,7 +111,7 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 	public final boolean unlock(ICharacter character)
 	{
 		int levelToUnlock = character.getPerkLevel(this) + 1;
-		if(applyUnlockCost(levelToUnlock, character))
+		if(canUnlock(levelToUnlock, character) && applyUnlockCost(levelToUnlock, character))
 		{
 			character.setPerkLevel(this, levelToUnlock);
 			return true;
@@ -138,7 +138,14 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 
 	protected PerkRequirement getRequirements(int level, ICharacter character)
 	{
-		return new PerkRequirementPerk(parent, 1);
+		return this instanceof RootPerk ? new PerkRequirement()
+		{
+			@Override
+			public boolean checkRequirement(ICharacter character)
+			{
+				return true;
+			}
+		} : new PerkRequirementPerk(parent, 1);
 	}
 
 	/**
