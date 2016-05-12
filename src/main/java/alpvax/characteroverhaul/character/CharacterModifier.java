@@ -1,6 +1,7 @@
 package alpvax.characteroverhaul.character;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -15,6 +16,18 @@ public class CharacterModifier
 	private Map<IAttribute, Set<AttributeModifier>> attributes = new HashMap<>();
 	//TODO:private Set<IAbilityProvider> abilities = new HashSet<>();
 	private UUID id = UUID.randomUUID();//TODO:Correct UUID
+
+	public CharacterModifier addAttributeModifier(IAttribute attribute, AttributeModifier modifier)
+	{
+		Set<AttributeModifier> set = attributes.get(attribute);
+		if(set == null)
+		{
+			set = new HashSet<>();
+			attributes.put(attribute, set);
+		}
+		set.add(modifier);
+		return this;
+	}
 
 	public void apply(ICharacter character)
 	{
