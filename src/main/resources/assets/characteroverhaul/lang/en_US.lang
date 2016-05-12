@@ -1,2 +1,2 @@
-mod.name=Character Overhaul
-mod.description=An API that allows other mods to add RPG-style skills and abilities to characters.
+mod.characteroverhaul.name=Character Overhaul
+mod.characteroverhaul.description=An API that allows other mods to add RPG-style skills and abilities to characters.
