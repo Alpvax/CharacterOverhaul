@@ -17,8 +17,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class CharacterOverhaul
 {
 	@SidedProxy(
-			clientSide = "alpvax.skillsandabilities.core.proxy.ClientProxy",
-			serverSide = "alpvax.skillsandabilities.core.proxy.CommonProxy")
+			clientSide = "alpvax.characteroverhaul.core.proxy.ClientProxy",
+			serverSide = "alpvax.characteroverhaul.core.proxy.CommonProxy")
 	public static CommonProxy proxy;
 
 	@Mod.Instance(MOD_ID)
