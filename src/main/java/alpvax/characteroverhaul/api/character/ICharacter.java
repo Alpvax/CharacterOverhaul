@@ -1,7 +1,6 @@
 package alpvax.characteroverhaul.api.character;
 
 import alpvax.characteroverhaul.api.perk.Perk;
-import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
@@ -21,16 +20,9 @@ public interface ICharacter
 	 */
 	public <T extends ICapabilityProvider> T getAttachedObject();
 
-	/**
-	 * Utility method to provide a shortcut to the AttributeMap.<br>
-	 * May return null if Attributes aren't supported on this object;
-	 * @return
-	 */
-	public AbstractAttributeMap getAttributeMap();
+	public void removeModifier(ICharacterModifier modifier);
 
-	public void removeModifier(CharacterModifier modifier);
-
-	public void applyModifier(CharacterModifier modifier);
+	public void applyModifier(ICharacterModifier modifier);
 
 	/**
 	 * Utility method for the character's position.

@@ -19,7 +19,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 public /*abstract/**/ class CharacterBase implements ICharacter
 {
 	private Map<ResourceLocation, Integer> perks = new HashMap<>();
-	private Map<UUID, CharacterModifier> modifiers = new HashMap<>();
+	private Map<UUID, ICharacterModifier> modifiers = new HashMap<>();
 	private final ICapabilityProvider attached;
 
 	public CharacterBase(ICapabilityProvider object)
@@ -49,8 +49,12 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		return (T)attached;
 	}
 
-	@Override
-	public AbstractAttributeMap getAttributeMap()
+	/**
+	 * Utility method to provide a shortcut to the AttributeMap.<br>
+	 * May return null if Attributes aren't supported on this object;
+	 * @return
+	 */
+	protected AbstractAttributeMap getAttributeMap()
 	{
 		ICapabilityProvider o = getAttachedObject();
 		return o instanceof EntityLivingBase ? ((EntityLivingBase)o).getAttributeMap() : null;
@@ -93,17 +97,31 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	}
 
 	@Override
-	public void applyModifier(CharacterModifier modifier)
+	public void applyModifier(ICharacterModifier modifier)
 	{
 		modifiers.put(modifier.getID(), modifier);
-		modifier.apply(this);
+		AbstractAttributeMap abilityMap = getAttributeMap();
+		if(abilityMap != null)
+		{
+			abilityMap.applyAttributeModifiers(modifier.getAttributeModifiers());
+		}
+		//TODO:Add abilities to character.
+		modifier.onApplied(this);
+		//TODO:markdirty
 	}
 
 	@Override
-	public void removeModifier(CharacterModifier modifier)
+	public void removeModifier(ICharacterModifier modifier)
 	{
 		modifiers.remove(modifier.getID(), modifier);
-		modifier.remove(this);
+		AbstractAttributeMap abilityMap = getAttributeMap();
+		if(abilityMap != null)
+		{
+			abilityMap.removeAttributeModifiers(modifier.getAttributeModifiers());
+		}
+		//TODO:remove abilities from character.
+		modifier.onRemoved(this);
+		//TODO:markdirty
 	}
 
 	@Override
@@ -117,7 +135,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 				newCharacter.setPerkLevel(perk, l);
 			}
 		}
-		for(CharacterModifier m : modifiers.values())
+		for(ICharacterModifier m : modifiers.values())
 		{
 			if(m.persistAcrossDeath())
 			{
