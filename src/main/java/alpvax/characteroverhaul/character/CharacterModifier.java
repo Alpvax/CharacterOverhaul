@@ -16,6 +16,7 @@ public class CharacterModifier
 	private Map<IAttribute, Set<AttributeModifier>> attributes = new HashMap<>();
 	//TODO:private Set<IAbilityProvider> abilities = new HashSet<>();
 	private UUID id = UUID.randomUUID();//TODO:Correct UUID
+	private boolean persist = true;
 
 	public CharacterModifier addAttributeModifier(IAttribute attribute, AttributeModifier modifier)
 	{
@@ -76,8 +77,14 @@ public class CharacterModifier
 		return id;
 	}
 
+	public CharacterModifier setDeathPersist(boolean flag)
+	{
+		persist = flag;
+		return this;
+	}
+
 	public boolean persistAcrossDeath()
 	{
-		return true;
+		return persist;
 	}
 }
