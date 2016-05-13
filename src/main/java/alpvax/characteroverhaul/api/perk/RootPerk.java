@@ -2,7 +2,6 @@ package alpvax.characteroverhaul.api.perk;
 
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.perk.requirement.PerkRequirement;
-import alpvax.characteroverhaul.api.perk.requirement.PerkRequirementTrue;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -32,6 +31,6 @@ public abstract class RootPerk extends Perk
 	@Override
 	protected PerkRequirement getRequirements(int level, ICharacter character)
 	{
-		return new PerkRequirementTrue();
+		return PerkRequirement.VALID;
 	}
 }
