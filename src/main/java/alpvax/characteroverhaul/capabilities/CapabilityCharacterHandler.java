@@ -1,24 +1,32 @@
 package alpvax.characteroverhaul.capabilities;
 
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import alpvax.characteroverhaul.api.character.CharacterBase;
 import alpvax.characteroverhaul.api.character.ICharacter;
+import alpvax.characteroverhaul.api.character.ICharacterModifier;
+import alpvax.characteroverhaul.api.character.ICharacterModifierExtended;
 import alpvax.characteroverhaul.api.perk.Perk;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.fml.common.FMLLog;
 
 public class CapabilityCharacterHandler
 {
 	private static final class Keys
 	{
 		private static final String PERKS = "Perks";
+		private static final String MODIFIERS = "Modifiers";
+		private static final String UUID_MOST = "IDMost";
+		private static final String UUID_LEAST = "IDLeast";
 	}
 
 
@@ -33,8 +41,9 @@ public class CapabilityCharacterHandler
 			public NBTBase writeNBT(Capability<ICharacter> capability, ICharacter instance, EnumFacing side)
 			{
 				NBTTagCompound nbt = new NBTTagCompound();
+				//Save Perks
 				NBTTagCompound perks = new NBTTagCompound();
-				for(Perk perk : Perk.registry.getValues())
+				for(Perk perk : Perk.REGISTRY.getValues())
 				{
 					int l = instance.getPerkLevel(perk);
 					if(l != 0)
@@ -42,9 +51,29 @@ public class CapabilityCharacterHandler
 						perks.setInteger(perk.getRegistryName().toString(), l);
 					}
 				}
-				if(perks.getSize() > 0)
+				if(!perks.hasNoTags())
 				{
 					nbt.setTag(Keys.PERKS, perks);
+				}
+				NBTTagList modifiers = new NBTTagList();
+				for(ICharacterModifier modifier : instance.getModifiers())
+				{
+					if(modifier instanceof ICharacterModifierExtended)
+					{
+						ICharacterModifierExtended m = (ICharacterModifierExtended)modifier;
+						if(m.shouldSaveNBTToCharacter())
+						{
+							NBTTagCompound mnbt = m.serializeNBT();
+							UUID id = m.getID();
+							mnbt.setLong(Keys.UUID_MOST, id.getMostSignificantBits());
+							mnbt.setLong(Keys.UUID_LEAST, id.getLeastSignificantBits());
+							modifiers.appendTag(mnbt);
+						}
+					}
+				}
+				if(!modifiers.hasNoTags())
+				{
+					nbt.setTag(Keys.MODIFIERS, modifiers);
 				}
 				return nbt;
 			}
@@ -53,13 +82,30 @@ public class CapabilityCharacterHandler
 			public void readNBT(Capability<ICharacter> capability, ICharacter instance, EnumFacing side, NBTBase base)
 			{
 				NBTTagCompound nbt = (NBTTagCompound)base;
+				//Load Perks
 				if(nbt.hasKey(Keys.PERKS, NBT.TAG_COMPOUND))
 				{
 					NBTTagCompound perks = nbt.getCompoundTag(Keys.PERKS);
 					for(String s : perks.getKeySet())
 					{
-						Perk perk = Perk.registry.getObject(new ResourceLocation(s));
+						Perk perk = Perk.REGISTRY.getObject(new ResourceLocation(s));
 						instance.setPerkLevel(perk, perks.getInteger(s));
+					}
+				}
+				//TODO:Load modifiers
+				if(nbt.hasKey(Keys.MODIFIERS, NBT.TAG_LIST))
+				{
+					NBTTagList modifiers = nbt.getTagList(Keys.MODIFIERS, NBT.TAG_COMPOUND);
+					for(int i = 0; i < modifiers.tagCount(); i++)
+					{
+						NBTTagCompound mnbt = modifiers.getCompoundTagAt(i);
+						UUID id = new UUID(mnbt.getLong(Keys.UUID_MOST), mnbt.getLong(Keys.UUID_LEAST));
+						ICharacterModifierExtended modifier = (ICharacterModifierExtended)instance.getModifier(id);
+						if(!modifier.shouldSaveNBTToCharacter())
+						{
+							FMLLog.warning("CharacterModifier with id %s has an data saved with the Character, but shouldn't be saving data to the character.", id);
+						}
+						modifier.deserializeNBT(mnbt);
 					}
 				}
 			}

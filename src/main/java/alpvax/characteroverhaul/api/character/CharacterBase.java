@@ -1,7 +1,9 @@
 package alpvax.characteroverhaul.api.character;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import alpvax.characteroverhaul.api.perk.Perk;
@@ -97,6 +99,18 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	}
 
 	@Override
+	public Set<ICharacterModifier> getModifiers()
+	{
+		return new HashSet<>(modifiers.values());
+	}
+
+	@Override
+	public ICharacterModifier getModifier(UUID id)
+	{
+		return modifiers.get(id);
+	}
+
+	@Override
 	public void applyModifier(ICharacterModifier modifier)
 	{
 		modifiers.put(modifier.getID(), modifier);
@@ -127,7 +141,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	@Override
 	public void cloneTo(ICharacter newCharacter)
 	{
-		for(Perk perk : Perk.registry.getValues())
+		for(Perk perk : Perk.REGISTRY.getValues())
 		{
 			int l = getPerkLevel(perk);
 			if(l != 0)

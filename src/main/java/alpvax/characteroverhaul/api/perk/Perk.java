@@ -22,7 +22,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
- * All perks must be registered with {@link GameRegistry#register(perk)}.
+ * All perks must be registered with {@link GameRegistry#register(IForgeRegistryEntry) GameRegistry.register(perk)}.
  */
 public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 {
@@ -146,7 +146,7 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 	 */
 	private static final int MAX_PERK_ID = 0xff;
 
-	public static final FMLControlledNamespacedRegistry<Perk> registry = PersistentRegistryManager.createRegistry(new ResourceLocation(Reference.MOD_ID, "perks"), Perk.class, null, 0, MAX_PERK_ID, true, null, null, null);
+	public static final FMLControlledNamespacedRegistry<Perk> REGISTRY = PersistentRegistryManager.createRegistry(new ResourceLocation(Reference.MOD_ID, "perks"), Perk.class, null, 0, MAX_PERK_ID, true, null, null, null);
 
 	/**
 	 * @return a list of {@linkplain RootPerk RootPerks} (i.e. a list of perk trees).
@@ -154,7 +154,7 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 	public static List<RootPerk> getRootPerks()
 	{
 		List<RootPerk> list = new ArrayList<>();
-		for(Perk p : registry.getValues())
+		for(Perk p : REGISTRY.getValues())
 		{
 			if(p instanceof RootPerk)
 			{
