@@ -1,11 +1,11 @@
 package alpvax.characteroverhaul.api.character;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
+import alpvax.characteroverhaul.api.ability.AbilityInstance;
+import alpvax.characteroverhaul.api.ability.IAbility;
 import alpvax.characteroverhaul.api.perk.Perk;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.state.IBlockState;
@@ -21,7 +21,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 public /*abstract/**/ class CharacterBase implements ICharacter
 {
 	private Map<ResourceLocation, Integer> perks = new HashMap<>();
-	private Map<UUID, ICharacterModifier> modifiers = new HashMap<>();
+	private Map<UUID, AbilityInstance> abilities = new HashMap<>();
 	private final ICapabilityProvider attached;
 
 	public CharacterBase(ICapabilityProvider object)
@@ -99,42 +99,28 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	}
 
 	@Override
-	public Set<ICharacterModifier> getModifiers()
+	public AbilityInstance getModifier(UUID id)
 	{
-		return new HashSet<>(modifiers.values());
+		return abilities.get(id);
 	}
 
 	@Override
-	public ICharacterModifier getModifier(UUID id)
+	public boolean hasAbility(IAbility ability)
 	{
-		return modifiers.get(id);
+		return abilities.containsKey(ability.getID());
 	}
 
 	@Override
-	public void applyModifier(ICharacterModifier modifier)
+	public void addAbility(IAbility ability)
 	{
-		modifiers.put(modifier.getID(), modifier);
-		AbstractAttributeMap abilityMap = getAttributeMap();
-		if(abilityMap != null)
-		{
-			abilityMap.applyAttributeModifiers(modifier.getAttributeModifiers());
-		}
-		//TODO:Add abilities to character.
-		modifier.onApplied(this);
+		abilities.put(ability.getID(), new AbilityInstance(this, ability));
 		//TODO:markdirty
 	}
 
 	@Override
-	public void removeModifier(ICharacterModifier modifier)
+	public void removeAbility(IAbility ability)
 	{
-		modifiers.remove(modifier.getID(), modifier);
-		AbstractAttributeMap abilityMap = getAttributeMap();
-		if(abilityMap != null)
-		{
-			abilityMap.removeAttributeModifiers(modifier.getAttributeModifiers());
-		}
-		//TODO:remove abilities from character.
-		modifier.onRemoved(this);
+		abilities.remove(ability.getID());
 		//TODO:markdirty
 	}
 
@@ -149,13 +135,14 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 				newCharacter.setPerkLevel(perk, l);
 			}
 		}
+		/*TODO:Abilities cloning
 		for(ICharacterModifier m : modifiers.values())
 		{
 			if(m.persistAcrossDeath())
 			{
 				newCharacter.applyModifier(m);
 			}
-		}
+		}*/
 		//TODO:Complete cloning
 	}
 }

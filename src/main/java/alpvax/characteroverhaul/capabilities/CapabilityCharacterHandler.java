@@ -1,23 +1,18 @@
 package alpvax.characteroverhaul.capabilities;
 
-import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import alpvax.characteroverhaul.api.character.CharacterBase;
 import alpvax.characteroverhaul.api.character.ICharacter;
-import alpvax.characteroverhaul.api.character.ICharacterModifier;
-import alpvax.characteroverhaul.api.character.ICharacterModifierExtended;
 import alpvax.characteroverhaul.api.perk.Perk;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.Constants.NBT;
-import net.minecraftforge.fml.common.FMLLog;
 
 public class CapabilityCharacterHandler
 {
@@ -55,6 +50,7 @@ public class CapabilityCharacterHandler
 				{
 					nbt.setTag(Keys.PERKS, perks);
 				}
+				/*Save Modifiers
 				NBTTagList modifiers = new NBTTagList();
 				for(ICharacterModifier modifier : instance.getModifiers())
 				{
@@ -74,7 +70,7 @@ public class CapabilityCharacterHandler
 				if(!modifiers.hasNoTags())
 				{
 					nbt.setTag(Keys.MODIFIERS, modifiers);
-				}
+				}*/
 				return nbt;
 			}
 
@@ -92,7 +88,7 @@ public class CapabilityCharacterHandler
 						instance.setPerkLevel(perk, perks.getInteger(s));
 					}
 				}
-				//TODO:Load modifiers
+				/*Load modifiers
 				if(nbt.hasKey(Keys.MODIFIERS, NBT.TAG_LIST))
 				{
 					NBTTagList modifiers = nbt.getTagList(Keys.MODIFIERS, NBT.TAG_COMPOUND);
@@ -107,7 +103,7 @@ public class CapabilityCharacterHandler
 						}
 						modifier.deserializeNBT(mnbt);
 					}
-				}
+				}*/
 			}
 		}, new Callable<ICharacter>()
 		{
