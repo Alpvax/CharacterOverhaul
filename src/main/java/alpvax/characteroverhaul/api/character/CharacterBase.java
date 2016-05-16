@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import alpvax.characteroverhaul.api.ability.AbilityInstance;
+import alpvax.characteroverhaul.api.ability.IAbility;
+import alpvax.characteroverhaul.api.ability.IAbility.AbilityState;
 import alpvax.characteroverhaul.api.perk.Perk;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.state.IBlockState;
@@ -22,6 +25,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 {
 	private Map<ResourceLocation, Integer> perks = new HashMap<>();
 	private Map<UUID, ICharacterModifier> modifiers = new HashMap<>();
+	private Map<UUID, AbilityInstance> abilities = new HashMap<>();
 	private final ICapabilityProvider attached;
 
 	public CharacterBase(ICapabilityProvider object)
@@ -157,5 +161,28 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 			}
 		}
 		//TODO:Complete cloning
+	}
+
+	@Override
+	public void addAbility(IAbility ability)
+	{
+		abilities.put(ability.getID(), new AbilityInstance(this, ability));
+		//TODO:markdirty
+	}
+
+
+
+	@Override
+	public void removeAbility(UUID abilityID)
+	{
+		AbilityInstance i = abilities.remove(abilityID);
+		i.changeState(AbilityState.DISABLED);
+		//TODO:markdirty
+	}
+
+	@Override
+	public Set<AbilityInstance> getAbilities(UUID abilityID)
+	{
+		return new HashSet<>(abilities.values());
 	}
 }
