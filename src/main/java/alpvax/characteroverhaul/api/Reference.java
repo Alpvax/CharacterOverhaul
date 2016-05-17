@@ -9,4 +9,7 @@ public class Reference
 
 
 	public static final ResourceLocation CAPABILITY_CHARACTER_KEY = new ResourceLocation(MOD_ID, "Character");
+
+
+	public static final int GUI_EFFECTS = 0;
 }
