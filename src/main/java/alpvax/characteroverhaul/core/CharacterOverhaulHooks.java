@@ -8,11 +8,15 @@ import alpvax.characteroverhaul.api.character.CharacterBase;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.capabilities.CapabilityCharacterHandler;
 import alpvax.characteroverhaul.capabilities.SerializeableCapabilityProvider;
+import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
+import net.minecraftforge.client.event.GuiScreenEvent.PotionShiftEvent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -47,5 +51,23 @@ public class CharacterOverhaulHooks
 		ICharacter oldCharacter = event.getOriginal().getCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null);
 		ICharacter newCharacter = event.getEntityPlayer().getCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null);
 		oldCharacter.cloneTo(newCharacter);
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onDrawPotions(PotionShiftEvent event)
+	{
+		//TODO:if potions display disabled
+		event.setCanceled(true);
+	}
+
+	@SubscribeEvent
+	public void onDrawPotions(DrawScreenEvent.Pre event)
+	{
+		if(event.getGui() instanceof InventoryEffectRenderer)
+		{
+			InventoryEffectRenderer gui = (InventoryEffectRenderer)event.getGui();
+			//TODO:if potions display disabled
+			ObfuscationReflectionHelper.setPrivateValue(InventoryEffectRenderer.class, gui, false, "hasActivePotionEffects");//TODO:Obfuscated names
+		}
 	}
 }
