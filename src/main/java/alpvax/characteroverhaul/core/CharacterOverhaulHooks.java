@@ -69,7 +69,7 @@ public class CharacterOverhaulHooks
 
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
-	public void onDrawPotions(DrawScreenEvent.Pre event)
+	public void onDrawInventory(DrawScreenEvent.Pre event)
 	{
 		if(event.getGui() instanceof InventoryEffectRenderer)
 		{
@@ -87,15 +87,11 @@ public class CharacterOverhaulHooks
 		{
 			InventoryEffectRenderer gui = (InventoryEffectRenderer)event.getGui();
 			//TODO:if potions display not disabled
-			//TODO:Obfuscated names
-			int guiLeft = ObfuscationReflectionHelper.getPrivateValue(InventoryEffectRenderer.class, gui, "guiLeft");
-			int guiTop = ObfuscationReflectionHelper.getPrivateValue(InventoryEffectRenderer.class, gui, "guiTop");
-			int ySize = ObfuscationReflectionHelper.getPrivateValue(InventoryEffectRenderer.class, gui, "ySize");
 
 			int i = Mouse.getEventX() * gui.width / gui.mc.displayWidth;
 			int j = gui.height - Mouse.getEventY() * gui.height / gui.mc.displayHeight - 1;
 			EntityPlayerSP player = gui.mc.thePlayer;
-			if(Mouse.getEventButton() == 0 && Mouse.getEventButtonState() && i < guiLeft && j > guiTop && j < guiTop + ySize)
+			if(Mouse.getEventButton() == 0 && Mouse.getEventButtonState() && i < gui.guiLeft && j > gui.guiTop && j < gui.guiTop + gui.ySize)
 			{
 				player.openGui(CharacterOverhaul.instance, Reference.GUI_EFFECTS, player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
 			}
