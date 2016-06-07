@@ -5,22 +5,28 @@ import alpvax.characteroverhaul.api.character.ICharacter;
 public class AbilityInstance
 {
 	private final ICharacter character;
-	private final IAbility ability;
+	private final Ability ability;
 	private int ticks;
 	private boolean active = false;
 
-	public AbilityInstance(ICharacter character, IAbility ability)
+	public AbilityInstance(ICharacter character, Ability ability)
 	{
 		this.character = character;
 		this.ability = ability;
+		ticks = 0;
 	}
 
-	protected ICharacter getcharacter()
+	protected final ICharacter getCharacter()
 	{
 		return character;
 	}
 
-	protected int getTicksSinceStateChange()
+	public final Ability getAbility()
+	{
+		return ability;
+	}
+
+	public int getTicksSinceStateChange()
 	{
 		return ticks;
 	}
@@ -38,18 +44,44 @@ public class AbilityInstance
 		}
 	}
 
-	private boolean canTrigger()
-	{
-		return ability.canTrigger(ticks, active);
-	}
-
 	public boolean trigger()
 	{
-		if(canTrigger())
+		if(ability.canToggle(this))
 		{
-			ability.trigger(this);
+			ability.onTrigger(this);
+			active = true;
 			return true;
 		}
 		return false;
+	}
+
+	public boolean isActive()
+	{
+		return active;
+	}
+
+	public boolean reset()
+	{
+		if(active && ability.canToggle(this))
+		{
+			ability.onReset(this);
+			active = false;
+			return true;
+		}
+		return false;
+	}
+
+	public final void load(boolean active, int ticks)
+	{
+		this.active = active;
+		this.ticks = ticks;
+		if(active)
+		{
+			ability.onTrigger(this);
+		}
+		else
+		{
+			ability.onReset(this);
+		}
 	}
 }

@@ -70,7 +70,7 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 		return new HashSet<Perk>(children);
 	}
 
-	public String localisedName()
+	public String getLocalisedName()
 	{
 		ResourceLocation r = getRegistryName();
 		return I18n.format(String.format("%s:perk.%s.name", r.getResourceDomain(), r.getResourcePath()));

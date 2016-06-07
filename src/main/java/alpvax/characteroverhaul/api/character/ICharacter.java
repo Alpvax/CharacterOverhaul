@@ -1,9 +1,9 @@
 package alpvax.characteroverhaul.api.character;
 
-import java.util.UUID;
+import java.util.List;
 
+import alpvax.characteroverhaul.api.ability.Ability;
 import alpvax.characteroverhaul.api.ability.AbilityInstance;
-import alpvax.characteroverhaul.api.ability.IAbility;
 import alpvax.characteroverhaul.api.perk.Perk;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -24,13 +24,15 @@ public interface ICharacter
 	 */
 	public <T extends ICapabilityProvider> T getAttachedObject();
 
-	public AbilityInstance getModifier(UUID id);
+	public AbilityInstance getAbilityInstance(Ability ability);
 
-	public boolean hasAbility(IAbility ability);
+	public List<AbilityInstance> getAbilities();
 
-	public void addAbility(IAbility ability);
+	public boolean hasAbility(Ability ability);
 
-	public void removeAbility(IAbility ability);
+	public void addAbility(AbilityInstance inst);
+
+	public void removeAbility(Ability ability);
 
 	/**
 	 * Utility method for the character's position.
