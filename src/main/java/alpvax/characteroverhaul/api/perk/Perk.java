@@ -12,6 +12,7 @@ import alpvax.characteroverhaul.api.Reference;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.perk.requirement.PerkRequirement;
 import alpvax.characteroverhaul.api.perk.requirement.PerkRequirementPerk;
+import alpvax.characteroverhaul.api.skill.Skill;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
@@ -27,14 +28,27 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 {
 	private final Perk parent;
+	private final Skill skill;
 	private Set<Perk> children = new HashSet<Perk>();
 
-	public Perk(String id, Perk parent)
+	private Perk(String id, Perk parent, Skill skillTree)
 	{
 		Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "Attempted instantiation of perk \"%s\" with no id", toString());
 		setRegistryName(id);
 		Preconditions.checkArgument(parent != null || this instanceof RootPerk, "Attempted instantiation of perk \"%s\" with no parent. If you want to create a new tree, you need to extend %s", getRegistryName(), RootPerk.class.getName());
 		this.parent = parent;
+		Preconditions.checkArgument(parent != null || this instanceof RootPerk, "Attempted instantiation of perk \"%s\" with no parent. If you want to create a new tree, you need to extend %s", getRegistryName(), RootPerk.class.getName());
+		this.skill = skillTree;
+	}
+
+	public Perk(String id, Perk parent)
+	{
+		this(id, parent, parent.getSkillTree());
+	}
+
+	public Perk(String id, Skill skillTree)
+	{
+		this(id, null, skillTree);
 	}
 
 	protected Perk getParent()
@@ -42,9 +56,9 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 		return parent;
 	}
 
-	private int getLevel(ICharacter character)
+	protected Skill getSkillTree()
 	{
-		return character.getPerkLevel(this);
+		return skill;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -82,7 +96,7 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 	@SideOnly(Side.CLIENT)
 	public final String getUnlockCostForDisplay(ICharacter character)
 	{
-		return getUnlockCostForDisplay(getLevel(character), character);
+		return getUnlockCostForDisplay(character.getPerkLevel(this), character);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -96,7 +110,7 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 	 */
 	public final boolean canUnlock(ICharacter character)
 	{
-		return canUnlock(getLevel(character), character);
+		return canUnlock(character.getPerkLevel(this), character);
 	}
 
 	public boolean canUnlock(int level, ICharacter character)
