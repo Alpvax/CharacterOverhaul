@@ -1,11 +1,12 @@
 package alpvax.characteroverhaul.api.character;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
+import alpvax.characteroverhaul.api.ability.Ability;
 import alpvax.characteroverhaul.api.ability.AbilityInstance;
-import alpvax.characteroverhaul.api.ability.IAbility;
 import alpvax.characteroverhaul.api.perk.Perk;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.state.IBlockState;
@@ -21,7 +22,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 public /*abstract/**/ class CharacterBase implements ICharacter
 {
 	private Map<ResourceLocation, Integer> perks = new HashMap<>();
-	private Map<UUID, AbilityInstance> abilities = new HashMap<>();
+	private Map<ResourceLocation, AbilityInstance> abilities = new HashMap<>();
 	private final ICapabilityProvider attached;
 
 	public CharacterBase(ICapabilityProvider object)
@@ -99,28 +100,34 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	}
 
 	@Override
-	public AbilityInstance getModifier(UUID id)
+	public List<AbilityInstance> getAbilities()
 	{
-		return abilities.get(id);
+		return new ArrayList<>(abilities.values());
 	}
 
 	@Override
-	public boolean hasAbility(IAbility ability)
+	public AbilityInstance getAbilityInstance(Ability ability)
 	{
-		return abilities.containsKey(ability.getID());
+		return abilities.get(ability.getRegistryName());
 	}
 
 	@Override
-	public void addAbility(IAbility ability)
+	public boolean hasAbility(Ability ability)
 	{
-		abilities.put(ability.getID(), new AbilityInstance(this, ability));
+		return abilities.containsKey(ability.getRegistryName());
+	}
+
+	@Override
+	public void addAbility(Ability ability)
+	{
+		abilities.put(ability.getRegistryName(), ability.createNewAbilityInstance(this));
 		//TODO:markdirty
 	}
 
 	@Override
-	public void removeAbility(IAbility ability)
+	public void removeAbility(Ability ability)
 	{
-		abilities.remove(ability.getID());
+		abilities.remove(ability.getRegistryName());
 		//TODO:markdirty
 	}
 
@@ -135,8 +142,11 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 				newCharacter.setPerkLevel(perk, l);
 			}
 		}
-		/*TODO:Abilities cloning
-		for(ICharacterModifier m : modifiers.values())
+		for(AbilityInstance inst : abilities.values())
+		{
+			//TODO:inst.cloneTo(newCharacter);
+		}
+		/*for(ICharacterModifier m : modifiers.values())
 		{
 			if(m.persistAcrossDeath())
 			{

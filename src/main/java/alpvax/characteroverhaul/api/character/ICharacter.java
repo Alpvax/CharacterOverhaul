@@ -30,7 +30,7 @@ public interface ICharacter
 
 	public boolean hasAbility(Ability ability);
 
-	public void addAbility(AbilityInstance inst);
+	public void addAbility(Ability ability);
 
 	public void removeAbility(Ability ability);
 

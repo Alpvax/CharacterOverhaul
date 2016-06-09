@@ -84,4 +84,11 @@ public class AbilityInstance
 			ability.onReset(this);
 		}
 	}
+
+	/*public void cloneTo(ICharacter newCharacter)
+	{
+		AbilityInstance i = ability.createNewAbilityInstance(newCharacter);
+
+
+	}*/
 }
