@@ -14,12 +14,8 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-/*
-// for people who want stable - not yet functional for MC 1.8.8 - we require the forgegradle 2.1 snapshot
-plugins {
-    id "net.minecraftforge.gradle.forge" version "2.0.2"
-}
-*/
+import org.apache.tools.ant.filters.ReplaceTokens
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -28,7 +24,7 @@ if(!project.hasProperty("modid")) {
     project.modid = project.projectDir.name.toLowerCase()
     println "Build property \"modid\" missing. Using \"${project.modid}\" instead"
 }
-errMsg = new StringBuilder();
+def errMsg = new StringBuilder();
 if(!project.hasProperty("mcVer")) {
     errMsg.append("Build property \"mcVer\" must be defined\n")
 }
@@ -56,6 +52,7 @@ group = "alpvax.${modid.toLowerCase()}" // http://maven.apache.org/guides/mini/g
 minecraft {
     version = "${project.mcVer}-${project.forgeVer}"
     runDir = file('../run').exists() ? '../run' : 'run'
+	mappings = project.mcpMappings
     
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
