@@ -13,6 +13,7 @@ public class ClientProxy extends CommonProxy implements IResourceManagerReloadLi
 	@Override
 	public void registerPre()
 	{
+		super.registerPre();
 		((IReloadableResourceManager)Minecraft.getMinecraft().getResourceManager()).registerReloadListener(this);
 	}
 

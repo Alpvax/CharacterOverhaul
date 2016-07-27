@@ -7,11 +7,10 @@ public class CommonProxy
 {
 	public void registerPre()
 	{
-
 	}
 
 	@SideOnly(Side.CLIENT)
-	public ClientProxy getClientSide()
+	public final ClientProxy getClientSide()
 	{
 		return (ClientProxy)this;
 	}

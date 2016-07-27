@@ -41,4 +41,11 @@ public class PerkRequirementGroup extends PerkRequirement
 		}
 		return operation != Type.ANY;//Return (true if (all pass and type is ALL) or (all fail and type is NONE), (false if all fail and type is ANY)
 	}
+
+	@Override
+	public String getDisplayText(boolean achieved)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -1,18 +1,16 @@
 package alpvax.characteroverhaul.api.character;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import alpvax.characteroverhaul.api.ability.Ability;
-import alpvax.characteroverhaul.api.ability.AbilityInstance;
+import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.api.perk.Perk;
+import alpvax.characteroverhaul.api.skill.Skill;
+import alpvax.characteroverhaul.api.skill.SkillInstance;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -22,7 +20,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 public /*abstract/**/ class CharacterBase implements ICharacter
 {
 	private Map<ResourceLocation, Integer> perks = new HashMap<>();
-	private Map<ResourceLocation, AbilityInstance> abilities = new HashMap<>();
+	private Map<ResourceLocation, SkillInstance> skills = new HashMap<>();
 	private final ICapabilityProvider attached;
 
 	public CharacterBase(ICapabilityProvider object)
@@ -30,37 +28,11 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		attached = object;
 	}
 
-	@Override
-	public int getPerkLevel(Perk perk)
-	{
-		Integer i = perks.get(perk.getRegistryName());
-		return i != null ? i.intValue() : 0;
-	}
-
-	@Override
-	public void setPerkLevel(Perk perk, int level)
-	{
-		int oldLevel = getPerkLevel(perk);
-		perks.put(perk.getRegistryName(), Integer.valueOf(level));
-		perk.onLevelChange(oldLevel, level, this);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ICapabilityProvider> T getAttachedObject()
 	{
 		return (T)attached;
-	}
-
-	/**
-	 * Utility method to provide a shortcut to the AttributeMap.<br>
-	 * May return null if Attributes aren't supported on this object;
-	 * @return
-	 */
-	protected AbstractAttributeMap getAttributeMap()
-	{
-		ICapabilityProvider o = getAttachedObject();
-		return o instanceof EntityLivingBase ? ((EntityLivingBase)o).getAttributeMap() : null;
 	}
 
 	@Override
@@ -100,38 +72,6 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	}
 
 	@Override
-	public List<AbilityInstance> getAbilities()
-	{
-		return new ArrayList<>(abilities.values());
-	}
-
-	@Override
-	public AbilityInstance getAbilityInstance(Ability ability)
-	{
-		return abilities.get(ability.getRegistryName());
-	}
-
-	@Override
-	public boolean hasAbility(Ability ability)
-	{
-		return abilities.containsKey(ability.getRegistryName());
-	}
-
-	@Override
-	public void addAbility(Ability ability)
-	{
-		abilities.put(ability.getRegistryName(), ability.createNewAbilityInstance(this));
-		//TODO:markdirty
-	}
-
-	@Override
-	public void removeAbility(Ability ability)
-	{
-		abilities.remove(ability.getRegistryName());
-		//TODO:markdirty
-	}
-
-	@Override
 	public void cloneTo(ICharacter newCharacter)
 	{
 		for(Perk perk : Perk.REGISTRY.getValues())
@@ -142,10 +82,14 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 				newCharacter.setPerkLevel(perk, l);
 			}
 		}
-		for(AbilityInstance inst : abilities.values())
+		for(SkillInstance skill : skills.values())
+		{
+			skill.cloneTo(newCharacter.getSkillInstance(skill.getSkill()));
+		}
+		/*for(AbilityInstance inst : abilities.values())
 		{
 			//TODO:inst.cloneTo(newCharacter);
-		}
+		}*/
 		/*for(ICharacterModifier m : modifiers.values())
 		{
 			if(m.persistAcrossDeath())
@@ -154,5 +98,66 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 			}
 		}*/
 		//TODO:Complete cloning
+	}
+
+	@Override
+	public int getPerkLevel(Perk perk)
+	{
+		Integer i = perks.get(perk.getRegistryName());
+		return i != null ? i.intValue() : 0;
+	}
+
+	@Override
+	public void setPerkLevel(Perk perk, int level)
+	{
+		int oldLevel = getPerkLevel(perk);
+		perks.put(perk.getRegistryName(), Integer.valueOf(level));
+		perk.onLevelChange(oldLevel, level, this);
+	}
+
+	@Override
+	public SkillInstance getSkillInstance(Skill skill)
+	{
+		ResourceLocation name = skill.getRegistryName();
+		SkillInstance skillInst = skills.get(name);
+		if(skillInst == null)
+		{
+			skillInst = new SkillInstance(this, skill);
+			skills.put(name, skillInst);
+		}
+		return skillInst;
+	}
+
+	@Override
+	public int getSkillLevel(Skill skill)
+	{
+		return getSkillInstance(skill).getLevel();
+	}
+
+	@Override
+	public void addSkillExperience(Skill skill, float amount)
+	{
+		getSkillInstance(skill).addExp(amount);
+	}
+
+	@Override
+	public List<ICharacterEffect> getEffects()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addEffect()
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void removeEffect()
+	{
+		// TODO Auto-generated method stub
+
 	}
 }
