@@ -109,7 +109,10 @@ public class CapabilityCharacterHandler
 					for(String s : perks.getKeySet())
 					{
 						Perk perk = Perk.REGISTRY.getObject(new ResourceLocation(s));
-						instance.setPerkLevel(perk, perks.getInteger(s));
+						if(perk != null)//Incorrect NBT check
+						{
+							instance.setPerkLevel(perk, perks.getInteger(s));
+						}
 					}
 				}
 				//Load Skills
@@ -119,7 +122,10 @@ public class CapabilityCharacterHandler
 					for(String s : skills.getKeySet())
 					{
 						Skill skill = Skill.REGISTRY.getObject(new ResourceLocation(s));
-						instance.getSkillInstance(skill).deserializeNBT(skills.getCompoundTag(s));
+						if(skill != null)//Incorrect NBT check
+						{
+							instance.getSkillInstance(skill).deserializeNBT(skills.getCompoundTag(s));
+						}
 					}
 				}
 				/*//Load abilities
