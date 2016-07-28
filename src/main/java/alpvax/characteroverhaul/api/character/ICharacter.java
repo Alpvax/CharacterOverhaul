@@ -1,6 +1,7 @@
 package alpvax.characteroverhaul.api.character;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
@@ -37,9 +38,9 @@ public interface ICharacter
 
 	public List<ICharacterEffect> getEffects();
 
-	public void addEffect();
+	public void addEffect(ICharacterEffect effect);
 
-	public void removeEffect();
+	public void removeEffect(UUID id);
 
 	/*public AbilityInstance getAbilityInstance(Ability ability);
 	

@@ -3,6 +3,9 @@ package alpvax.characteroverhaul.api.character;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import com.google.common.base.Preconditions;
 
 import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.api.perk.Perk;
@@ -21,6 +24,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 {
 	private Map<ResourceLocation, Integer> perks = new HashMap<>();
 	private Map<ResourceLocation, SkillInstance> skills = new HashMap<>();
+	private Map<UUID, ICharacterEffect> effects = new HashMap<>();
 	private final ICapabilityProvider attached;
 
 	public CharacterBase(ICapabilityProvider object)
@@ -148,16 +152,20 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	}
 
 	@Override
-	public void addEffect()
+	public void addEffect(ICharacterEffect effect)
 	{
-		// TODO Auto-generated method stub
-
+		UUID id = effect.getId();
+		Preconditions.checkArgument(!effects.containsKey(id), "Already an effect with that id: %s", id);
+		effect.onAttach();
+		effects.put(id, effect);
 	}
 
 	@Override
-	public void removeEffect()
+	public void removeEffect(UUID id)
 	{
-		// TODO Auto-generated method stub
-
+		if(effects.containsKey(id))
+		{
+			effects.remove(id).onRemove();
+		}
 	}
 }
