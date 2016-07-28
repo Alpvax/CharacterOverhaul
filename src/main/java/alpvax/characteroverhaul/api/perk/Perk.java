@@ -8,6 +8,7 @@ import com.google.common.base.Strings;
 
 import alpvax.characteroverhaul.api.Reference;
 import alpvax.characteroverhaul.api.character.ICharacter;
+import alpvax.characteroverhaul.api.effect.IEffectProvider;
 import alpvax.characteroverhaul.api.skill.Skill;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
@@ -21,12 +22,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /**
  * All perks must be registered with {@link GameRegistry#register(IForgeRegistryEntry) GameRegistry.register(perk)}.
  */
-public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
+public abstract class Perk extends IForgeRegistryEntry.Impl<Perk> implements IEffectProvider
 {
 	private final Skill skill;
 	private Set<Perk> children = new HashSet<Perk>();
 
-	private Perk(String id, Skill skillTree)
+	public Perk(String id, Skill skillTree)
 	{
 		Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "Attempted instantiation of perk \"%s\" with no id", toString());
 		setRegistryName(id);
@@ -71,7 +72,7 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk>
 	public final boolean unlock(ICharacter character)
 	{
 		int levelToUnlock = character.getPerkLevel(this) + 1;
-		if(canUnlock(levelToUnlock, character) && applyUnlockCost(levelToUnlock, character))
+		if(levelToUnlock <= getMaxLevel(character) && canUnlock(levelToUnlock, character) && applyUnlockCost(levelToUnlock, character))
 		{
 			character.setPerkLevel(this, levelToUnlock);
 			return true;
