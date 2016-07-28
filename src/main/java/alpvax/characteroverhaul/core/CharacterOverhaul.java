@@ -2,23 +2,29 @@ package alpvax.characteroverhaul.core;
 
 import static alpvax.characteroverhaul.api.Reference.MOD_ID;
 
+import java.util.List;
+
+import org.apache.logging.log4j.Level;
+
 import alpvax.characteroverhaul.api.Reference;
+import alpvax.characteroverhaul.api.perk.Perk;
+import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.capabilities.CapabilityCharacterHandler;
 import alpvax.characteroverhaul.core.proxy.CommonProxy;
-import alpvax.characteroverhaul.network.ConfigMessage;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Metadata;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = Reference.MOD_ID, version = Reference.VERSION, guiFactory = "alpvax.characteroverhaul.client.COGuiFactory")
 public class CharacterOverhaul
@@ -56,9 +62,30 @@ public class CharacterOverhaul
 		MinecraftForge.EVENT_BUS.register(new CharacterOverhaulHooks());
 	}
 
+	@Mod.EventHandler
+	public void postInit(FMLPostInitializationEvent e)
+	{
+		//Ensure Skills registry is initialised, even if no skills were registered
+		List<Skill> skills = Skill.getAllSkills();
+		StringBuilder sb = new StringBuilder("Detected ").append(skills.size()).append(" registered skill(s):\n");
+		for(Skill s : skills)
+		{
+			sb.append("\n").append(s.getRegistryName().toString());
+		}
+		FMLLog.log("Character Overhaul", Level.INFO, sb.toString());
+		//Ensure Perks registry is initialised, even if no skills were registered
+		List<Perk> perks = Perk.REGISTRY.getValues();
+		sb = new StringBuilder("Detected ").append(perks.size()).append(" registered perk(s):\n");
+		for(Perk p : perks)
+		{
+			sb.append("\n").append(p.getRegistryName().toString()).append(" (").append(p.getDisplayName()).append(")");
+		}
+		FMLLog.log("Character Overhaul", Level.INFO, sb.toString());
+	}
+
 	private void registerPackets()
 	{
-		network.registerMessage(ConfigMessage.Handler.class, ConfigMessage.class, 0, Side.SERVER);
+		//network.registerMessage(ConfigMessage.Handler.class, ConfigMessage.class, 0, Side.SERVER);
 		// network.registerMessage(SecondMessage.Handler.class, SecondMessage.class, 1, Side.CLIENT);	
 	}
 
