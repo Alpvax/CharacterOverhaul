@@ -6,7 +6,7 @@ import java.util.Set;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
-import alpvax.characteroverhaul.api.Reference;
+import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.effect.IEffectProvider;
 import alpvax.characteroverhaul.api.skill.Skill;
@@ -104,5 +104,5 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk> implements IEf
 	 */
 	private static final int MAX_PERK_ID = 0xff;
 
-	public static final FMLControlledNamespacedRegistry<Perk> REGISTRY = PersistentRegistryManager.createRegistry(new ResourceLocation(Reference.MOD_ID, "perks"), Perk.class, null, 0, MAX_PERK_ID, true, null, null, null);
+	public static final FMLControlledNamespacedRegistry<Perk> REGISTRY = PersistentRegistryManager.createRegistry(new ResourceLocation(CharacterOverhaulReference.MOD_ID, "perks"), Perk.class, null, 0, MAX_PERK_ID, true, null, null, null);
 }

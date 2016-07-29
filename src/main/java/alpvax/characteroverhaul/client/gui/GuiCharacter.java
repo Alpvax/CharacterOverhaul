@@ -1,6 +1,6 @@
 package alpvax.characteroverhaul.client.gui;
 
-import alpvax.characteroverhaul.api.Reference;
+import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 public class GuiCharacter extends GuiScreen
 {
 	/** The location of the inventory background texture */
-	public static final ResourceLocation BACKGROUND = new ResourceLocation(Reference.MOD_ID, "textures/gui/character/inventory.png");
+	public static final ResourceLocation BACKGROUND = new ResourceLocation(CharacterOverhaulReference.MOD_ID, "textures/gui/character/inventory.png");
 	private boolean buildTexture = false;
 
 	@Override

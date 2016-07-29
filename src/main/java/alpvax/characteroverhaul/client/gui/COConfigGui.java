@@ -3,7 +3,7 @@ package alpvax.characteroverhaul.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import alpvax.characteroverhaul.api.Reference;
+import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.core.CharacterOverhaul;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -18,7 +18,7 @@ public class COConfigGui extends GuiConfig
 
 	public COConfigGui(GuiScreen parentScreen)
 	{
-		super(parentScreen, getElements(), Reference.MOD_ID, false, false, I18n.format(Reference.MOD_ID + ".configgui.mainConfigTitle"));
+		super(parentScreen, getElements(), CharacterOverhaulReference.MOD_ID, false, false, I18n.format(CharacterOverhaulReference.MOD_ID + ".configgui.mainConfigTitle"));
 	}
 
 	private static List<IConfigElement> getElements()

@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
-import alpvax.characteroverhaul.api.Reference;
+import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
@@ -45,7 +45,7 @@ public abstract class Skill extends IForgeRegistryEntry.Impl<Skill>
 	 */
 	private static final int MAX_SKILL_ID = 0xff;
 
-	public static final FMLControlledNamespacedRegistry<Skill> REGISTRY = PersistentRegistryManager.createRegistry(new ResourceLocation(Reference.MOD_ID, "skills"), Skill.class, null, 0, MAX_SKILL_ID, true, null, null, null);
+	public static final FMLControlledNamespacedRegistry<Skill> REGISTRY = PersistentRegistryManager.createRegistry(new ResourceLocation(CharacterOverhaulReference.MOD_ID, "skills"), Skill.class, null, 0, MAX_SKILL_ID, true, null, null, null);
 
 	/**
 	 * @return a list of {@linkplain RootPerk RootPerks} (i.e. a list of perk trees).

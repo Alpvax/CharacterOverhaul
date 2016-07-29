@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.lwjgl.input.Mouse;
 
-import alpvax.characteroverhaul.api.Reference;
+import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.character.CharacterBase;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.effect.ICharacterEffect;
@@ -40,7 +40,7 @@ public class CharacterOverhaulHooks
 	{
 		if(!hasCapability(event, CapabilityCharacterHandler.CHARACTER_CAPABILITY, null))
 		{
-			event.addCapability(Reference.CAPABILITY_CHARACTER_KEY, new SerializeableCapabilityProvider<ICharacter>(new CharacterBase(event.getEntity()), CapabilityCharacterHandler.CHARACTER_CAPABILITY));
+			event.addCapability(CharacterOverhaulReference.CAPABILITY_CHARACTER_KEY, new SerializeableCapabilityProvider<ICharacter>(new CharacterBase(event.getEntity()), CapabilityCharacterHandler.CHARACTER_CAPABILITY));
 		}
 	}
 
@@ -142,7 +142,7 @@ public class CharacterOverhaulHooks
 			EntityPlayerSP player = gui.mc.thePlayer;
 			if(Mouse.getEventButton() == 0 && Mouse.getEventButtonState() && i < gui.guiLeft && j > gui.guiTop && j < gui.guiTop + gui.ySize)
 			{
-				player.openGui(CharacterOverhaul.instance, Reference.GUI_EFFECTS, player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
+				player.openGui(CharacterOverhaul.instance, CharacterOverhaulReference.GUI_EFFECTS, player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
 			}
 		}
 	}
