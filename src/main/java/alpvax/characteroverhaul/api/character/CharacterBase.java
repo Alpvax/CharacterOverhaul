@@ -1,5 +1,6 @@
 package alpvax.characteroverhaul.api.character;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.UUID;
 
 import com.google.common.base.Preconditions;
 
+import alpvax.characteroverhaul.api.ability.IAbility;
 import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
@@ -25,6 +27,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	private Map<ResourceLocation, Integer> perks = new HashMap<>();
 	private Map<ResourceLocation, SkillInstance> skills = new HashMap<>();
 	private Map<UUID, ICharacterEffect> effects = new HashMap<>();
+	private Map<UUID, IAbility> abilities = new HashMap<>();
 	private final ICapabilityProvider attached;
 
 	public CharacterBase(ICapabilityProvider object)
@@ -147,8 +150,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	@Override
 	public List<ICharacterEffect> getEffects()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>(effects.values());
 	}
 
 	@Override
@@ -166,6 +168,30 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		if(effects.containsKey(id))
 		{
 			effects.remove(id).onRemove();
+		}
+	}
+
+	@Override
+	public List<IAbility> getAbilities()
+	{
+		return new ArrayList<>(abilities.values());
+	}
+
+	@Override
+	public void addAbility(IAbility ability)
+	{
+		UUID id = ability.getId();
+		Preconditions.checkArgument(!abilities.containsKey(id), "Already an ability with that id: %s", id);
+		ability.onAttach();
+		abilities.put(id, ability);
+	}
+
+	@Override
+	public void removeAbility(UUID id)
+	{
+		if(abilities.containsKey(id))
+		{
+			abilities.remove(id).onRemove();
 		}
 	}
 }

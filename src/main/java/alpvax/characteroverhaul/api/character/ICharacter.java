@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
+import alpvax.characteroverhaul.api.ability.IAbility;
 import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
@@ -42,14 +43,20 @@ public interface ICharacter
 
 	public void removeEffect(UUID id);
 
+	public List<IAbility> getAbilities();
+
+	public void addAbility(IAbility ability);
+
+	public void removeAbility(UUID id);
+
 	/*public AbilityInstance getAbilityInstance(Ability ability);
-	
+
 	public List<AbilityInstance> getAbilities();
-	
+
 	public boolean hasAbility(Ability ability);
-	
+
 	public void addAbility(Ability ability);
-	
+
 	public void removeAbility(Ability ability);*/
 
 	/**
