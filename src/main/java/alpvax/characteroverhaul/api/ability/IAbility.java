@@ -3,23 +3,19 @@ package alpvax.characteroverhaul.api.ability;
 import java.util.UUID;
 
 import alpvax.characteroverhaul.api.effect.IEffectProvider;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface IAbility
 {
-	/**
-	 * If this returns true, this effect will have to be equipped in an ability slot for it to have an effect.<br>
-	 * Otherwise it will appear on the effects screen instead and will have an effect without being equipped.
-	 */
-	public boolean requiresAbilitySlot();
-
 	public UUID getId();
 
-	/**
-	 * Called every tick, use it to passively enable/disable the ability.
-	 */
-	public void tick();
-
 	public IEffectProvider getProvider();
+
+	public String getLocalisedName();
+
+	@SideOnly(Side.CLIENT)
+	public void renderIcon();//TODO:Call it from somewhere
 
 	/**
 	 * Called when the ability is added to the character.
@@ -31,6 +27,14 @@ public interface IAbility
 	 */
 	public void onRemove();
 
+	/**
+	 * Called every tick, use it to passively enable/disable the ability.
+	 */
+	public void tick();
+
+	/**
+	 * Whether the ability is currently affecting the character.
+	 */
 	public boolean isActive();
 
 	/**

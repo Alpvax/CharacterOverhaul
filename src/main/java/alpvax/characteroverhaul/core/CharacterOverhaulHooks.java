@@ -11,6 +11,7 @@ import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.capabilities.CapabilityCharacterHandler;
 import alpvax.characteroverhaul.capabilities.SerializeableCapabilityProvider;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.entity.Entity;
@@ -19,6 +20,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.MouseInputEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.PotionShiftEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -114,6 +117,26 @@ public class CharacterOverhaulHooks
 	{
 		//TODO:if potions display disabled
 		event.setCanceled(true);
+	}
+
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent
+	public void onRenderOverlay(RenderGameOverlayEvent.Pre event)
+	{
+		if(event.getType() == ElementType.POTION_ICONS)
+		{
+			//TODO:if potions display disabled
+			event.setCanceled(true);
+			for(ICharacterEffect effect : Minecraft.getMinecraft().thePlayer.getCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null).getEffects())
+			{
+				effect.renderOnHUD(event.getResolution());
+			}
+		}
+		/*TODO:Render abilities
+		if(event.getType() == ElementType.HOTBAR)
+		{
+
+		}*/
 	}
 
 	@SideOnly(Side.CLIENT)
