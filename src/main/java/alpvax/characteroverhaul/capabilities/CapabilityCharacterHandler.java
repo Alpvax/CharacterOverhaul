@@ -2,7 +2,6 @@ package alpvax.characteroverhaul.capabilities;
 
 import java.util.concurrent.Callable;
 
-import alpvax.characteroverhaul.api.abilityoutdated.AbilityInstance;
 import alpvax.characteroverhaul.api.character.CharacterBase;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.perk.Perk;
@@ -15,7 +14,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.Constants.NBT;
-import net.minecraftforge.common.util.INBTSerializable;
 
 public class CapabilityCharacterHandler
 {
@@ -24,7 +22,8 @@ public class CapabilityCharacterHandler
 		private static final String PERKS = "Perks";
 		private static final String SKILLS = "Skills";
 		/*private static final String ABILITIES = "Abilities";
-		private static final String MODIFIERS = "Modifiers";
+		private static final String EFFECTS = "Effects";
+		//private static final String MODIFIERS = "Modifiers";
 		private static final String UUID_MOST = "IDMost";
 		private static final String UUID_LEAST = "IDLeast";*/
 	}
@@ -66,13 +65,33 @@ public class CapabilityCharacterHandler
 				}
 				/*//Save Abilities
 				NBTTagList abilities = new NBTTagList();
-				for(AbilityInstance inst : instance.getAbilities())
+				for(IAbility ability : instance.getAbilities())
 				{
-					abilities.appendTag(inst.serializeNBT());
+					@SuppressWarnings("unchecked")
+					NBTTagCompound tag = ability instanceof INBTSerializable ? ((INBTSerializable<NBTTagCompound>)ability).serializeNBT() : new NBTTagCompound();
+					UUID id = ability.getId();
+					tag.setLong(NBTKeys.UUID_MOST, id.getMostSignificantBits());
+					tag.setLong(NBTKeys.UUID_LEAST, id.getLeastSignificantBits());
+					abilities.appendTag(tag);
 				}
 				if(!abilities.hasNoTags())
 				{
 					nbt.setTag(NBTKeys.ABILITIES, abilities);
+				}
+				//Save Effects
+				NBTTagList effects = new NBTTagList();
+				for(ICharacterEffect effect : instance.getEffects())
+				{
+					@SuppressWarnings("unchecked")
+					NBTTagCompound tag = effect instanceof INBTSerializable ? ((INBTSerializable<NBTTagCompound>)effect).serializeNBT() : new NBTTagCompound();
+					UUID id = effect.getId();
+					tag.setLong(NBTKeys.UUID_MOST, id.getMostSignificantBits());
+					tag.setLong(NBTKeys.UUID_LEAST, id.getLeastSignificantBits());
+					effects.appendTag(tag);
+				}
+				if(!effects.hasNoTags())
+				{
+					nbt.setTag(NBTKeys.EFFECTS, effects);
 				}*/
 				/*Save Modifiers
 				NBTTagList modifiers = new NBTTagList();
@@ -165,13 +184,6 @@ public class CapabilityCharacterHandler
 					}
 				}*/
 			}
-
-			@SuppressWarnings("unchecked")
-			public <T extends NBTBase> void loadInstanceNBT(AbilityInstance inst, T tag)
-			{
-				((INBTSerializable<T>)inst).deserializeNBT(tag);
-			}
-
 		}, new Callable<ICharacter>()
 		{
 			@Override
