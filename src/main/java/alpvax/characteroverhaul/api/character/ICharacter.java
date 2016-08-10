@@ -49,6 +49,8 @@ public interface ICharacter
 
 	public List<IAbility> getAbilities();
 
+	public List<IAbility> getCurrentAbilities();
+
 	public void addAbility(IAbility ability);
 
 	public void removeAbility(UUID id);

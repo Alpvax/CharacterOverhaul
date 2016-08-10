@@ -21,11 +21,12 @@ public class CapabilityCharacterHandler
 	{
 		private static final String PERKS = "Perks";
 		private static final String SKILLS = "Skills";
-		/*private static final String ABILITIES = "Abilities";
-		private static final String EFFECTS = "Effects";
+		private static final String ABILITIES = "Abilities";
+		//private static final String EFFECTS = "Effects";
 		//private static final String MODIFIERS = "Modifiers";
+		protected static final String ABILITY_ACTIVE = "Active";
 		private static final String UUID_MOST = "IDMost";
-		private static final String UUID_LEAST = "IDLeast";*/
+		private static final String UUID_LEAST = "IDLeast";
 	}
 
 	@CapabilityInject(ICharacter.class)
@@ -72,13 +73,14 @@ public class CapabilityCharacterHandler
 					UUID id = ability.getId();
 					tag.setLong(NBTKeys.UUID_MOST, id.getMostSignificantBits());
 					tag.setLong(NBTKeys.UUID_LEAST, id.getLeastSignificantBits());
+					tag.setBoolean(NBTKeys.ABILITY_ACTIVE, ability.isActive());
 					abilities.appendTag(tag);
 				}
 				if(!abilities.hasNoTags())
 				{
 					nbt.setTag(NBTKeys.ABILITIES, abilities);
-				}
-				//Save Effects
+				}*/
+				/*//Save Effects
 				NBTTagList effects = new NBTTagList();
 				for(ICharacterEffect effect : instance.getEffects())
 				{
@@ -166,7 +168,7 @@ public class CapabilityCharacterHandler
 						}
 						FMLLog.warning("Character has data saved for ability %s, but no such ability exists.", id);
 					}
-				}*/
+				}
 				/*Load modifiers
 				if(nbt.hasKey(Keys.MODIFIERS, NBT.TAG_LIST))
 				{

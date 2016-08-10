@@ -1,6 +1,7 @@
 package alpvax.characteroverhaul.api.character;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import alpvax.characteroverhaul.api.character.modifier.CharacterModifierFactory;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
 import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.api.perk.Perk;
+import alpvax.characteroverhaul.api.settings.Settings;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
 import net.minecraft.block.BlockDirectional;
@@ -32,6 +34,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	private final ImmutableMap<ResourceLocation, ICharacterModifierHandler<?>> modifiers;
 	private Map<UUID, ICharacterEffect> effects = new HashMap<>();
 	private Map<UUID, IAbility> abilities = new HashMap<>();
+	private UUID[] abilityHotbar = new UUID[Settings.getCurrentConfig().getNumAbilities()];//TODO: number of abilities
 	private final ICapabilityProvider attached;
 
 	public CharacterBase(ICapabilityProvider object)
@@ -196,6 +199,17 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	public List<IAbility> getAbilities()
 	{
 		return new ArrayList<>(abilities.values());
+	}
+
+	@Override
+	public List<IAbility> getCurrentAbilities()
+	{
+		List<IAbility> list = new ArrayList<>();
+		for(int i = 0; i < abilityHotbar.length; i++)
+		{
+			list.add(abilities.get(abilityHotbar[i]));
+		}
+		return Collections.unmodifiableList(list);
 	}
 
 	@Override
