@@ -7,8 +7,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 
 import alpvax.characteroverhaul.api.ability.IAbility;
+import alpvax.characteroverhaul.api.character.modifier.CharacterModifierFactory;
+import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
 import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
@@ -24,8 +27,9 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public /*abstract/**/ class CharacterBase implements ICharacter
 {
-	private Map<ResourceLocation, Integer> perks = new HashMap<>();
-	private Map<ResourceLocation, SkillInstance> skills = new HashMap<>();
+	private final Map<ResourceLocation, Integer> perks = new HashMap<>();
+	private final Map<ResourceLocation, SkillInstance> skills = new HashMap<>();
+	private final ImmutableMap<ResourceLocation, ICharacterModifierHandler<?>> modifiers;
 	private Map<UUID, ICharacterEffect> effects = new HashMap<>();
 	private Map<UUID, IAbility> abilities = new HashMap<>();
 	private final ICapabilityProvider attached;
@@ -33,6 +37,16 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	public CharacterBase(ICapabilityProvider object)
 	{
 		attached = object;
+		ImmutableMap.Builder<ResourceLocation, ICharacterModifierHandler<?>> b = ImmutableMap.builder();
+		for(CharacterModifierFactory<?> factory : CharacterModifierFactory.REGISTRY.getValues())
+		{
+			if(factory.isValidForCharacter(this))
+			{
+				b.put(factory.getRegistryName(), factory.newHandler(this));
+			}
+		}
+		modifiers = b.build();
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -145,6 +159,13 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	public void addSkillExperience(Skill skill, float amount)
 	{
 		getSkillInstance(skill).addExp(amount);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends ICharacterModifierHandler<?>> T getModifierHandler(ResourceLocation registryName)
+	{
+		return (T)modifiers.get(registryName);
 	}
 
 	@Override

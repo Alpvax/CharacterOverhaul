@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.logging.log4j.Level;
 
 import alpvax.characteroverhaul.api.CharacterOverhaulReference;
+import alpvax.characteroverhaul.api.character.modifier.CharacterModifierFactory;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.capabilities.CapabilityCharacterHandler;
@@ -65,20 +66,34 @@ public class CharacterOverhaul
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent e)
 	{
+		String form = "Detected %d registered %s:%n";
+		int num;
+		StringBuilder sb;
 		//Ensure Skills registry is initialised, even if no skills were registered
 		List<Skill> skills = Skill.getAllSkills();
-		StringBuilder sb = new StringBuilder("Detected ").append(skills.size()).append(" registered skill(s):\n");
+		num = skills.size();
+		sb = new StringBuilder(String.format(form, num, num == 1 ? "skill" : "skills"));
 		for(Skill s : skills)
 		{
 			sb.append("\n").append(s.getRegistryName().toString());
 		}
 		FMLLog.log("Character Overhaul", Level.INFO, sb.toString());
-		//Ensure Perks registry is initialised, even if no skills were registered
+		//Ensure Perks registry is initialised, even if no perks were registered
 		List<Perk> perks = Perk.REGISTRY.getValues();
-		sb = new StringBuilder("Detected ").append(perks.size()).append(" registered perk(s):\n");
+		num = skills.size();
+		sb = new StringBuilder(String.format(form, num, num == 1 ? "perk" : "perks"));
 		for(Perk p : perks)
 		{
 			sb.append("\n").append(p.getRegistryName().toString()).append(" (").append(p.getDisplayName()).append(")");
+		}
+		FMLLog.log("Character Overhaul", Level.INFO, sb.toString());
+		//Ensure Modifiers registry is initialised, even if no factories were registered
+		List<CharacterModifierFactory<?>> modifiers = CharacterModifierFactory.REGISTRY.getValues();
+		num = skills.size();
+		sb = new StringBuilder(String.format(form, num, "character modifier " + (num == 1 ? "factory" : "factories")));
+		for(CharacterModifierFactory<?> m : modifiers)
+		{
+			sb.append("\n").append(m.getRegistryName().toString());
 		}
 		FMLLog.log("Character Overhaul", Level.INFO, sb.toString());
 	}
@@ -86,7 +101,7 @@ public class CharacterOverhaul
 	private void registerPackets()
 	{
 		//network.registerMessage(ConfigMessage.Handler.class, ConfigMessage.class, 0, Side.SERVER);
-		// network.registerMessage(SecondMessage.Handler.class, SecondMessage.class, 1, Side.CLIENT);	
+		// network.registerMessage(SecondMessage.Handler.class, SecondMessage.class, 1, Side.CLIENT);
 	}
 
 	@SubscribeEvent

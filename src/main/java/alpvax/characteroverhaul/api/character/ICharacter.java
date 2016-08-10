@@ -6,10 +6,12 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 
 import alpvax.characteroverhaul.api.ability.IAbility;
+import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
 import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
@@ -36,6 +38,8 @@ public interface ICharacter
 	public int getSkillLevel(Skill skill);
 
 	public void addSkillExperience(Skill skill, float amount);
+
+	public <T extends ICharacterModifierHandler<?>> T getModifierHandler(ResourceLocation registryName);
 
 	public List<ICharacterEffect> getEffects();
 
