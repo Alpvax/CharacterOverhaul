@@ -4,6 +4,8 @@ import java.util.concurrent.Callable;
 
 import alpvax.characteroverhaul.api.character.CharacterBase;
 import alpvax.characteroverhaul.api.character.ICharacter;
+import alpvax.characteroverhaul.api.character.modifier.CharacterModifierFactory;
+import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import net.minecraft.nbt.NBTBase;
@@ -21,9 +23,9 @@ public class CapabilityCharacterHandler
 	{
 		private static final String PERKS = "Perks";
 		private static final String SKILLS = "Skills";
+		private static final String MODIFIERS = "Modifiers";
 		private static final String ABILITIES = "Abilities";
 		//private static final String EFFECTS = "Effects";
-		//private static final String MODIFIERS = "Modifiers";
 		protected static final String ABILITY_ACTIVE = "Active";
 		private static final String UUID_MOST = "IDMost";
 		private static final String UUID_LEAST = "IDLeast";
@@ -64,6 +66,20 @@ public class CapabilityCharacterHandler
 				{
 					nbt.setTag(NBTKeys.SKILLS, skills);
 				}
+				//Save Modifiers
+				NBTTagCompound modifiers = new NBTTagCompound();
+				for(ResourceLocation key : CharacterModifierFactory.REGISTRY.getKeys())
+				{
+					ICharacterModifierHandler<?> modifier = instance.getModifierHandler(key);
+					if(modifier != null)
+					{
+						modifiers.setTag(key.toString(), modifier.serializeNBT());
+					}
+				}
+				if(!modifiers.hasNoTags())
+				{
+					nbt.setTag(NBTKeys.MODIFIERS, modifiers);
+				}
 				/*//Save Abilities
 				NBTTagList abilities = new NBTTagList();
 				for(IAbility ability : instance.getAbilities())
@@ -94,27 +110,6 @@ public class CapabilityCharacterHandler
 				if(!effects.hasNoTags())
 				{
 					nbt.setTag(NBTKeys.EFFECTS, effects);
-				}*/
-				/*Save Modifiers
-				NBTTagList modifiers = new NBTTagList();
-				for(ICharacterModifier modifier : instance.getModifiers())
-				{
-					if(modifier instanceof ICharacterModifierExtended)
-					{
-						ICharacterModifierExtended m = (ICharacterModifierExtended)modifier;
-						if(m.shouldSaveNBTToCharacter())
-						{
-							NBTTagCompound mnbt = m.serializeNBT();
-							UUID id = m.getID();
-							mnbt.setLong(Keys.UUID_MOST, id.getMostSignificantBits());
-							mnbt.setLong(Keys.UUID_LEAST, id.getLeastSignificantBits());
-							modifiers.appendTag(mnbt);
-						}
-					}
-				}
-				if(!modifiers.hasNoTags())
-				{
-					nbt.setTag(Keys.MODIFIERS, modifiers);
 				}*/
 				return nbt;
 			}
@@ -149,6 +144,19 @@ public class CapabilityCharacterHandler
 						}
 					}
 				}
+				//Load Modifiers
+				if(nbt.hasKey(NBTKeys.MODIFIERS, NBT.TAG_COMPOUND))
+				{
+					NBTTagCompound modifiers = nbt.getCompoundTag(NBTKeys.MODIFIERS);
+					for(String s : modifiers.getKeySet())
+					{
+						ICharacterModifierHandler<?> modifier = instance.getModifierHandler(new ResourceLocation(s));
+						if(modifier != null)
+						{
+							modifier.deserializeNBT(modifiers.getCompoundTag(s));
+						}
+					}
+				}
 				/*//Load abilities
 				if(nbt.hasKey(NBTKeys.ABILITIES, NBT.TAG_LIST))
 				{
@@ -167,22 +175,6 @@ public class CapabilityCharacterHandler
 							}
 						}
 						FMLLog.warning("Character has data saved for ability %s, but no such ability exists.", id);
-					}
-				}
-				/*Load modifiers
-				if(nbt.hasKey(Keys.MODIFIERS, NBT.TAG_LIST))
-				{
-					NBTTagList modifiers = nbt.getTagList(Keys.MODIFIERS, NBT.TAG_COMPOUND);
-					for(int i = 0; i < modifiers.tagCount(); i++)
-					{
-						NBTTagCompound mnbt = modifiers.getCompoundTagAt(i);
-						UUID id = new UUID(mnbt.getLong(Keys.UUID_MOST), mnbt.getLong(Keys.UUID_LEAST));
-						ICharacterModifierExtended modifier = (ICharacterModifierExtended)instance.getModifier(id);
-						if(!modifier.shouldSaveNBTToCharacter())
-						{
-							FMLLog.warning("CharacterModifier with id %s has an data saved with the Character, but shouldn't be saving data to the character.", id);
-						}
-						modifier.deserializeNBT(mnbt);
 					}
 				}*/
 			}

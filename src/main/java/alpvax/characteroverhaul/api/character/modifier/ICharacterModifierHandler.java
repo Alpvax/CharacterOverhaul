@@ -1,9 +1,11 @@
 package alpvax.characteroverhaul.api.character.modifier;
 
 import alpvax.characteroverhaul.api.character.ICharacter;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.util.INBTSerializable;
 
-public interface ICharacterModifierHandler<T extends ICharacterModifier> extends Comparable<ICharacterModifierHandler<?>>
+public interface ICharacterModifierHandler<T extends ICharacterModifier> extends INBTSerializable<NBTTagCompound>, Comparable<ICharacterModifierHandler<?>>
 {
 	/**
 	 * @return the key this is attached to the character with.
