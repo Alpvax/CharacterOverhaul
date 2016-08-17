@@ -6,15 +6,17 @@ import java.util.List;
 import org.lwjgl.input.Mouse;
 
 import alpvax.characteroverhaul.api.CharacterOverhaulReference;
-import alpvax.characteroverhaul.api.character.CharacterBase;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.effect.ICharacterEffect;
+import alpvax.characteroverhaul.capabilities.AffectedCapabilityProvider;
 import alpvax.characteroverhaul.capabilities.CapabilityCharacterHandler;
-import alpvax.characteroverhaul.capabilities.SerializeableCapabilityProvider;
+import alpvax.characteroverhaul.capabilities.CharacterCapabilityProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
@@ -41,9 +43,14 @@ public class CharacterOverhaulHooks
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void attachCapabilities(AttachCapabilitiesEvent.Entity event)
 	{
-		if(!hasCapability(event, CapabilityCharacterHandler.CHARACTER_CAPABILITY, null))
+		Entity e;
+		if((e = event.getEntity()) instanceof EntityPlayer && !hasCapability(event, CapabilityCharacterHandler.CHARACTER_CAPABILITY, null))
 		{
-			event.addCapability(CharacterOverhaulReference.CAPABILITY_CHARACTER_KEY, new SerializeableCapabilityProvider<ICharacter>(new CharacterBase(event.getEntity()), CapabilityCharacterHandler.CHARACTER_CAPABILITY));
+			event.addCapability(CharacterOverhaulReference.CAPABILITY_CHARACTER_KEY, new CharacterCapabilityProvider(e));
+		}
+		if(!hasCapability(event, CapabilityCharacterHandler.AFFECTED_CAPABILITY, null))
+		{
+			event.addCapability(CharacterOverhaulReference.CAPABILITY_AFFECTED_KEY, new AffectedCapabilityProvider(e));
 		}
 	}
 
@@ -98,7 +105,11 @@ public class CharacterOverhaulHooks
 			IItemHandler items = provider.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 			for(int i = 0; i < items.getSlots(); i++)
 			{
-				tickCharacterEffects(items.getStackInSlot(i));
+				ItemStack stack = items.getStackInSlot(i);
+				if(stack != null)
+				{
+					tickCharacterEffects(stack);
+				}
 			}
 		}
 	}

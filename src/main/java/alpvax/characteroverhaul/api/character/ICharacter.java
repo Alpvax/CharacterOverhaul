@@ -3,19 +3,14 @@ package alpvax.characteroverhaul.api.character;
 import java.util.List;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
-
 import alpvax.characteroverhaul.api.ability.IAbility;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
-import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
-public interface ICharacter
+public interface ICharacter extends IAffected
 {
 	/**
 	 * @param perk the perk to retrieve the level of.
@@ -41,12 +36,6 @@ public interface ICharacter
 
 	public <T extends ICharacterModifierHandler<?>> T getModifierHandler(ResourceLocation registryName);
 
-	public List<ICharacterEffect> getEffects();
-
-	public void addEffect(ICharacterEffect effect);
-
-	public void removeEffect(UUID id);
-
 	public List<IAbility> getAbilities();
 
 	public List<IAbility> getCurrentAbilities();
@@ -64,25 +53,6 @@ public interface ICharacter
 	public void addAbility(Ability ability);
 
 	public void removeAbility(Ability ability);*/
-
-	/**
-	 * Gets the object this Character represents.
-	 * @return
-	 */
-	public <T extends ICapabilityProvider> T getAttachedObject();
-
-	/**
-	 * Utility method for the character's position.
-	 * @return
-	 */
-	public Vec3d getPosition();
-
-	/**
-	 * Utility method for the direction the character is facing.<br>
-	 * Should return {@link Vec3d#ZERO} if the character doesn't have an orientation (e.g. most TileEntities).
-	 * @return
-	 */
-	public @Nonnull Vec3d getDirection();
 
 
 	/**

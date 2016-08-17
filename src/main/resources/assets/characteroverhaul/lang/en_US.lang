@@ -1,7 +1,9 @@
 mod.characteroverhaul.name=Character Overhaul
 mod.characteroverhaul.description=An API that allows other mods to add RPG-style skills and abilities to characters.
 
-commands.character.usage=/character [command | @p<target>]
+commands.character.usage=/character <command> [@p <target>]\nValid subcommands:%s
+commands.character.options=Valid subcommands:%s
+commands.character.error.notarget=Unable to determine a target.
 commands.character.error.multipletargets=Target already specified as %1$s, not looking for target with username %2$s.
 
 character.perks.num=Character %1$s has aquired %2$d perk(s)

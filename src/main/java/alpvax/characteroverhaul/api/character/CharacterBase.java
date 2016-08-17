@@ -13,33 +13,24 @@ import com.google.common.collect.ImmutableMap;
 import alpvax.characteroverhaul.api.ability.IAbility;
 import alpvax.characteroverhaul.api.character.modifier.CharacterModifierFactory;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
-import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.settings.Settings;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
-import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
-public /*abstract/**/ class CharacterBase implements ICharacter
+public /*abstract/**/ class CharacterBase extends AffectedBase implements ICharacter
 {
 	private final Map<ResourceLocation, Integer> perks = new HashMap<>();
 	private final Map<ResourceLocation, SkillInstance> skills = new HashMap<>();
 	private final ImmutableMap<ResourceLocation, ICharacterModifierHandler<?>> modifiers;
-	private Map<UUID, ICharacterEffect> effects = new HashMap<>();
 	private Map<UUID, IAbility> abilities = new HashMap<>();
 	private UUID[] abilityHotbar = new UUID[Settings.getCurrentConfig().getNumAbilities()];//TODO: number of abilities
-	private final ICapabilityProvider attached;
 
 	public CharacterBase(ICapabilityProvider object)
 	{
-		attached = object;
+		super(object);
 		ImmutableMap.Builder<ResourceLocation, ICharacterModifierHandler<?>> b = ImmutableMap.builder();
 		for(CharacterModifierFactory<?> factory : CharacterModifierFactory.REGISTRY.getValues())
 		{
@@ -50,49 +41,6 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		}
 		modifiers = b.build();
 
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends ICapabilityProvider> T getAttachedObject()
-	{
-		return (T)attached;
-	}
-
-	@Override
-	public Vec3d getPosition()
-	{
-		ICapabilityProvider o = getAttachedObject();
-		if(o instanceof Entity)
-		{
-			return ((Entity)o).getPositionVector();
-		}
-		if(o instanceof TileEntity)
-		{
-			BlockPos pos = ((TileEntity)o).getPos();
-			return new Vec3d((pos.getX()) + 0.5D, (pos.getY()) + 0.5D, (pos.getZ()) + 0.5D);
-		}
-		return null;
-	}
-
-	@Override
-	public Vec3d getDirection()
-	{
-		ICapabilityProvider o = getAttachedObject();
-		if(o instanceof Entity)
-		{
-			return ((Entity)o).getLookVec();
-		}
-		if(o instanceof TileEntity)
-		{
-			TileEntity t = ((TileEntity)o);
-			IBlockState state = t.getWorld().getBlockState(t.getPos());
-			if(state.getPropertyNames().contains(BlockDirectional.FACING))
-			{
-				return new Vec3d(state.getValue(BlockDirectional.FACING).getDirectionVec());
-			}
-		}
-		return Vec3d.ZERO;
 	}
 
 	@Override
@@ -169,30 +117,6 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	public <T extends ICharacterModifierHandler<?>> T getModifierHandler(ResourceLocation registryName)
 	{
 		return (T)modifiers.get(registryName);
-	}
-
-	@Override
-	public List<ICharacterEffect> getEffects()
-	{
-		return new ArrayList<>(effects.values());
-	}
-
-	@Override
-	public void addEffect(ICharacterEffect effect)
-	{
-		UUID id = effect.getId();
-		Preconditions.checkArgument(!effects.containsKey(id), "Already an effect with that id: %s", id);
-		effect.onAttach();
-		effects.put(id, effect);
-	}
-
-	@Override
-	public void removeEffect(UUID id)
-	{
-		if(effects.containsKey(id))
-		{
-			effects.remove(id).onRemove();
-		}
 	}
 
 	@Override

@@ -2,7 +2,9 @@ package alpvax.characteroverhaul.capabilities;
 
 import java.util.concurrent.Callable;
 
+import alpvax.characteroverhaul.api.character.AffectedBase;
 import alpvax.characteroverhaul.api.character.CharacterBase;
+import alpvax.characteroverhaul.api.character.IAffected;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.character.modifier.CharacterModifierFactory;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
@@ -24,15 +26,18 @@ public class CapabilityCharacterHandler
 		private static final String PERKS = "Perks";
 		private static final String SKILLS = "Skills";
 		private static final String MODIFIERS = "Modifiers";
-		private static final String ABILITIES = "Abilities";
+		/*private static final String ABILITIES = "Abilities";
 		//private static final String EFFECTS = "Effects";
 		protected static final String ABILITY_ACTIVE = "Active";
 		private static final String UUID_MOST = "IDMost";
-		private static final String UUID_LEAST = "IDLeast";
+		private static final String UUID_LEAST = "IDLeast";*/
 	}
 
 	@CapabilityInject(ICharacter.class)
 	public static Capability<ICharacter> CHARACTER_CAPABILITY = null;
+
+	@CapabilityInject(IAffected.class)
+	public static Capability<IAffected> AFFECTED_CAPABILITY = null;
 
 	public static void register()
 	{
@@ -41,7 +46,8 @@ public class CapabilityCharacterHandler
 			@Override
 			public NBTBase writeNBT(Capability<ICharacter> capability, ICharacter instance, EnumFacing side)
 			{
-				NBTTagCompound nbt = new NBTTagCompound();
+				//Save Effects
+				NBTTagCompound nbt = (NBTTagCompound)AFFECTED_CAPABILITY.writeNBT(instance, side);
 				//Save Perks
 				NBTTagCompound perks = new NBTTagCompound();
 				for(Perk perk : Perk.REGISTRY.getValues())
@@ -96,21 +102,6 @@ public class CapabilityCharacterHandler
 				{
 					nbt.setTag(NBTKeys.ABILITIES, abilities);
 				}*/
-				/*//Save Effects
-				NBTTagList effects = new NBTTagList();
-				for(ICharacterEffect effect : instance.getEffects())
-				{
-					@SuppressWarnings("unchecked")
-					NBTTagCompound tag = effect instanceof INBTSerializable ? ((INBTSerializable<NBTTagCompound>)effect).serializeNBT() : new NBTTagCompound();
-					UUID id = effect.getId();
-					tag.setLong(NBTKeys.UUID_MOST, id.getMostSignificantBits());
-					tag.setLong(NBTKeys.UUID_LEAST, id.getLeastSignificantBits());
-					effects.appendTag(tag);
-				}
-				if(!effects.hasNoTags())
-				{
-					nbt.setTag(NBTKeys.EFFECTS, effects);
-				}*/
 				return nbt;
 			}
 
@@ -118,6 +109,8 @@ public class CapabilityCharacterHandler
 			public void readNBT(Capability<ICharacter> capability, ICharacter instance, EnumFacing side, NBTBase base)
 			{
 				NBTTagCompound nbt = (NBTTagCompound)base;
+				//Load Effects
+				AFFECTED_CAPABILITY.readNBT(instance, side, nbt);
 				//Load Perks
 				if(nbt.hasKey(NBTKeys.PERKS, NBT.TAG_COMPOUND))
 				{
@@ -184,6 +177,44 @@ public class CapabilityCharacterHandler
 			public ICharacter call() throws Exception
 			{
 				return new CharacterBase(null);
+			}
+		});
+		CapabilityManager.INSTANCE.register(IAffected.class, new Capability.IStorage<IAffected>()
+		{
+			@Override
+			public NBTBase writeNBT(Capability<IAffected> capability, IAffected instance, EnumFacing side)
+			{
+				NBTTagCompound nbt = new NBTTagCompound();
+				/*TODO://Save Effects
+				NBTTagList effects = new NBTTagList();
+				for(ICharacterEffect effect : instance.getEffects())
+				{
+					@SuppressWarnings("unchecked")
+					NBTTagCompound tag = effect instanceof INBTSerializable ? ((INBTSerializable<NBTTagCompound>)effect).serializeNBT() : new NBTTagCompound();
+					UUID id = effect.getId();
+					tag.setLong(NBTKeys.UUID_MOST, id.getMostSignificantBits());
+					tag.setLong(NBTKeys.UUID_LEAST, id.getLeastSignificantBits());
+					effects.appendTag(tag);
+				}
+				if(!effects.hasNoTags())
+				{
+					nbt.setTag(NBTKeys.EFFECTS, effects);
+				}*/
+				return nbt;
+			}
+
+			@Override
+			public void readNBT(Capability<IAffected> capability, IAffected instance, EnumFacing side, NBTBase base)
+			{
+				/*TODO:Load Effects
+				NBTTagCompound nbt = (NBTTagCompound)base;*/
+			}
+		}, new Callable<IAffected>()
+		{
+			@Override
+			public IAffected call() throws Exception
+			{
+				return new AffectedBase(null);
 			}
 		});
 	}
