@@ -3,11 +3,15 @@ package alpvax.characteroverhaul.core;
 import static alpvax.characteroverhaul.api.CharacterOverhaulReference.MOD_ID;
 import static alpvax.characteroverhaul.api.CharacterOverhaulReference.VERSION;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.logging.log4j.Level;
 
 import alpvax.characteroverhaul.api.character.modifier.CharacterModifierFactory;
+import alpvax.characteroverhaul.api.character.modifier.RegistryCharModFactory;
+import alpvax.characteroverhaul.api.modifier.player.PlayerRace;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.capabilities.CapabilityCharacterHandler;
@@ -28,6 +32,9 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 @Mod(modid = MOD_ID, version = VERSION, guiFactory = "alpvax.characteroverhaul.client.COGuiFactory")
 public class CharacterOverhaul
@@ -61,10 +68,13 @@ public class CharacterOverhaul
 		proxy.registerPre();
 
 		CapabilityCharacterHandler.register();
+
+		GameRegistry.register(PlayerRace.STEVE);
+
 		MinecraftForge.EVENT_BUS.register(instance);
 		MinecraftForge.EVENT_BUS.register(new CharacterOverhaulHooks());
-	} 
-	
+	}
+
 	@Mod.EventHandler
 	public void serverLoad(FMLServerStartingEvent event)
 	{
@@ -75,35 +85,43 @@ public class CharacterOverhaul
 	public void postInit(FMLPostInitializationEvent e)
 	{
 		String form = "Detected %d registered %s:%n";
-		int num;
-		StringBuilder sb;
-		//Ensure Skills registry is initialised, even if no skills were registered
-		List<Skill> skills = Skill.getAllSkills();
-		num = skills.size();
-		sb = new StringBuilder(String.format(form, num, num == 1 ? "skill" : "skills"));
-		for(Skill s : skills)
+		//Ensure Skill registry is initialised, even if no skills were registered.
+		FMLLog.log("Character Overhaul", Level.INFO, getRegistryLogText(form, Skill.REGISTRY, "skill", "skills"));
+		//Ensure Perk registry is initialised, even if no perks were registered.
+		FMLLog.log("Character Overhaul", Level.INFO, getRegistryLogText(form, Perk.REGISTRY, "perk", "perks"));
+		//Ensure CharacterModifierFactory registry is initialised, even if no modifier factories were registered.
+		//Also does the same for any registry factories.
+		List<String> registryModifiers = new ArrayList<>();
+		FMLLog.log("Character Overhaul", Level.INFO, getRegistryLogText(form, CharacterModifierFactory.REGISTRY, "factory", "factories", (CharacterModifierFactory<?, ?> factory) -> {
+			if(factory instanceof RegistryCharModFactory<?, ?>)
+			{
+				String s = factory.getRegistryName().getResourcePath();
+				registryModifiers.add(getRegistryLogText(form, ((RegistryCharModFactory<?, ?>)factory).registry(), s, s));
+			}
+		}));
+		registryModifiers.forEach((String s) -> FMLLog.log("Character Overhaul", Level.INFO, s));
+
+	}
+
+	private <T extends IForgeRegistryEntry<T>> String getRegistryLogText(String form, FMLControlledNamespacedRegistry<T> registry, String singularArg, String multipleArg)
+	{
+		return getRegistryLogText(form, registry, singularArg, multipleArg, null);
+	}
+
+	private <T extends IForgeRegistryEntry<T>> String getRegistryLogText(String form, FMLControlledNamespacedRegistry<T> registry, String singularArg, String multipleArg, Consumer<T> forEach)
+	{
+		List<T> values = registry.getValues();
+		int num = values.size();
+		StringBuilder sb = new StringBuilder(String.format(form, num, num == 1 ? singularArg : multipleArg));
+		for(T t : values)
 		{
-			sb.append("\n").append(s.getRegistryName().toString());
+			sb.append("\n").append(t.getRegistryName().toString());
+			if(forEach != null)
+			{
+				forEach.accept(t);
+			}
 		}
-		FMLLog.log("Character Overhaul", Level.INFO, sb.toString());
-		//Ensure Perks registry is initialised, even if no perks were registered
-		List<Perk> perks = Perk.REGISTRY.getValues();
-		num = skills.size();
-		sb = new StringBuilder(String.format(form, num, num == 1 ? "perk" : "perks"));
-		for(Perk p : perks)
-		{
-			sb.append("\n").append(p.getRegistryName().toString()).append(" (").append(p.getDisplayName()).append(")");
-		}
-		FMLLog.log("Character Overhaul", Level.INFO, sb.toString());
-		//Ensure Modifiers registry is initialised, even if no factories were registered
-		List<CharacterModifierFactory<?>> modifiers = CharacterModifierFactory.REGISTRY.getValues();
-		num = skills.size();
-		sb = new StringBuilder(String.format(form, num, "character modifier " + (num == 1 ? "factory" : "factories")));
-		for(CharacterModifierFactory<?> m : modifiers)
-		{
-			sb.append("\n").append(m.getRegistryName().toString());
-		}
-		FMLLog.log("Character Overhaul", Level.INFO, sb.toString());
+		return sb.toString();
 	}
 
 	private void registerPackets()

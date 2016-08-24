@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.registry.PersistentRegistryManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class CharacterModifierFactory<T extends ICharacterModifierHandler<?>> extends IForgeRegistryEntry.Impl<CharacterModifierFactory<?>>
+public abstract class CharacterModifierFactory<T extends ICharacterModifierHandler<M>, M extends ICharacterModifier> extends IForgeRegistryEntry.Impl<CharacterModifierFactory<?, ?>>
 {
 	/**
 	 * Change this value in order to allow for more/fewer perks.
@@ -20,7 +20,7 @@ public abstract class CharacterModifierFactory<T extends ICharacterModifierHandl
 	private static final int MAX_MODIFIER_ID = 0xff;
 
 	@SuppressWarnings("unchecked")
-	public static final FMLControlledNamespacedRegistry<CharacterModifierFactory<?>> REGISTRY = PersistentRegistryManager.createRegistry(new ResourceLocation(CharacterOverhaulReference.MOD_ID, "modiferhandlers"), CharacterModifierFactory.class, null, 0, MAX_MODIFIER_ID, true, null, null, null);
+	public static final FMLControlledNamespacedRegistry<CharacterModifierFactory<?, ?>> REGISTRY = PersistentRegistryManager.createRegistry(new ResourceLocation(CharacterOverhaulReference.MOD_ID, "modiferhandlers"), CharacterModifierFactory.class, null, 0, MAX_MODIFIER_ID, true, null, null, null);
 
 	public CharacterModifierFactory(String key)
 	{
@@ -39,7 +39,16 @@ public abstract class CharacterModifierFactory<T extends ICharacterModifierHandl
 
 	public abstract boolean isValidForCharacter(ICharacter character);
 
-	public abstract T newHandler(ICharacter character);
+	public T newHandler(ICharacter character)
+	{
+		T handler = createHandler(character);
+		handler.setModifier(getDefaultModifier(character));
+		return handler;
+	}
+
+	protected abstract T createHandler(ICharacter character);
+
+	protected abstract M getDefaultModifier(ICharacter character);
 
 	@SideOnly(Side.CLIENT)
 	public abstract List<ICharacterCreationPage> getPagesForGUI();

@@ -9,23 +9,24 @@ import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifier;
 import alpvax.characteroverhaul.api.character.modifier.PerkModifier;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 import net.minecraftforge.fml.common.registry.PersistentRegistryManager;
 
-public class PlayerClass extends IForgeRegistryEntry.Impl<PlayerClass> implements ICharacterModifier
+public class PlayerRace extends IForgeRegistryEntry.Impl<PlayerRace> implements ICharacterModifier
 {
-	public PlayerClass(String id)
+	public PlayerRace(String id)
 	{
-		Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "Attempted instantiation of player class \"%s\" with no id", toString());
+		Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "Attempted instantiation of player race \"%s\" with no id", toString());
 		setRegistryName(id);
 	}
 
 	@Override
 	public boolean isValidForCharacter(ICharacter character)
 	{
-		return character.getAttachedObject() instanceof EntityPlayer;
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
@@ -49,10 +50,14 @@ public class PlayerClass extends IForgeRegistryEntry.Impl<PlayerClass> implement
 		return null;
 	}
 
+	//TODO: define and add "steve" race
+	public static final PlayerRace STEVE = new PlayerRace("steve");
+
 	/**
 	 * Change this value in order to allow for more/fewer perks.
 	 */
-	private static final int MAX_CLASS_ID = 0xff;
+	private static final int MAX_RACE_ID = 0xff;
 
-	public static final FMLControlledNamespacedRegistry<PlayerClass> REGISTRY = PersistentRegistryManager.createRegistry(CharacterOverhaulReference.MODIFIER_CLASS_KEY, PlayerClass.class, null, 0, MAX_CLASS_ID, true, null, null, null);
+	public static final FMLControlledNamespacedRegistry<PlayerRace> REGISTRY = PersistentRegistryManager.createRegistry(new ResourceLocation(CharacterOverhaulReference.MOD_ID, "races"), PlayerRace.class, STEVE.getRegistryName(), 0, MAX_RACE_ID, true, null, null, null);
+
 }

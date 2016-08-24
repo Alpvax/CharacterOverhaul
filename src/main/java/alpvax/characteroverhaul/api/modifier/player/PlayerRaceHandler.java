@@ -10,12 +10,12 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 
-public class PlayerClassHandler implements ICharacterModifierHandler<PlayerClass>
+public class PlayerRaceHandler implements ICharacterModifierHandler<PlayerRace>
 {
 	private final ICharacter character;
-	private PlayerClass playerclass = null;
+	private PlayerRace race = null;
 
-	public PlayerClassHandler(ICharacter attached)
+	public PlayerRaceHandler(ICharacter attached)
 	{
 		character = attached;
 	}
@@ -23,19 +23,25 @@ public class PlayerClassHandler implements ICharacterModifierHandler<PlayerClass
 	@Override
 	public NBTTagString serializeNBT()
 	{
-		return new NBTTagString(playerclass.getRegistryName().toString());
+		return new NBTTagString(race.getRegistryName().toString());
 	}
 
 	@Override
 	public void deserializeNBT(NBTBase nbt)
 	{
-		setModifier(PlayerClass.REGISTRY.getObject(new ResourceLocation(((NBTTagString)nbt).getString())));
+		race = PlayerRace.REGISTRY.getObject(new ResourceLocation(((NBTTagString)nbt).getString()));
+	}
+
+	@Override
+	public int compareTo(ICharacterModifierHandler<?> arg0)
+	{
+		return -1;//Should always be first in the list
 	}
 
 	@Override
 	public ResourceLocation getKey()
 	{
-		return CharacterOverhaulReference.MODIFIER_CLASS_KEY;
+		return CharacterOverhaulReference.MODIFIER_RACE_KEY;
 	}
 
 	@Override
@@ -45,20 +51,20 @@ public class PlayerClassHandler implements ICharacterModifierHandler<PlayerClass
 	}
 
 	@Override
-	public boolean setModifier(PlayerClass modifier)
+	public boolean setModifier(PlayerRace modifier)
 	{
-		if(modifier != null)
+		if(modifier == PlayerRace.STEVE)
 		{
 			return false;
 		}
-		playerclass = modifier;
+		race = modifier;
 		return true;
 	}
 
 	@Override
 	public List<PerkModifier> getPerkModifiers()
 	{
-		return playerclass.getPerkModifiers();
+		return race.getPerkModifiers();
 	}
 
 }

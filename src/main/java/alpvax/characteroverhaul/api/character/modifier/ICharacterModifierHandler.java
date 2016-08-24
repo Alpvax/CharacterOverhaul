@@ -1,11 +1,13 @@
 package alpvax.characteroverhaul.api.character.modifier;
 
+import java.util.List;
+
 import alpvax.characteroverhaul.api.character.ICharacter;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public interface ICharacterModifierHandler<T extends ICharacterModifier> extends INBTSerializable<NBTTagCompound>, Comparable<ICharacterModifierHandler<?>>
+public interface ICharacterModifierHandler<T extends ICharacterModifier> extends INBTSerializable<NBTBase>, Comparable<ICharacterModifierHandler<?>>
 {
 	/**
 	 * @return the key this is attached to the character with.
@@ -27,9 +29,15 @@ public interface ICharacterModifierHandler<T extends ICharacterModifier> extends
 	/**
 	 * Use to modify the character
 	 */
-	public void applyModifier();
+	/*public void applyModifier();
+	
+	public void removeModifier();*/
 
-	public void removeModifier();
+	/**
+	 *
+	 * @return
+	 */
+	public List<PerkModifier> getPerkModifiers();
 
 	@Override
 	public default int compareTo(ICharacterModifierHandler<?> o)

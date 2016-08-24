@@ -32,7 +32,7 @@ public /*abstract/**/ class CharacterBase extends AffectedBase implements IChara
 	{
 		super(object);
 		ImmutableMap.Builder<ResourceLocation, ICharacterModifierHandler<?>> b = ImmutableMap.builder();
-		for(CharacterModifierFactory<?> factory : CharacterModifierFactory.REGISTRY.getValues())
+		for(CharacterModifierFactory<?, ?> factory : CharacterModifierFactory.REGISTRY.getValues())
 		{
 			if(factory.isValidForCharacter(this))
 			{

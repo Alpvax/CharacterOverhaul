@@ -11,6 +11,8 @@ public class CharacterOverhaulReference
 	public static final ResourceLocation CAPABILITY_CHARACTER_KEY = new ResourceLocation(MOD_ID, "character");
 	public static final ResourceLocation CAPABILITY_AFFECTED_KEY = new ResourceLocation(MOD_ID, "affected");
 
+	public static final ResourceLocation MODIFIER_RACE_KEY = new ResourceLocation(MOD_ID, "race");
+	public static final ResourceLocation MODIFIER_CLASS_KEY = new ResourceLocation(MOD_ID, "class");
 
 	public static final int GUI_EFFECTS = 0;
 }
