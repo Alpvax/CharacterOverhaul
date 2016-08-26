@@ -1,12 +1,11 @@
 package alpvax.characteroverhaul.api.character.modifier;
 
-import alpvax.characteroverhaul.api.character.ICharacter;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 import net.minecraftforge.fml.common.registry.PersistentRegistryManager;
 
-public abstract class RegistryCharModFactory<T extends ICharacterModifierHandler<M>, M extends ICharacterModifier & IForgeRegistryEntry<M>> extends CharacterModifierFactory<T, M>
+public abstract class RegistryCharModFactory<T extends ICharacterModifierHandler<M>, M extends ICharacterModifier & IForgeRegistryEntry<M>> extends CharacterModifierFactory<T>
 {
 	private final FMLControlledNamespacedRegistry<M> registry;
 
@@ -25,11 +24,5 @@ public abstract class RegistryCharModFactory<T extends ICharacterModifierHandler
 	public FMLControlledNamespacedRegistry<M> registry()
 	{
 		return registry;
-	}
-
-	@Override
-	protected M getDefaultModifier(ICharacter character)
-	{
-		return registry().getDefaultValue();
 	}
 }

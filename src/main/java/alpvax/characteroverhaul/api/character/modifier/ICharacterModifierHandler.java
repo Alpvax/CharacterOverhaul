@@ -10,7 +10,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 public interface ICharacterModifierHandler<T extends ICharacterModifier> extends INBTSerializable<NBTBase>, Comparable<ICharacterModifierHandler<?>>
 {
 	/**
-	 * @return the key this is attached to the character with.
+	 * @return the key this is attached to the character with. Should also be the key used to register the factory.
 	 */
 	public ResourceLocation getKey();
 
@@ -26,11 +26,13 @@ public interface ICharacterModifierHandler<T extends ICharacterModifier> extends
 	 */
 	public boolean setModifier(T modifier);
 
+	public T getDefaultModifier();
+
 	/**
 	 * Use to modify the character
 	 */
 	/*public void applyModifier();
-	
+
 	public void removeModifier();*/
 
 	/**

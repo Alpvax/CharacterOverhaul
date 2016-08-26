@@ -23,7 +23,7 @@ public class PlayerClassCharModFactory extends RegistryCharModFactory<PlayerClas
 	}
 
 	@Override
-	protected PlayerClassHandler createHandler(ICharacter character)
+	public PlayerClassHandler createHandler(ICharacter character)
 	{
 		return new PlayerClassHandler(character);
 	}
