@@ -21,7 +21,7 @@ public class GuiCharacterCreation extends GuiScreen
 	{
 		this.character = character;
 		ImmutableList.Builder<ICharacterCreationPage> b = ImmutableList.<ICharacterCreationPage>builder();
-		for(CharacterModifierFactory<?, ?> factory : CharacterModifierFactory.REGISTRY.getValues())
+		for(CharacterModifierFactory<?> factory : CharacterModifierFactory.REGISTRY.getValues())
 		{
 			List<ICharacterCreationPage> list = factory.getPagesForGUI();
 			if(list != null && factory.isValidForCharacter(character))
