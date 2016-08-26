@@ -5,6 +5,7 @@ import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
 import alpvax.characteroverhaul.api.character.modifier.RegistryCharModHandler;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 
 public class PlayerRaceHandler extends RegistryCharModHandler<PlayerRace>
 {
@@ -23,6 +24,12 @@ public class PlayerRaceHandler extends RegistryCharModHandler<PlayerRace>
 	public ResourceLocation getKey()
 	{
 		return CharacterOverhaulReference.MODIFIER_RACE_KEY;
+	}
+
+	@Override
+	protected FMLControlledNamespacedRegistry<PlayerRace> getRegistry()//Override to save trying to find and cast
+	{
+		return PlayerRace.REGISTRY;
 	}
 
 	@Override
