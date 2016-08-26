@@ -2,10 +2,13 @@ package alpvax.characteroverhaul.api.character.modifier;
 
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
+
 import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.client.gui.ICharacterCreationPage;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 import net.minecraftforge.fml.common.registry.PersistentRegistryManager;
@@ -34,6 +37,11 @@ public abstract class CharacterModifierFactory<T extends ICharacterModifierHandl
 
 	public final T getModifierHandler(ICharacter character)
 	{
+		if(!isValidForCharacter(character))
+		{
+			FMLLog.log(Level.INFO, "Character %s has no handler registered under %s", character, getRegistryName());
+			return null;
+		}
 		return character.getModifierHandler(getRegistryName());
 	}
 
