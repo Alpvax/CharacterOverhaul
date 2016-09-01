@@ -92,7 +92,7 @@ public class CharacterOverhaul
 		//Ensure CharacterModifierFactory registry is initialised, even if no modifier factories were registered.
 		//Also does the same for any registry factories.
 		List<String> registryModifiers = new ArrayList<>();
-		FMLLog.log("Character Overhaul", Level.INFO, getRegistryLogText(form, CharacterModifierFactory.REGISTRY, "factory", "factories", (CharacterModifierFactory<?, ?> factory) -> {
+		FMLLog.log("Character Overhaul", Level.INFO, getRegistryLogText(form, CharacterModifierFactory.REGISTRY, "factory", "factories", (CharacterModifierFactory<?> factory) -> {
 			if(factory instanceof RegistryCharModFactory<?, ?>)
 			{
 				String s = factory.getRegistryName().getResourcePath();
