@@ -85,7 +85,18 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    
+    // compile against the JEI API
+    deobfCompile "mezz.jei:jei_${mcVer}:${jei_version}:api"
+    // at runtime, use the full JEI jar
+    runtime "mezz.jei:jei_${mcVer}:${jei_version}"
+}
 
+repositories {
+    maven {
+        // location of the maven that hosts JEI files
+        url "http://dvs1.progwml6.com/files/maven"
+    }
 }
 
 processResources
