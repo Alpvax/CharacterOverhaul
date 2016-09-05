@@ -13,8 +13,8 @@ import com.google.common.collect.ImmutableMap;
 import alpvax.characteroverhaul.api.ability.IAbility;
 import alpvax.characteroverhaul.api.character.modifier.CharacterModifierFactory;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
+import alpvax.characteroverhaul.api.config.Config;
 import alpvax.characteroverhaul.api.perk.Perk;
-import alpvax.characteroverhaul.api.settings.Settings;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
 import net.minecraft.util.ResourceLocation;
@@ -26,7 +26,7 @@ public /*abstract/**/ class CharacterBase extends AffectedBase implements IChara
 	private final Map<ResourceLocation, SkillInstance> skills = new HashMap<>();
 	private final ImmutableMap<ResourceLocation, ICharacterModifierHandler<?>> modifiers;
 	private Map<UUID, IAbility> abilities = new HashMap<>();
-	private UUID[] abilityHotbar = new UUID[Settings.getCurrentConfig().getNumAbilities()];//TODO: number of abilities
+	private UUID[] abilityHotbar = new UUID[Config.numAbilities];
 
 	public CharacterBase(ICapabilityProvider object)
 	{
