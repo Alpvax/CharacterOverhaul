@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import alpvax.characteroverhaul.api.config.Config;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -31,7 +32,7 @@ public class JeiPlugin implements IModPlugin
 			@Override
 			public List<Rectangle> getGuiExtraAreas(InventoryEffectRenderer guiContainer)
 			{
-				return /*TODO:if tabs enabled ?*/ Lists.newArrayList(new Rectangle(/*TODO:Get Rect for eact tab*/));// : null;
+				return !Config.renderPotionsInInventory ? Lists.newArrayList(new Rectangle(/*TODO:Get Rect for eact tab*/)) : null;
 			}
 		});
 	}

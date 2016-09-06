@@ -7,6 +7,7 @@ import org.lwjgl.input.Mouse;
 
 import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.character.ICharacter;
+import alpvax.characteroverhaul.api.config.Config;
 import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.capabilities.AffectedCapabilityProvider;
 import alpvax.characteroverhaul.capabilities.CapabilityCharacterHandler;
@@ -126,17 +127,18 @@ public class CharacterOverhaulHooks
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onDrawPotions(PotionShiftEvent event)
 	{
-		//TODO:if potions display disabled
-		event.setCanceled(true);
+		if(!Config.renderPotionsInInventory)
+		{
+			event.setCanceled(true);
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onRenderOverlay(RenderGameOverlayEvent.Pre event)
 	{
-		if(event.getType() == ElementType.POTION_ICONS)
+		if(event.getType() == ElementType.POTION_ICONS && !Config.renderPotionsOnHud)
 		{
-			//TODO:if potions display disabled
 			event.setCanceled(true);
 			for(ICharacterEffect effect : Minecraft.getMinecraft().thePlayer.getCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null).getEffects())
 			{
@@ -154,10 +156,9 @@ public class CharacterOverhaulHooks
 	@SubscribeEvent
 	public void onDrawInventory(DrawScreenEvent.Pre event)
 	{
-		if(event.getGui() instanceof InventoryEffectRenderer)
+		if(event.getGui() instanceof InventoryEffectRenderer && !Config.renderPotionsInInventory)
 		{
 			InventoryEffectRenderer gui = (InventoryEffectRenderer)event.getGui();
-			//TODO:if potions display disabled
 			ObfuscationReflectionHelper.setPrivateValue(InventoryEffectRenderer.class, gui, false, "hasActivePotionEffects");//TODO:Obfuscated names
 		}
 	}
@@ -166,10 +167,9 @@ public class CharacterOverhaulHooks
 	@SubscribeEvent
 	public void onClickPotions(MouseInputEvent.Pre event)
 	{
-		if(event.getGui() instanceof InventoryEffectRenderer)
+		if(event.getGui() instanceof InventoryEffectRenderer && Config.renderPotionsInInventory)
 		{
 			InventoryEffectRenderer gui = (InventoryEffectRenderer)event.getGui();
-			//TODO:if potions display not disabled
 
 			int i = Mouse.getEventX() * gui.width / gui.mc.displayWidth;
 			int j = gui.height - Mouse.getEventY() * gui.height / gui.mc.displayHeight - 1;

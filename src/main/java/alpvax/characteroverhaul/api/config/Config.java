@@ -45,8 +45,9 @@ public final class Config
 	public static int arditeRate = 16; // max. ardite per chunk*/
 
 	// Clientside configs
-	/*public static boolean renderTableItems = true;
-	public static boolean extraTooltips = true;
+	public static boolean renderPotionsInInventory = false;
+	public static boolean renderPotionsOnHud = false;
+	/*public static boolean extraTooltips = true;
 	public static boolean enableForgeBucketModel = true; // enables the forge bucket model by default
 	public static boolean dumpTextureMap = false; // requires debug module*/
 
@@ -157,46 +158,24 @@ public final class Config
 
 			Worldgen.setPropertyOrder(propOrder);
 		}*/
-		/*//Clientside
+		//Clientside
 		{
 			String cat = "clientside";
 			List<String> propOrder = Lists.newArrayList();
 			ClientSide = configFile.getCategory(cat);
 
-			// rename renderTableItems to renderInventoryInWorld
-			configFile.renameProperty(cat, "renderTableItems", "renderInventoryInWorld");
-
-			prop = configFile.get(cat, "renderInventoryInWorld", renderTableItems);
-			prop.setComment("If true all of Tinkers' blocks with contents (tables, basin, drying racks,...) will render their contents in the world");
-			renderTableItems = prop.getBoolean();
+			prop = configFile.get(cat, "renderPotionsInInventory", renderPotionsInInventory);
+			prop.setComment("If true the vanilla potions rendering will be used in the inventory.");
+			renderPotionsInInventory = prop.getBoolean();
 			propOrder.add(prop.getName());
 
-			prop = configFile.get(cat, "extraTooltips", extraTooltips);
-			prop.setComment("If true tools will show additional info in their tooltips");
-			extraTooltips = prop.getBoolean();
-			propOrder.add(prop.getName());
-
-			prop = configFile.get(cat, "enableForgeBucketModel", enableForgeBucketModel);
-			prop.setComment("If true tools will enable the forge bucket model on startup and then turn itself off. This is only there so that a fresh install gets the buckets turned on by default.");
-			enableForgeBucketModel = prop.getBoolean();
-			if(enableForgeBucketModel) {
-				prop.set(false);
-				ForgeModContainer.replaceVanillaBucketModel = true;
-				Property forgeProp = ForgeModContainer.getConfig().getCategory(Configuration.CATEGORY_CLIENT).get("replaceVanillaBucketModel");
-				if(forgeProp != null) {
-					forgeProp.set(true);
-					ForgeModContainer.getConfig().save();
-				}
-			}
-			propOrder.add(prop.getName());
-
-			prop = configFile.get(cat, "dumpTextureMap", dumpTextureMap);
-			prop.setComment("REQUIRES DEBUG MODULE. Will do nothing if debug module is disabled. If true the texture map will be dumped into the run directory, just like old forge did.");
-			dumpTextureMap = prop.getBoolean();
+			prop = configFile.get(cat, "renderPotionsOnHud", renderPotionsOnHud);
+			prop.setComment("If true the vanilla potions rendering will be used on the HUD.");
+			renderPotionsOnHud = prop.getBoolean();
 			propOrder.add(prop.getName());
 
 			ClientSide.setPropertyOrder(propOrder);
-		}*/
+		}
 
 		//save changes if any
 		boolean changed = false;
