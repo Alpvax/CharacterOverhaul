@@ -1,6 +1,7 @@
 package alpvax.characteroverhaul.core.proxy;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -24,6 +25,11 @@ public class CommonProxy
 	}
 
 	private final List<ICharacterCreationPageHandler> creationGuiPages = new ArrayList<>();
+
+	public List<ICharacterCreationPageHandler> getPageHandlers()
+	{
+		return Collections.unmodifiableList(creationGuiPages);
+	}
 
 	public void registerCreationGUIHandler(Class<?> clazz)
 	{

@@ -8,10 +8,10 @@ import com.google.common.base.Strings;
 import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
-import net.minecraftforge.fml.common.registry.PersistentRegistryManager;
+import net.minecraftforge.fml.common.registry.RegistryBuilder;
 
 /**
  * All perks must be registered with {@link GameRegistry#register(IForgeRegistryEntry) GameRegistry.register(perk)}.
@@ -45,7 +45,7 @@ public abstract class Skill extends IForgeRegistryEntry.Impl<Skill>
 	 */
 	private static final int MAX_SKILL_ID = 0xff;
 
-	public static final FMLControlledNamespacedRegistry<Skill> REGISTRY = PersistentRegistryManager.createRegistry(new ResourceLocation(CharacterOverhaulReference.MOD_ID, "skills"), Skill.class, null, 0, MAX_SKILL_ID, true, null, null, null);
+	public static final IForgeRegistry<Skill> REGISTRY = new RegistryBuilder<Skill>().setName(new ResourceLocation(CharacterOverhaulReference.MOD_ID, "skills")).setType(Skill.class).setIDRange(0, MAX_SKILL_ID).create();
 
 	/**
 	 * @return a list of {@linkplain RootPerk RootPerks} (i.e. a list of perk trees).

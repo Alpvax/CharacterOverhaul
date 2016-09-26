@@ -6,10 +6,12 @@ import com.google.common.base.Strings;
 import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifier;
+import alpvax.characteroverhaul.api.character.modifier.RegistryCharModHandler;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
-import net.minecraftforge.fml.common.registry.PersistentRegistryManager;
+import net.minecraftforge.fml.common.registry.RegistryBuilder;
 
 public abstract class PlayerClass extends IForgeRegistryEntry.Impl<PlayerClass> implements ICharacterModifier
 {
@@ -25,10 +27,46 @@ public abstract class PlayerClass extends IForgeRegistryEntry.Impl<PlayerClass> 
 		return character.getAttachedObject() instanceof EntityPlayer;
 	}
 
+	public static class Handler extends RegistryCharModHandler<PlayerClass>
+	{
+		public Handler(ICharacter attached)
+		{
+			super(attached);
+		}
+
+		@Override
+		public ResourceLocation getKey()
+		{
+			return CharacterOverhaulReference.MODIFIER_CLASS_KEY;
+		}
+
+		@Override
+		protected IForgeRegistry<PlayerClass> getRegistry()//Override to save trying to find and cast
+		{
+			return REGISTRY;
+		}
+
+		@Override
+		public boolean setModifier(PlayerClass modifier)
+		{
+			if(modifier == null)
+			{
+				return false;
+			}
+			return super.setModifier(modifier);
+		}
+
+		@Override
+		public PlayerClass getDefaultModifier()
+		{
+			return null;
+		}
+	}
+
 	/**
 	 * Change this value in order to allow for more/fewer perks.
 	 */
 	private static final int MAX_CLASS_ID = 0xff;
 
-	public static final FMLControlledNamespacedRegistry<PlayerClass> REGISTRY = PersistentRegistryManager.createRegistry(CharacterOverhaulReference.MODIFIER_CLASS_KEY, PlayerClass.class, null, 0, MAX_CLASS_ID, true, null, null, null);
+	public static final IForgeRegistry<PlayerClass> REGISTRY = new RegistryBuilder<PlayerClass>().setName(CharacterOverhaulReference.MODIFIER_CLASS_KEY).setType(PlayerClass.class).setIDRange(0, MAX_CLASS_ID).create();
 }

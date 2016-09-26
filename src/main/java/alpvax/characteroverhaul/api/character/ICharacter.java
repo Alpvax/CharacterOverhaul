@@ -36,6 +36,8 @@ public interface ICharacter extends IAffected
 
 	public <T extends ICharacterModifierHandler<?>> T getModifierHandler(ResourceLocation registryName);
 
+	//public List<ICharacterModifierHandler<?>> getModifierHandlers();
+
 	public List<IAbility> getAbilities();
 
 	public List<IAbility> getCurrentAbilities();

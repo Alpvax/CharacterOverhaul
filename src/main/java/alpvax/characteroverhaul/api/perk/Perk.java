@@ -12,10 +12,10 @@ import alpvax.characteroverhaul.api.effect.IEffectProvider;
 import alpvax.characteroverhaul.api.skill.Skill;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
-import net.minecraftforge.fml.common.registry.PersistentRegistryManager;
+import net.minecraftforge.fml.common.registry.RegistryBuilder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -104,5 +104,5 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk> implements IEf
 	 */
 	private static final int MAX_PERK_ID = 0xff;
 
-	public static final FMLControlledNamespacedRegistry<Perk> REGISTRY = PersistentRegistryManager.createRegistry(new ResourceLocation(CharacterOverhaulReference.MOD_ID, "perks"), Perk.class, null, 0, MAX_PERK_ID, true, null, null, null);
+	public static final IForgeRegistry<Perk> REGISTRY = new RegistryBuilder<Perk>().setName(new ResourceLocation(CharacterOverhaulReference.MOD_ID, "perks")).setType(Perk.class).setIDRange(0, MAX_PERK_ID).create();
 }

@@ -11,13 +11,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 import alpvax.characteroverhaul.api.ability.IAbility;
-import alpvax.characteroverhaul.api.character.modifier.CharacterModifierFactory;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
 import alpvax.characteroverhaul.api.config.Config;
+import alpvax.characteroverhaul.api.event.CharacterCreationEvent;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public /*abstract/**/ class CharacterBase extends AffectedBase implements ICharacter
@@ -32,15 +33,10 @@ public /*abstract/**/ class CharacterBase extends AffectedBase implements IChara
 	{
 		super(object);
 		ImmutableMap.Builder<ResourceLocation, ICharacterModifierHandler<?>> b = ImmutableMap.builder();
-		for(CharacterModifierFactory<?> factory : CharacterModifierFactory.REGISTRY.getValues())
-		{
-			if(factory.isValidForCharacter(this))
-			{
-				b.put(factory.getRegistryName(), factory.createHandler(this));
-			}
-		}
+		CharacterCreationEvent event = new CharacterCreationEvent(this);
+		MinecraftForge.EVENT_BUS.post(event);
+		b.putAll(event.getModifiers());
 		modifiers = b.build();
-
 	}
 
 	@Override

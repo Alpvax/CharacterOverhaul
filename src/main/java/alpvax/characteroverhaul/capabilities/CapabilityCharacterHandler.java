@@ -6,7 +6,6 @@ import alpvax.characteroverhaul.api.character.AffectedBase;
 import alpvax.characteroverhaul.api.character.CharacterBase;
 import alpvax.characteroverhaul.api.character.IAffected;
 import alpvax.characteroverhaul.api.character.ICharacter;
-import alpvax.characteroverhaul.api.character.modifier.CharacterModifierFactory;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
@@ -72,7 +71,7 @@ public class CapabilityCharacterHandler
 				{
 					nbt.setTag(NBTKeys.SKILLS, skills);
 				}
-				//Save Modifiers
+				/*//Save Modifiers
 				NBTTagCompound modifiers = new NBTTagCompound();
 				for(ResourceLocation key : CharacterModifierFactory.REGISTRY.getKeys())
 				{
@@ -85,7 +84,7 @@ public class CapabilityCharacterHandler
 				if(!modifiers.hasNoTags())
 				{
 					nbt.setTag(NBTKeys.MODIFIERS, modifiers);
-				}
+				}*/
 				/*//Save Abilities
 				NBTTagList abilities = new NBTTagList();
 				for(IAbility ability : instance.getAbilities())
@@ -117,7 +116,7 @@ public class CapabilityCharacterHandler
 					NBTTagCompound perks = nbt.getCompoundTag(NBTKeys.PERKS);
 					for(String s : perks.getKeySet())
 					{
-						Perk perk = Perk.REGISTRY.getObject(new ResourceLocation(s));
+						Perk perk = Perk.REGISTRY.getValue(new ResourceLocation(s));
 						if(perk != null)//Incorrect NBT check
 						{
 							instance.setPerkLevel(perk, perks.getInteger(s));
@@ -130,7 +129,7 @@ public class CapabilityCharacterHandler
 					NBTTagCompound skills = nbt.getCompoundTag(NBTKeys.SKILLS);
 					for(String s : skills.getKeySet())
 					{
-						Skill skill = Skill.REGISTRY.getObject(new ResourceLocation(s));
+						Skill skill = Skill.REGISTRY.getValue(new ResourceLocation(s));
 						if(skill != null)//Incorrect NBT check
 						{
 							instance.getSkillInstance(skill).deserializeNBT(skills.getCompoundTag(s));

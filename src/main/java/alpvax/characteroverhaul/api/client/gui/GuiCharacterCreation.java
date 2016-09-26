@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 import alpvax.characteroverhaul.api.character.ICharacter;
-import alpvax.characteroverhaul.api.character.modifier.CharacterModifierFactory;
+import alpvax.characteroverhaul.core.CharacterOverhaul;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -21,13 +21,9 @@ public class GuiCharacterCreation extends GuiScreen
 	{
 		this.character = character;
 		ImmutableList.Builder<ICharacterCreationPage> b = ImmutableList.<ICharacterCreationPage>builder();
-		for(CharacterModifierFactory<?> factory : CharacterModifierFactory.REGISTRY.getValues())
+		for(ICharacterCreationPageHandler handler : CharacterOverhaul.proxy.getPageHandlers())
 		{
-			List<ICharacterCreationPage> list = factory.getPagesForGUI();
-			if(list != null && factory.isValidForCharacter(character))
-			{
-				b.addAll(list);
-			}
+			b.addAll(handler.getPages(character));
 		}
 		pages = b.build();
 	}

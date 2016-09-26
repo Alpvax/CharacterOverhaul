@@ -1,10 +1,9 @@
 package alpvax.characteroverhaul.api.character.modifier;
 
 import java.util.List;
-import java.util.Map;
 
 import alpvax.characteroverhaul.api.character.ICharacter;
-import net.minecraft.util.ResourceLocation;
+import alpvax.characteroverhaul.api.skill.SkillInstance.SkillExpModifier;
 
 public interface ICharacterModifier
 {
@@ -16,5 +15,5 @@ public interface ICharacterModifier
 
 	public List<PerkModifier> getPerkModifiers();
 
-	public boolean isValidFor(ICharacter character, Map<ResourceLocation, ICharacterModifierHandler<?>> handlers);
+	public List<SkillExpModifier> getSkillModifiers();
 }

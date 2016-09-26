@@ -3,10 +3,11 @@ package alpvax.characteroverhaul.api.character.modifier;
 import java.util.List;
 
 import alpvax.characteroverhaul.api.character.ICharacter;
+import alpvax.characteroverhaul.api.skill.SkillInstance.SkillExpModifier;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
+import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 public abstract class RegistryCharModHandler<T extends ICharacterModifier & IForgeRegistryEntry<T>> implements ICharacterModifierHandler<T>
@@ -28,14 +29,11 @@ public abstract class RegistryCharModHandler<T extends ICharacterModifier & IFor
 	@Override
 	public void deserializeNBT(NBTBase nbt)
 	{
-		modifier = getRegistry().getObject(new ResourceLocation(((NBTTagString)nbt).getString()));
+		modifier = getRegistry().getValue(new ResourceLocation(((NBTTagString)nbt).getString()));
 	}
 
-	@SuppressWarnings("unchecked")
-	protected FMLControlledNamespacedRegistry<T> getRegistry()
-	{
-		return ((RegistryCharModFactory<?, T>)CharacterModifierFactory.REGISTRY.getValue(getKey())).registry();
-	}
+
+	protected abstract IForgeRegistry<T> getRegistry();
 
 	@Override
 	public ICharacter getCharacter()
@@ -51,14 +49,14 @@ public abstract class RegistryCharModHandler<T extends ICharacterModifier & IFor
 	}
 
 	@Override
-	public T getDefaultModifier()
-	{
-		return getRegistry().getDefaultValue();
-	}
-
-	@Override
 	public List<PerkModifier> getPerkModifiers()
 	{
 		return modifier.getPerkModifiers();
+	}
+
+	@Override
+	public List<SkillExpModifier> getSkillModifiers()
+	{
+		return modifier.getSkillModifiers();
 	}
 }
