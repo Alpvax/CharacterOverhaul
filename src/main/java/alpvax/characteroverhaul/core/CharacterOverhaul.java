@@ -26,6 +26,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Metadata;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
@@ -123,6 +124,25 @@ public class CharacterOverhaul
 		if(event.getModID().equals(MOD_ID))
 		{
 			syncConfig();
+		}
+	}
+
+	@Mod.EventHandler
+	public void handleIMCMessage(FMLInterModComms.IMCEvent event)
+	{
+		for(FMLInterModComms.IMCMessage message : event.getMessages())
+		{
+			if("addCharacterCreationGuiPage".equalsIgnoreCase(message.key) && message.isStringMessage())
+			{
+				try
+				{
+					proxy.registerCreationGUIHandler(Class.forName(message.getStringValue()));
+				}
+				catch(ClassNotFoundException e)
+				{
+					//TODO:Log error
+				}
+			}
 		}
 	}
 
