@@ -13,15 +13,18 @@ import com.google.common.collect.ImmutableMap;
 import alpvax.characteroverhaul.api.ability.IAbility;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
 import alpvax.characteroverhaul.api.config.Config;
+import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.api.event.CharacterCreationEvent;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 
-public /*abstract/**/ class CharacterBase extends AffectedBase implements ICharacter
+public /*abstract/**/ class CharacterBase implements ICharacter
 {
 	private final Map<ResourceLocation, Integer> perks = new HashMap<>();
 	private final Map<ResourceLocation, SkillInstance> skills = new HashMap<>();
@@ -29,14 +32,79 @@ public /*abstract/**/ class CharacterBase extends AffectedBase implements IChara
 	private Map<UUID, IAbility> abilities = new HashMap<>();
 	private UUID[] abilityHotbar = new UUID[Config.numAbilities];
 
-	public CharacterBase(ICapabilityProvider object)
+	private final IAffected affected;
+
+	public CharacterBase(AttachCapabilitiesEvent event)
 	{
-		super(object);
+		this(getAffected(event));
+	}
+
+	private static IAffected getAffected(AttachCapabilitiesEvent event)
+	{
+		ICapabilityProvider obj = (ICapabilityProvider)event.getObject();
+		if(obj.hasCapability(IAffected.CAPABILITY, null))
+		{
+			return obj.getCapability(IAffected.CAPABILITY, null);
+		}
+		for(ICapabilityProvider provider : event.getCapabilities().values())
+		{
+			if(provider.hasCapability(IAffected.CAPABILITY, null))
+			{
+				return provider.getCapability(IAffected.CAPABILITY, null);
+			}
+		}
+		return new AffectedBase(obj);
+	}
+
+	public CharacterBase(IAffected affected)
+	{
+		this.affected = affected;
 		ImmutableMap.Builder<ResourceLocation, ICharacterModifierHandler<?>> b = ImmutableMap.builder();
 		CharacterCreationEvent event = new CharacterCreationEvent(this);
 		MinecraftForge.EVENT_BUS.post(event);
 		b.putAll(event.getModifiers());
+		/*for(Map.Entry<ResourceLocation, ICharacterModifierHandler<?>> e : event.getModifiers().entrySet())
+		{
+			b.put(e);
+			ICharacterModifierHandler<?> handler = e.getValue();
+		}*/
 		modifiers = b.build();
+	}
+
+	@Override
+	public <T extends ICapabilityProvider> T getAttachedObject()
+	{
+		return affected.getAttachedObject();
+	}
+
+	@Override
+	public Vec3d getPosition()
+	{
+		return affected.getPosition();
+	}
+
+	@Override
+	public Vec3d getDirection()
+	{
+		return affected.getDirection();
+	}
+
+	@Override
+	public List<ICharacterEffect> getEffects()
+	{
+		return affected.getEffects();
+	}
+
+	@Override
+	public void addEffect(ICharacterEffect effect)
+	{
+		affected.addEffect(effect);
+	}
+
+	@Override
+	public void removeEffect(UUID id)
+	{
+		affected.removeEffect(id);
 	}
 
 	@Override
