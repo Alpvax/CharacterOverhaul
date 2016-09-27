@@ -15,7 +15,6 @@ import com.google.common.collect.Lists;
 
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.perk.Perk;
-import alpvax.characteroverhaul.capabilities.CapabilityCharacterHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandNotFoundException;
@@ -144,9 +143,9 @@ public class CharacterCommand extends CommandBase
 					target = getCharacter(sender);
 				}
 				// TODO Auto-generated method stub
-			
+
 			}
-			
+
 			@Override
 			public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, List<String> args)
 			{
@@ -164,9 +163,9 @@ public class CharacterCommand extends CommandBase
 					target = getCharacter(sender);
 				}
 				// TODO Auto-generated method stub
-			
+
 			}
-			
+
 			@Override
 			public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, List<String> args)
 			{
@@ -184,9 +183,9 @@ public class CharacterCommand extends CommandBase
 					target = getCharacter(sender);
 				}
 				// TODO Auto-generated method stub
-			
+
 			}
-			
+
 			@Override
 			public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, List<String> args)
 			{
@@ -237,7 +236,7 @@ public class CharacterCommand extends CommandBase
 			List<String> cmdArgs = Lists.newArrayList(args);
 			Iterator<String> i = cmdArgs.listIterator();
 			int argsIndex = -1;
-			boolean playerSpecified = !(sender instanceof ICapabilityProvider) || !((ICapabilityProvider)sender).hasCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null);
+			boolean playerSpecified = !(sender instanceof ICapabilityProvider) || !((ICapabilityProvider)sender).hasCapability(ICharacter.CAPABILITY, null);
 			while(i.hasNext())
 			{
 				String arg = i.next();
@@ -252,19 +251,19 @@ public class CharacterCommand extends CommandBase
 						Vec3d look = es.getLookVec();
 						if(look != null)
 						{
-							Vec3d start = new Vec3d(es.posX, es.posY + (double)es.getEyeHeight(), es.posZ);
+							Vec3d start = new Vec3d(es.posX, es.posY + es.getEyeHeight(), es.posZ);
 							Vec3d end = start.add(look.scale(256));//Maximum distance to search
 							RayTraceResult hit = es.worldObj.rayTraceBlocks(start, end);
 							if(hit.typeOfHit == Type.ENTITY && hit.entityHit != null)
 							{
-								target = hit.entityHit.getCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null);
+								target = hit.entityHit.getCapability(ICharacter.CAPABILITY, null);
 							}
 							else if(hit.typeOfHit == Type.BLOCK)
 							{
 								TileEntity tile = es.worldObj.getTileEntity(hit.getBlockPos());
 								if(tile != null)
 								{
-									target = tile.getCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, hit.sideHit);
+									target = tile.getCapability(ICharacter.CAPABILITY, hit.sideHit);
 								}
 							}
 						}
@@ -341,6 +340,7 @@ public class CharacterCommand extends CommandBase
 		cmd.execute();
 	}
 
+	@Override
 	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
 	{
 		if(args.length == 1)
@@ -366,6 +366,7 @@ public class CharacterCommand extends CommandBase
 	/**
 	 * Return whether the specified command parameter index is a username parameter.
 	 */
+	@Override
 	public boolean isUsernameIndex(String[] args, int index)
 	{
 		return index < 1 ? false : isUsernamePrefix(args[index - 1]);
@@ -378,11 +379,11 @@ public class CharacterCommand extends CommandBase
 
 	private static ICharacter getCharacter(ICommandSender sender)
 	{
-		return ((ICapabilityProvider)sender).getCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null);
+		return ((ICapabilityProvider)sender).getCapability(ICharacter.CAPABILITY, null);
 	}
-	
+
 	public static ICharacter getCharacter(MinecraftServer server, ICommandSender sender, String target) throws PlayerNotFoundException
 	{
-		return getPlayer(server, sender, target).getCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null);
+		return getPlayer(server, sender, target).getCapability(ICharacter.CAPABILITY, null);
 	}
 }

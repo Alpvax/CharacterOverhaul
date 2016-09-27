@@ -6,11 +6,11 @@ import java.util.List;
 import org.lwjgl.input.Mouse;
 
 import alpvax.characteroverhaul.api.CharacterOverhaulReference;
+import alpvax.characteroverhaul.api.character.IAffected;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.config.Config;
 import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import alpvax.characteroverhaul.capabilities.AffectedCapabilityProvider;
-import alpvax.characteroverhaul.capabilities.CapabilityCharacterHandler;
 import alpvax.characteroverhaul.capabilities.CharacterCapabilityProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -45,11 +45,11 @@ public class CharacterOverhaulHooks
 	public void attachCapabilities(AttachCapabilitiesEvent.Entity event)
 	{
 		Entity e;
-		if((e = event.getEntity()) instanceof EntityPlayer && !hasCapability(event, CapabilityCharacterHandler.CHARACTER_CAPABILITY, null))
+		if((e = event.getEntity()) instanceof EntityPlayer && !hasCapability(event, ICharacter.CAPABILITY, null))
 		{
 			event.addCapability(CharacterOverhaulReference.CAPABILITY_CHARACTER_KEY, new CharacterCapabilityProvider(e));
 		}
-		if(!hasCapability(event, CapabilityCharacterHandler.AFFECTED_CAPABILITY, null))
+		if(!hasCapability(event, IAffected.CAPABILITY, null))
 		{
 			event.addCapability(CharacterOverhaulReference.CAPABILITY_AFFECTED_KEY, new AffectedCapabilityProvider(e));
 		}
@@ -94,9 +94,9 @@ public class CharacterOverhaulHooks
 	 */
 	private void tickCharacterEffects(ICapabilityProvider provider)
 	{
-		if(provider.hasCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null))
+		if(provider.hasCapability(ICharacter.CAPABILITY, null))
 		{
-			for(ICharacterEffect effect : provider.getCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null).getEffects())
+			for(ICharacterEffect effect : provider.getCapability(ICharacter.CAPABILITY, null).getEffects())
 			{
 				effect.tick();
 			}
@@ -118,8 +118,8 @@ public class CharacterOverhaulHooks
 	@SubscribeEvent
 	public void onRespawn(PlayerEvent.Clone event)
 	{
-		ICharacter oldCharacter = event.getOriginal().getCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null);
-		ICharacter newCharacter = event.getEntityPlayer().getCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null);
+		ICharacter oldCharacter = event.getOriginal().getCapability(ICharacter.CAPABILITY, null);
+		ICharacter newCharacter = event.getEntityPlayer().getCapability(ICharacter.CAPABILITY, null);
 		oldCharacter.cloneTo(newCharacter);
 	}
 
@@ -140,7 +140,7 @@ public class CharacterOverhaulHooks
 		if(event.getType() == ElementType.POTION_ICONS && !Config.renderPotionsOnHud)
 		{
 			event.setCanceled(true);
-			for(ICharacterEffect effect : Minecraft.getMinecraft().thePlayer.getCapability(CapabilityCharacterHandler.CHARACTER_CAPABILITY, null).getEffects())
+			for(ICharacterEffect effect : Minecraft.getMinecraft().thePlayer.getCapability(ICharacter.CAPABILITY, null).getEffects())
 			{
 				effect.renderOnHUD(event.getResolution());
 			}

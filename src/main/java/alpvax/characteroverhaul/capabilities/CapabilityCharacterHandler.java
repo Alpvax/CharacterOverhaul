@@ -14,7 +14,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.Constants.NBT;
 
@@ -32,12 +31,6 @@ public class CapabilityCharacterHandler
 		private static final String UUID_LEAST = "IDLeast";*/
 	}
 
-	@CapabilityInject(ICharacter.class)
-	public static Capability<ICharacter> CHARACTER_CAPABILITY = null;
-
-	@CapabilityInject(IAffected.class)
-	public static Capability<IAffected> AFFECTED_CAPABILITY = null;
-
 	public static void register()
 	{
 		CapabilityManager.INSTANCE.register(ICharacter.class, new Capability.IStorage<ICharacter>()
@@ -46,7 +39,7 @@ public class CapabilityCharacterHandler
 			public NBTBase writeNBT(Capability<ICharacter> capability, ICharacter instance, EnumFacing side)
 			{
 				//Save Effects
-				NBTTagCompound nbt = (NBTTagCompound)AFFECTED_CAPABILITY.writeNBT(instance, side);
+				NBTTagCompound nbt = (NBTTagCompound)IAffected.CAPABILITY.writeNBT(instance, side);
 				//Save Perks
 				NBTTagCompound perks = new NBTTagCompound();
 				for(Perk perk : Perk.REGISTRY.getValues())
@@ -109,7 +102,7 @@ public class CapabilityCharacterHandler
 			{
 				NBTTagCompound nbt = (NBTTagCompound)base;
 				//Load Effects
-				AFFECTED_CAPABILITY.readNBT(instance, side, nbt);
+				IAffected.CAPABILITY.readNBT(instance, side, nbt);
 				//Load Perks
 				if(nbt.hasKey(NBTKeys.PERKS, NBT.TAG_COMPOUND))
 				{

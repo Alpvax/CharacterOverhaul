@@ -9,9 +9,14 @@ import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 
 public interface ICharacter extends IAffected
 {
+	@CapabilityInject(ICharacter.class)
+	public static Capability<ICharacter> CAPABILITY = null;
+
 	/**
 	 * @param perk the perk to retrieve the level of.
 	 * @return the level of the perk, or 0 if it isn't acquired.

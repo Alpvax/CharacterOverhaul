@@ -7,10 +7,14 @@ import javax.annotation.Nonnull;
 
 import alpvax.characteroverhaul.api.effect.ICharacterEffect;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public interface IAffected
 {
+	@CapabilityInject(IAffected.class)
+	public static Capability<IAffected> CAPABILITY = null;
 
 	public List<ICharacterEffect> getEffects();
 

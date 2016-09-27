@@ -23,7 +23,7 @@ public class CharacterCapabilityProvider extends AffectedCapabilityProvider
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing)
 	{
-		return capability == CapabilityCharacterHandler.CHARACTER_CAPABILITY || super.hasCapability(capability, facing);
+		return capability == ICharacter.CAPABILITY || super.hasCapability(capability, facing);
 	}
 
 	@Override
@@ -35,13 +35,13 @@ public class CharacterCapabilityProvider extends AffectedCapabilityProvider
 	@Override
 	public NBTTagCompound serializeNBT()
 	{
-		return (NBTTagCompound)CapabilityCharacterHandler.CHARACTER_CAPABILITY.writeNBT(get(), null);
+		return (NBTTagCompound)ICharacter.CAPABILITY.writeNBT(get(), null);
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt)
 	{
-		CapabilityCharacterHandler.CHARACTER_CAPABILITY.readNBT(get(), null, nbt);
+		ICharacter.CAPABILITY.readNBT(get(), null, nbt);
 	}
 
 }
