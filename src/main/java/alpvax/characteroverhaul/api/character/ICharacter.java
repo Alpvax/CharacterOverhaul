@@ -8,11 +8,13 @@ import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.util.INBTSerializable;
 
-public interface ICharacter extends IAffected
+public interface ICharacter extends IAffected, INBTSerializable<NBTTagCompound>
 {
 	@CapabilityInject(ICharacter.class)
 	public static Capability<ICharacter> CAPABILITY = null;
@@ -22,6 +24,11 @@ public interface ICharacter extends IAffected
 	 * @return the level of the perk, or 0 if it isn't acquired.
 	 */
 	public int getPerkLevel(Perk perk);
+
+	public default void levelPerk(Perk perk, int amount)
+	{
+		setPerkLevel(perk, getPerkLevel(perk) + amount);
+	}
 
 	public void setPerkLevel(Perk perk, int level);
 

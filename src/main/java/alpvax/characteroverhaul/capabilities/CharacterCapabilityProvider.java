@@ -35,13 +35,15 @@ public class CharacterCapabilityProvider extends AffectedCapabilityProvider
 	@Override
 	public NBTTagCompound serializeNBT()
 	{
-		return (NBTTagCompound)ICharacter.CAPABILITY.writeNBT(get(), null);
+		return ((ICharacter)get()).serializeNBT();
+		//return (NBTTagCompound)ICharacter.CAPABILITY.writeNBT(get(), null);
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt)
 	{
-		ICharacter.CAPABILITY.readNBT(get(), null, nbt);
+		((ICharacter)get()).deserializeNBT(nbt);
+		//ICharacter.CAPABILITY.readNBT(get(), null, nbt);
 	}
 
 }

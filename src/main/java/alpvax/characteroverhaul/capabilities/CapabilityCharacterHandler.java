@@ -6,30 +6,25 @@ import alpvax.characteroverhaul.api.character.AffectedBase;
 import alpvax.characteroverhaul.api.character.CharacterBase;
 import alpvax.characteroverhaul.api.character.IAffected;
 import alpvax.characteroverhaul.api.character.ICharacter;
-import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
-import alpvax.characteroverhaul.api.perk.Perk;
-import alpvax.characteroverhaul.api.skill.Skill;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.util.Constants.NBT;
 
 public class CapabilityCharacterHandler
 {
-	private static final class NBTKeys
+	/*private static final class NBTKeys
 	{
 		private static final String PERKS = "Perks";
 		private static final String SKILLS = "Skills";
 		private static final String MODIFIERS = "Modifiers";
-		/*private static final String ABILITIES = "Abilities";
+		//private static final String ABILITIES = "Abilities";
 		//private static final String EFFECTS = "Effects";
-		protected static final String ABILITY_ACTIVE = "Active";
-		private static final String UUID_MOST = "IDMost";
-		private static final String UUID_LEAST = "IDLeast";*/
-	}
+		//protected static final String ABILITY_ACTIVE = "Active";
+		//private static final String UUID_MOST = "IDMost";
+		//private static final String UUID_LEAST = "IDLeast";
+	}*/
 
 	public static void register()
 	{
@@ -38,7 +33,7 @@ public class CapabilityCharacterHandler
 			@Override
 			public NBTBase writeNBT(Capability<ICharacter> capability, ICharacter instance, EnumFacing side)
 			{
-				//Save Effects
+				/*//Save Effects
 				NBTTagCompound nbt = (NBTTagCompound)IAffected.CAPABILITY.writeNBT(instance, side);
 				//Save Perks
 				NBTTagCompound perks = new NBTTagCompound();
@@ -58,12 +53,13 @@ public class CapabilityCharacterHandler
 				NBTTagCompound skills = new NBTTagCompound();
 				for(Skill skill : Skill.REGISTRY.getValues())
 				{
-					skills.setTag(skill.getRegistryName().toString(), instance.getSkillInstance(skill).serializeNBT());
+					SkillInstance inst = instance.getSkillInstance(skill);
+					skills.setTag(skill.getRegistryName().toString(), inst.serializeNBT());
 				}
 				if(!skills.hasNoTags())
 				{
 					nbt.setTag(NBTKeys.SKILLS, skills);
-				}
+				}*/
 				/*//Save Modifiers
 				NBTTagCompound modifiers = new NBTTagCompound();
 				for(ResourceLocation key : CharacterModifierFactory.REGISTRY.getKeys())
@@ -94,13 +90,14 @@ public class CapabilityCharacterHandler
 				{
 					nbt.setTag(NBTKeys.ABILITIES, abilities);
 				}*/
-				return nbt;
+				//return nbt;
+				return null;
 			}
 
 			@Override
 			public void readNBT(Capability<ICharacter> capability, ICharacter instance, EnumFacing side, NBTBase base)
 			{
-				NBTTagCompound nbt = (NBTTagCompound)base;
+				/*NBTTagCompound nbt = (NBTTagCompound)base;
 				//Load Effects
 				IAffected.CAPABILITY.readNBT(instance, side, nbt);
 				//Load Perks
@@ -125,11 +122,15 @@ public class CapabilityCharacterHandler
 						Skill skill = Skill.REGISTRY.getValue(new ResourceLocation(s));
 						if(skill != null)//Incorrect NBT check
 						{
-							instance.getSkillInstance(skill).deserializeNBT(skills.getCompoundTag(s));
+							SkillInstance inst = instance.getSkillInstance(skill);
+							if(inst != null)
+							{
+								inst.deserializeNBT(skills.getCompoundTag(s));
+							}
 						}
 					}
-				}
-				//Load Modifiers
+				}*/
+				/*//Load Modifiers
 				if(nbt.hasKey(NBTKeys.MODIFIERS, NBT.TAG_COMPOUND))
 				{
 					NBTTagCompound modifiers = nbt.getCompoundTag(NBTKeys.MODIFIERS);
@@ -141,7 +142,7 @@ public class CapabilityCharacterHandler
 							modifier.deserializeNBT(modifiers.getCompoundTag(s));
 						}
 					}
-				}
+				}*/
 				/*//Load abilities
 				if(nbt.hasKey(NBTKeys.ABILITIES, NBT.TAG_LIST))
 				{

@@ -18,10 +18,12 @@ import alpvax.characteroverhaul.api.event.CharacterCreationEvent;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 
 public /*abstract/**/ class CharacterBase implements ICharacter
@@ -156,7 +158,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	{
 		ResourceLocation name = skill.getRegistryName();
 		SkillInstance skillInst = skills.get(name);
-		if(skillInst == null)
+		if(skillInst == null)// && TODO:skill is not disabled
 		{
 			skillInst = new SkillInstance(this, skill);
 			skills.put(name, skillInst);
@@ -167,13 +169,23 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	@Override
 	public int getSkillLevel(Skill skill)
 	{
-		return getSkillInstance(skill).getLevel();
+		SkillInstance inst = getSkillInstance(skill);
+		if(inst != null)
+		{
+			return inst.getLevel();
+		}
+		//TODO:Log
+		return Integer.MIN_VALUE;
 	}
 
 	@Override
 	public void addSkillExperience(Skill skill, float amount)
 	{
-		getSkillInstance(skill).addExp(amount);
+		SkillInstance inst = getSkillInstance(skill);
+		if(inst != null)
+		{
+			inst.addExp(amount);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -215,6 +227,81 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		if(abilities.containsKey(id))
 		{
 			abilities.remove(id).onRemove();
+		}
+	}
+
+	private static final class NBTKeys
+	{
+		private static final String PERKS = "Perks";
+		private static final String SKILLS = "Skills";
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT()
+	{
+		//Save Effects
+		NBTTagCompound nbt = (NBTTagCompound)IAffected.CAPABILITY.writeNBT(this, null);
+		//Save Perks
+		NBTTagCompound perknbt = new NBTTagCompound();
+		for(Perk perk : Perk.REGISTRY.getValues())
+		{
+			int l = getPerkLevel(perk);
+			if(l != 0)
+			{
+				perknbt.setInteger(perk.getRegistryName().toString(), l);
+			}
+		}
+		if(!perknbt.hasNoTags())
+		{
+			nbt.setTag(NBTKeys.PERKS, perknbt);
+		}
+		//Save Skills
+		NBTTagCompound skillnbt = new NBTTagCompound();
+		for(SkillInstance inst : skills.values())
+		{
+			skillnbt.setTag(inst.getSkill().getRegistryName().toString(), inst.serializeNBT());
+		}
+		if(!skillnbt.hasNoTags())
+		{
+			nbt.setTag(NBTKeys.SKILLS, skillnbt);
+		}
+		return nbt;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt)
+	{
+		//Load Effects
+		IAffected.CAPABILITY.readNBT(this, null, nbt);
+		//Load Perks
+		if(nbt.hasKey(NBTKeys.PERKS, NBT.TAG_COMPOUND))
+		{
+			NBTTagCompound perknbt = nbt.getCompoundTag(NBTKeys.PERKS);
+			for(String s : perknbt.getKeySet())
+			{
+				Perk perk = Perk.REGISTRY.getValue(new ResourceLocation(s));
+				if(perk != null)//Incorrect NBT check
+				{
+					setPerkLevel(perk, perknbt.getInteger(s));
+				}
+			}
+		}
+		//Load Skills
+		if(nbt.hasKey(NBTKeys.SKILLS, NBT.TAG_COMPOUND))
+		{
+			NBTTagCompound skillnbt = nbt.getCompoundTag(NBTKeys.SKILLS);
+			for(String s : skillnbt.getKeySet())
+			{
+				Skill skill = Skill.REGISTRY.getValue(new ResourceLocation(s));
+				if(skill != null)//Incorrect NBT check
+				{
+					SkillInstance inst = getSkillInstance(skill);
+					if(inst != null)
+					{
+						inst.deserializeNBT(skillnbt.getCompoundTag(s));
+					}
+				}
+			}
 		}
 	}
 }
