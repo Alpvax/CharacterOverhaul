@@ -25,12 +25,11 @@ public interface ICharacter extends IAffected, INBTSerializable<NBTTagCompound>
 	 */
 	public int getPerkLevel(Perk perk);
 
-	public default void levelPerk(Perk perk, int amount)
-	{
-		setPerkLevel(perk, getPerkLevel(perk) + amount);
-	}
+	public void aquirePerk(Perk perk);
 
-	public void setPerkLevel(Perk perk, int level);
+	public void aquirePerk(Perk perk, int level);
+
+	//public void setPerkLevel(Perk perk, int level);
 
 	/**
 	 * @param skill the skill to retrieve the instance of.
@@ -73,5 +72,5 @@ public interface ICharacter extends IAffected, INBTSerializable<NBTTagCompound>
 	 * Used to copy data from this to a new Character upon player respawn.
 	 * @param newCharacter
 	 */
-	public void cloneTo(ICharacter newCharacter);
+	public void cloneFrom(ICharacter newCharacter);
 }

@@ -120,7 +120,7 @@ public class CharacterOverhaulHooks
 	{
 		ICharacter oldCharacter = event.getOriginal().getCapability(ICharacter.CAPABILITY, null);
 		ICharacter newCharacter = event.getEntityPlayer().getCapability(ICharacter.CAPABILITY, null);
-		oldCharacter.cloneTo(newCharacter);
+		newCharacter.cloneFrom(oldCharacter);
 	}
 
 	@SideOnly(Side.CLIENT)

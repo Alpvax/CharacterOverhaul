@@ -110,19 +110,23 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	}
 
 	@Override
-	public void cloneTo(ICharacter newCharacter)
+	public void cloneFrom(ICharacter newCharacter)
 	{
 		for(Perk perk : Perk.REGISTRY.getValues())
 		{
-			int l = getPerkLevel(perk);
+			int l = newCharacter.getPerkLevel(perk);
 			if(l != 0)
 			{
-				newCharacter.setPerkLevel(perk, l);
+				setPerkLevel(perk, l);
 			}
 		}
-		for(SkillInstance skill : skills.values())
+		for(Skill skill : Skill.getAllSkills())
 		{
-			skill.cloneTo(newCharacter.getSkillInstance(skill.getSkill()));
+			SkillInstance inst = newCharacter.getSkillInstance(skill);
+			if(inst != null)
+			{
+				inst.cloneTo(getSkillInstance(skill));
+			}
 		}
 		/*for(AbilityInstance inst : abilities.values())
 		{
@@ -146,7 +150,21 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	}
 
 	@Override
-	public void setPerkLevel(Perk perk, int level)
+	public void aquirePerk(Perk perk)
+	{
+		setPerkLevel(perk, getPerkLevel(perk) + 1);
+	}
+
+	@Override
+	public void aquirePerk(Perk perk, int level)
+	{
+		if(level > getPerkLevel(perk))
+		{
+			setPerkLevel(perk, level);
+		}
+	}
+
+	private void setPerkLevel(Perk perk, int level)
 	{
 		int oldLevel = getPerkLevel(perk);
 		perks.put(perk.getRegistryName(), Integer.valueOf(level));
