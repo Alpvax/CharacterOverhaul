@@ -14,6 +14,9 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.INBTSerializable;
 
+/**
+ * Classes that wish to implement this should extend {@link CharacterBase}.
+ */
 public interface ICharacter extends IAffected, INBTSerializable<NBTTagCompound>
 {
 	@CapabilityInject(ICharacter.class)

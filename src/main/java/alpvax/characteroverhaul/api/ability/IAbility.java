@@ -30,7 +30,7 @@ public interface IAbility
 	/**
 	 * Called every tick, use it to passively enable/disable the ability.
 	 */
-	public void tick();
+	public boolean shouldToggle();
 
 	/**
 	 * Whether the ability is currently affecting the character.

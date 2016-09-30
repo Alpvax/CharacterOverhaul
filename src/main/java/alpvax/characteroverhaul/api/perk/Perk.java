@@ -74,7 +74,7 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk> implements IEf
 		int levelToUnlock = character.getPerkLevel(this) + 1;
 		if(levelToUnlock <= getMaxLevel(character) && canUnlock(levelToUnlock, character) && applyUnlockCost(levelToUnlock, character))
 		{
-			character.setPerkLevel(this, levelToUnlock);
+			character.aquirePerk(this, levelToUnlock);
 			return true;
 		}
 		return false;

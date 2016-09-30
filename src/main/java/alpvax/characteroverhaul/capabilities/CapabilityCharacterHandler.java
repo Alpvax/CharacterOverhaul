@@ -169,7 +169,7 @@ public class CapabilityCharacterHandler
 			@Override
 			public ICharacter call() throws Exception
 			{
-				return new CharacterBase(new AffectedBase(null));
+				return new CharacterBase(null);
 			}
 		});
 		CapabilityManager.INSTANCE.register(IAffected.class, new Capability.IStorage<IAffected>()

@@ -22,36 +22,28 @@ public class AffectedCapabilityProvider implements ICapabilitySerializable<NBTTa
 		affected = handler;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected <T extends IAffected> T get()
-	{
-		return (T)affected;
-	}
-
-
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing)
 	{
 		return capability == IAffected.CAPABILITY;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing)
 	{
-		return hasCapability(capability, facing) ? (T)get() : null;
+		return hasCapability(capability, facing) ? IAffected.CAPABILITY.cast(affected) : null;
 	}
 
 	@Override
 	public NBTTagCompound serializeNBT()
 	{
-		return (NBTTagCompound)IAffected.CAPABILITY.writeNBT(get(), null);
+		return (NBTTagCompound)IAffected.CAPABILITY.writeNBT(affected, null);
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt)
 	{
-		IAffected.CAPABILITY.readNBT(get(), null, nbt);
+		IAffected.CAPABILITY.readNBT(affected, null, nbt);
 	}
 
 }

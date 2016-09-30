@@ -44,14 +44,14 @@ public class CharacterOverhaulHooks
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void attachCapabilities(AttachCapabilitiesEvent.Entity event)
 	{
-		Entity e;
-		if((e = event.getEntity()) instanceof EntityPlayer && !hasCapability(event, ICharacter.CAPABILITY, null))
-		{
-			event.addCapability(CharacterOverhaulReference.CAPABILITY_CHARACTER_KEY, new CharacterCapabilityProvider(e));
-		}
+		Entity e = event.getEntity();
 		if(!hasCapability(event, IAffected.CAPABILITY, null))
 		{
 			event.addCapability(CharacterOverhaulReference.CAPABILITY_AFFECTED_KEY, new AffectedCapabilityProvider(e));
+		}
+		if(e instanceof EntityPlayer && !hasCapability(event, ICharacter.CAPABILITY, null))
+		{
+			event.addCapability(CharacterOverhaulReference.CAPABILITY_CHARACTER_KEY, new CharacterCapabilityProvider(e));
 		}
 	}
 

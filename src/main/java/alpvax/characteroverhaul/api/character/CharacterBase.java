@@ -24,8 +24,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants.NBT;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 
+/**
+ * Basic implementation of the {@link ICharacter} interface.
+ */
 public /*abstract/**/ class CharacterBase implements ICharacter
 {
 	private final Map<ResourceLocation, Integer> perks = new HashMap<>();
@@ -34,33 +36,11 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	private Map<UUID, IAbility> abilities = new HashMap<>();
 	private UUID[] abilityHotbar = new UUID[Config.numAbilities];
 
-	private final IAffected affected;
+	private final ICapabilityProvider attached;
 
-	public CharacterBase(AttachCapabilitiesEvent event)
+	public CharacterBase(ICapabilityProvider object)
 	{
-		this(getAffected(event));
-	}
-
-	private static IAffected getAffected(AttachCapabilitiesEvent event)
-	{
-		ICapabilityProvider obj = (ICapabilityProvider)event.getObject();
-		if(obj.hasCapability(IAffected.CAPABILITY, null))
-		{
-			return obj.getCapability(IAffected.CAPABILITY, null);
-		}
-		for(ICapabilityProvider provider : event.getCapabilities().values())
-		{
-			if(provider.hasCapability(IAffected.CAPABILITY, null))
-			{
-				return provider.getCapability(IAffected.CAPABILITY, null);
-			}
-		}
-		return new AffectedBase(obj);
-	}
-
-	public CharacterBase(IAffected affected)
-	{
-		this.affected = affected;
+		attached = object;
 		ImmutableMap.Builder<ResourceLocation, ICharacterModifierHandler<?>> b = ImmutableMap.builder();
 		CharacterCreationEvent event = new CharacterCreationEvent(this);
 		MinecraftForge.EVENT_BUS.post(event);
@@ -73,40 +53,46 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		modifiers = b.build();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ICapabilityProvider> T getAttachedObject()
 	{
-		return affected.getAttachedObject();
+		return (T)attached;
+	}
+
+	private final IAffected getAffected()
+	{
+		return attached.getCapability(IAffected.CAPABILITY, null);
 	}
 
 	@Override
 	public Vec3d getPosition()
 	{
-		return affected.getPosition();
+		return getAffected().getPosition();
 	}
 
 	@Override
 	public Vec3d getDirection()
 	{
-		return affected.getDirection();
+		return getAffected().getDirection();
 	}
 
 	@Override
 	public List<ICharacterEffect> getEffects()
 	{
-		return affected.getEffects();
+		return getAffected().getEffects();
 	}
 
 	@Override
 	public void addEffect(ICharacterEffect effect)
 	{
-		affected.addEffect(effect);
+		getAffected().addEffect(effect);
 	}
 
 	@Override
 	public void removeEffect(UUID id)
 	{
-		affected.removeEffect(id);
+		getAffected().removeEffect(id);
 	}
 
 	@Override
