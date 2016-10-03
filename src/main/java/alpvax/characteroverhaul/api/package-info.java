@@ -1,7 +1,4 @@
-@API(
-		owner = CharacterOverhaulReference.MOD_ID,
-		apiVersion = "1.0",
-		provides = CharacterOverhaulReference.MOD_ID + "|API")
+@API(owner = "@VERSION@", apiVersion = CharacterOverhaulReference.API_VERSION, provides = CharacterOverhaulReference.API_ID)
 package alpvax.characteroverhaul.api;
 
 import net.minecraftforge.fml.common.API;

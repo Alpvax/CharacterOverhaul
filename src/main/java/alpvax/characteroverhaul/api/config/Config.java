@@ -4,14 +4,11 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public final class Config
 {
@@ -52,11 +49,11 @@ public final class Config
 	public static boolean dumpTextureMap = false; // requires debug module*/
 
 	/* Config File */
-	static Configuration configFile;
+	public static Configuration configFile;
 
-	static ConfigCategory Gameplay;
+	private static ConfigCategory Gameplay;
 	//static ConfigCategory Worldgen;
-	static ConfigCategory ClientSide;
+	private static ConfigCategory ClientSide;
 
 	public static void load(FMLPreInitializationEvent event)
 	{
@@ -65,15 +62,6 @@ public final class Config
 		MinecraftForge.EVENT_BUS.register(instance);
 
 		syncConfig();
-	}
-
-	@SubscribeEvent
-	public void update(ConfigChangedEvent.OnConfigChangedEvent event)
-	{
-		if(event.getModID().equals(CharacterOverhaulReference.MOD_ID))
-		{
-			syncConfig();
-		}
 	}
 
 

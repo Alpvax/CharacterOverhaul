@@ -1,6 +1,6 @@
 package alpvax.characteroverhaul.client.gui;
 
-import alpvax.characteroverhaul.api.CharacterOverhaulReference;
+import alpvax.characteroverhaul.core.CharacterOverhaul;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiCharTab extends Gui
 {
-	protected static final ResourceLocation TAB_TEXTURES = new ResourceLocation(CharacterOverhaulReference.MOD_ID, "textures/gui/tabs.png");
+	protected static final ResourceLocation TAB_TEXTURES = new ResourceLocation(CharacterOverhaul.MOD_ID, "textures/gui/tabs.png");
 
 	/** The number of ticks required to completely open or close the tab */
 	private static float SPEED = 10F;
@@ -48,7 +48,7 @@ public class GuiCharTab extends Gui
 		yPosition = y;
 		height = iconSize + 2;
 		displayString = I18n.format("character." + key + ".tab");
-		icon = new ResourceLocation(CharacterOverhaulReference.MOD_ID, "textures/gui/tab_" + key + ".png");
+		icon = new ResourceLocation(CharacterOverhaul.MOD_ID, "textures/gui/tab_" + key + ".png");
 	}
 
 	public boolean isSelected()

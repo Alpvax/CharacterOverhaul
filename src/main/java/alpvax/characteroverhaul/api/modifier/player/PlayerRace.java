@@ -48,7 +48,7 @@ public abstract class PlayerRace extends IForgeRegistryEntry.Impl<PlayerRace> im
 		@Override
 		public ResourceLocation getKey()
 		{
-			return CharacterOverhaulReference.MODIFIER_RACE_KEY;
+			return CharacterOverhaulReference.RACE_REGISTRY_KEY;
 		}
 
 		@Override
@@ -104,5 +104,5 @@ public abstract class PlayerRace extends IForgeRegistryEntry.Impl<PlayerRace> im
 	 */
 	private static final int MAX_RACE_ID = 0xff;
 
-	public static final IForgeRegistry<PlayerRace> REGISTRY = new RegistryBuilder<PlayerRace>().setName(new ResourceLocation(CharacterOverhaulReference.MOD_ID, "races")).setType(PlayerRace.class).setIDRange(0, MAX_RACE_ID).create();//STEVE.getRegistryName()
+	public static final IForgeRegistry<PlayerRace> REGISTRY = new RegistryBuilder<PlayerRace>().setName(CharacterOverhaulReference.RACE_REGISTRY_KEY).setType(PlayerRace.class).setIDRange(0, MAX_RACE_ID).create();//STEVE.getRegistryName()
 }

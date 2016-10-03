@@ -7,7 +7,6 @@ import com.google.common.base.Strings;
 
 import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.character.ICharacter;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
@@ -45,7 +44,7 @@ public abstract class Skill extends IForgeRegistryEntry.Impl<Skill>
 	 */
 	private static final int MAX_SKILL_ID = 0xff;
 
-	public static final IForgeRegistry<Skill> REGISTRY = new RegistryBuilder<Skill>().setName(new ResourceLocation(CharacterOverhaulReference.MOD_ID, "skills")).setType(Skill.class).setIDRange(0, MAX_SKILL_ID).create();
+	public static final IForgeRegistry<Skill> REGISTRY = new RegistryBuilder<Skill>().setName(CharacterOverhaulReference.SKILL_REGISTRY_KEY).setType(Skill.class).setIDRange(0, MAX_SKILL_ID).create();
 
 	/**
 	 * @return a list of {@linkplain RootPerk RootPerks} (i.e. a list of perk trees).

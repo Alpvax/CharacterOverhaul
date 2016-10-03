@@ -31,7 +31,7 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk> implements IEf
 	{
 		Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "Attempted instantiation of perk \"%s\" with no id", toString());
 		setRegistryName(id);
-		this.skill = skillTree;
+		skill = skillTree;
 	}
 
 	/**
@@ -104,5 +104,5 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk> implements IEf
 	 */
 	private static final int MAX_PERK_ID = 0xff;
 
-	public static final IForgeRegistry<Perk> REGISTRY = new RegistryBuilder<Perk>().setName(new ResourceLocation(CharacterOverhaulReference.MOD_ID, "perks")).setType(Perk.class).setIDRange(0, MAX_PERK_ID).create();
+	public static final IForgeRegistry<Perk> REGISTRY = new RegistryBuilder<Perk>().setName(CharacterOverhaulReference.PERK_REGISTRY_KEY).setType(Perk.class).setIDRange(0, MAX_PERK_ID).create();
 }

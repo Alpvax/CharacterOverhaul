@@ -37,7 +37,7 @@ public abstract class PlayerClass extends IForgeRegistryEntry.Impl<PlayerClass> 
 		@Override
 		public ResourceLocation getKey()
 		{
-			return CharacterOverhaulReference.MODIFIER_CLASS_KEY;
+			return CharacterOverhaulReference.CHAR_CLASS_REGISTRY_KEY;
 		}
 
 		@Override
@@ -68,5 +68,5 @@ public abstract class PlayerClass extends IForgeRegistryEntry.Impl<PlayerClass> 
 	 */
 	private static final int MAX_CLASS_ID = 0xff;
 
-	public static final IForgeRegistry<PlayerClass> REGISTRY = new RegistryBuilder<PlayerClass>().setName(CharacterOverhaulReference.MODIFIER_CLASS_KEY).setType(PlayerClass.class).setIDRange(0, MAX_CLASS_ID).create();
+	public static final IForgeRegistry<PlayerClass> REGISTRY = new RegistryBuilder<PlayerClass>().setName(CharacterOverhaulReference.CHAR_CLASS_REGISTRY_KEY).setType(PlayerClass.class).setIDRange(0, MAX_CLASS_ID).create();
 }

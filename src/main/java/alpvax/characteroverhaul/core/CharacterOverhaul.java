@@ -1,13 +1,12 @@
 package alpvax.characteroverhaul.core;
 
-import static alpvax.characteroverhaul.api.CharacterOverhaulReference.MOD_ID;
-import static alpvax.characteroverhaul.api.CharacterOverhaulReference.VERSION;
-
 import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.Level;
 
+import alpvax.characteroverhaul.api.CharacterOverhaulReference;
+import alpvax.characteroverhaul.api.config.Config;
 import alpvax.characteroverhaul.api.modifier.player.PlayerRace;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
@@ -16,7 +15,6 @@ import alpvax.characteroverhaul.command.CharacterCommand;
 import alpvax.characteroverhaul.core.proxy.CommonProxy;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
@@ -32,9 +30,12 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
-@Mod(modid = MOD_ID, version = VERSION, guiFactory = "alpvax.characteroverhaul.client.COGuiFactory")
+@Mod(modid = CharacterOverhaul.MOD_ID, version = CharacterOverhaul.VERSION, guiFactory = "alpvax.characteroverhaul.client.COGuiFactory")
 public class CharacterOverhaul
 {
+	public static final String MOD_ID = "@VERSION@";//CharacterOverhaulReference.MOD_ID;
+	public static final String VERSION = CharacterOverhaulReference.MOD_VERSION;
+
 	@SidedProxy(
 			clientSide = "alpvax.characteroverhaul.core.proxy.ClientProxy",
 			serverSide = "alpvax.characteroverhaul.core.proxy.CommonProxy")
@@ -46,7 +47,7 @@ public class CharacterOverhaul
 	@Metadata(MOD_ID)
 	public static ModMetadata meta;
 
-	public static Configuration config;
+	//public static Configuration config;
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent e)
@@ -64,6 +65,7 @@ public class CharacterOverhaul
 
 		MinecraftForge.EVENT_BUS.register(instance);
 		MinecraftForge.EVENT_BUS.register(new CharacterOverhaulHooks());
+		Config.load(e);
 	}
 
 	@Mod.EventHandler
@@ -108,7 +110,7 @@ public class CharacterOverhaul
 	{
 		if(event.getModID().equals(MOD_ID))
 		{
-			syncConfig();
+			Config.syncConfig();
 		}
 	}
 
@@ -129,9 +131,5 @@ public class CharacterOverhaul
 				}
 			}
 		}
-	}
-
-	public void syncConfig()
-	{
 	}
 }
