@@ -9,7 +9,6 @@ import com.google.common.base.Strings;
 import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.effect.IEffectProvider;
-import alpvax.characteroverhaul.api.skill.Skill;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -24,23 +23,28 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public abstract class Perk extends IForgeRegistryEntry.Impl<Perk> implements IEffectProvider
 {
-	private final Skill skill;
+	private final PerkTree tree;
 	private Set<Perk> children = new HashSet<Perk>();
 
-	public Perk(String id, Skill skillTree)
+	public Perk(String id, PerkTree perkTree)
 	{
 		Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "Attempted instantiation of perk \"%s\" with no id", toString());
 		setRegistryName(id);
-		skill = skillTree;
+		tree = perkTree;
 	}
 
 	/**
 	 * Get the skill tree this perk is part of.<br>
 	 * Can return null if the perk is not associated with a skill!
 	 */
-	protected Skill getSkillTree()
+	protected PerkTree getPerkTree()
 	{
-		return skill;
+		return tree;
+	}
+
+	public String getPermissionKey()
+	{
+		return getPerkTree().getPermissionKey() + getRegistryName().getResourcePath();
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -46,7 +46,7 @@ public class CharacterCommand extends CommandBase
 			@Override
 			public void execute(MinecraftServer server, ICommandSender sender, ICharacter target, List<String> cmdArgs)
 			{
-				sender.addChatMessage(new TextComponentTranslation("commands.character.usage", CMD_NAMES.get().collect(Collectors.joining(",\n\t"))));
+				sender.sendMessage(new TextComponentTranslation("commands.character.usage", CMD_NAMES.get().collect(Collectors.joining(",\n\t"))));
 				//TODO: better help
 			}
 
@@ -64,11 +64,11 @@ public class CharacterCommand extends CommandBase
 			{
 				if(target == null)
 				{
-					sender.addChatMessage(new TextComponentTranslation("commands.character.error.notarget"));
+					sender.sendMessage(new TextComponentTranslation("commands.character.error.notarget"));
 				}
 				else
 				{
-					sender.addChatMessage(new TextComponentString(target.toString()));//TODO: improve test output before release
+					sender.sendMessage(new TextComponentString(target.toString()));//TODO: improve test output before release
 				}
 			}
 
@@ -106,7 +106,7 @@ public class CharacterCommand extends CommandBase
 				{
 					message.appendSibling(perks);
 				}
-				sender.addChatMessage(message);
+				sender.sendMessage(message);
 			}
 
 			@Override
@@ -253,14 +253,14 @@ public class CharacterCommand extends CommandBase
 						{
 							Vec3d start = new Vec3d(es.posX, es.posY + es.getEyeHeight(), es.posZ);
 							Vec3d end = start.add(look.scale(256));//Maximum distance to search
-							RayTraceResult hit = es.worldObj.rayTraceBlocks(start, end);
+							RayTraceResult hit = es.world.rayTraceBlocks(start, end);
 							if(hit.typeOfHit == Type.ENTITY && hit.entityHit != null)
 							{
 								target = hit.entityHit.getCapability(ICharacter.CAPABILITY, null);
 							}
 							else if(hit.typeOfHit == Type.BLOCK)
 							{
-								TileEntity tile = es.worldObj.getTileEntity(hit.getBlockPos());
+								TileEntity tile = es.world.getTileEntity(hit.getBlockPos());
 								if(tile != null)
 								{
 									target = tile.getCapability(ICharacter.CAPABILITY, hit.sideHit);
@@ -276,7 +276,7 @@ public class CharacterCommand extends CommandBase
 					playerSpecified = true;
 					if(target != null)
 					{
-						sender.addChatMessage(new TextComponentTranslation("commands.character.error.multipletargets", target.<EntityPlayer> getAttachedObject().getDisplayNameString(), arg));
+						sender.sendMessage(new TextComponentTranslation("commands.character.error.multipletargets", target.<EntityPlayer> getAttachedObject().getDisplayNameString(), arg));
 					}
 					else
 					{
@@ -286,7 +286,7 @@ public class CharacterCommand extends CommandBase
 						}
 						catch(PlayerNotFoundException e)
 						{
-							sender.addChatMessage(new TextComponentTranslation("commands.generic.player.notFound"));
+							sender.sendMessage(new TextComponentTranslation("commands.generic.player.notFound"));
 						}
 					}
 					i.remove();
@@ -295,7 +295,7 @@ public class CharacterCommand extends CommandBase
 			}
 			if(target == null && playerSpecified)
 			{
-				throw new PlayerNotFoundException();
+				throw new PlayerNotFoundException("commands.generic.player.unspecified");
 			}
 			this.target = target;
 			command = CharCmd.get(cmdArgs.get(0));
@@ -318,13 +318,13 @@ public class CharacterCommand extends CommandBase
 	}
 
 	@Override
-	public String getCommandName()
+	public String getName()
 	{
 		return "character";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender sender)
+	public String getUsage(ICommandSender sender)
 	{
 		return "commands.character.usage";
 	}
@@ -334,14 +334,14 @@ public class CharacterCommand extends CommandBase
 	{
 		if(args.length < 1)
 		{
-			throw new WrongUsageException(getCommandUsage(sender), CMD_NAMES.get().collect(Collectors.joining(",\n\t")));
+			throw new WrongUsageException(getUsage(sender), CMD_NAMES.get().collect(Collectors.joining(",\n\t")));
 		}
 		CommandParts cmd = new CommandParts(server, sender, args);
 		cmd.execute();
 	}
 
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
 	{
 		if(args.length == 1)
 		{
@@ -349,7 +349,7 @@ public class CharacterCommand extends CommandBase
 		}
 		if(isUsernameIndex(args, args.length - 1))
 		{
-			return getListOfStringsMatchingLastWord(args, server.getAllUsernames());
+			return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
 		}
 		try
 		{
@@ -382,7 +382,7 @@ public class CharacterCommand extends CommandBase
 		return ((ICapabilityProvider)sender).getCapability(ICharacter.CAPABILITY, null);
 	}
 
-	public static ICharacter getCharacter(MinecraftServer server, ICommandSender sender, String target) throws PlayerNotFoundException
+	public static ICharacter getCharacter(MinecraftServer server, ICommandSender sender, String target) throws CommandException
 	{
 		return getPlayer(server, sender, target).getCapability(ICharacter.CAPABILITY, null);
 	}

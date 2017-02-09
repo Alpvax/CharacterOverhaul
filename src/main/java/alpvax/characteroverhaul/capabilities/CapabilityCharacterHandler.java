@@ -2,12 +2,9 @@ package alpvax.characteroverhaul.capabilities;
 
 import java.util.concurrent.Callable;
 
-import alpvax.characteroverhaul.api.character.AffectedBase;
 import alpvax.characteroverhaul.api.character.CharacterBase;
-import alpvax.characteroverhaul.api.character.IAffected;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -73,6 +70,21 @@ public class CapabilityCharacterHandler
 				if(!modifiers.hasNoTags())
 				{
 					nbt.setTag(NBTKeys.MODIFIERS, modifiers);
+				}*/
+				/*//Save Effects
+				NBTTagList effects = new NBTTagList();
+				for(ICharacterEffect effect : instance.getEffects())
+				{
+					@SuppressWarnings("unchecked")
+					NBTTagCompound tag = effect instanceof INBTSerializable ? ((INBTSerializable<NBTTagCompound>)effect).serializeNBT() : new NBTTagCompound();
+					UUID id = effect.getId();
+					tag.setLong(NBTKeys.UUID_MOST, id.getMostSignificantBits());
+					tag.setLong(NBTKeys.UUID_LEAST, id.getLeastSignificantBits());
+					effects.appendTag(tag);
+				}
+				if(!effects.hasNoTags())
+				{
+					nbt.setTag(NBTKeys.EFFECTS, effects);
 				}*/
 				/*//Save Abilities
 				NBTTagList abilities = new NBTTagList();
@@ -143,6 +155,7 @@ public class CapabilityCharacterHandler
 						}
 					}
 				}*/
+				//TODO:Load Effects
 				/*//Load abilities
 				if(nbt.hasKey(NBTKeys.ABILITIES, NBT.TAG_LIST))
 				{
@@ -170,44 +183,6 @@ public class CapabilityCharacterHandler
 			public ICharacter call() throws Exception
 			{
 				return new CharacterBase(null);
-			}
-		});
-		CapabilityManager.INSTANCE.register(IAffected.class, new Capability.IStorage<IAffected>()
-		{
-			@Override
-			public NBTBase writeNBT(Capability<IAffected> capability, IAffected instance, EnumFacing side)
-			{
-				NBTTagCompound nbt = new NBTTagCompound();
-				/*TODO://Save Effects
-				NBTTagList effects = new NBTTagList();
-				for(ICharacterEffect effect : instance.getEffects())
-				{
-					@SuppressWarnings("unchecked")
-					NBTTagCompound tag = effect instanceof INBTSerializable ? ((INBTSerializable<NBTTagCompound>)effect).serializeNBT() : new NBTTagCompound();
-					UUID id = effect.getId();
-					tag.setLong(NBTKeys.UUID_MOST, id.getMostSignificantBits());
-					tag.setLong(NBTKeys.UUID_LEAST, id.getLeastSignificantBits());
-					effects.appendTag(tag);
-				}
-				if(!effects.hasNoTags())
-				{
-					nbt.setTag(NBTKeys.EFFECTS, effects);
-				}*/
-				return nbt;
-			}
-
-			@Override
-			public void readNBT(Capability<IAffected> capability, IAffected instance, EnumFacing side, NBTBase base)
-			{
-				/*TODO:Load Effects
-				NBTTagCompound nbt = (NBTTagCompound)base;*/
-			}
-		}, new Callable<IAffected>()
-		{
-			@Override
-			public IAffected call() throws Exception
-			{
-				return new AffectedBase(null);
 			}
 		});
 	}

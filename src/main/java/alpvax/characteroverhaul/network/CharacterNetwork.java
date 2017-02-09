@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 /**
  * Modified version of TConstruct's <a href=
  * "https://github.com/SlimeKnights/TinkersConstruct/blob/master/src/main/java/slimeknights/tconstruct/common/TinkerNetwork.java">
- * TConstruct</a>, so all credit goes to those guys.
+ * TinkerNetwork</a>, so all credit goes to those guys.
  */
 public class CharacterNetwork extends NetworkWrapper
 {
@@ -26,6 +26,8 @@ public class CharacterNetwork extends NetworkWrapper
 	{
 		// register all the packets
 		registerPacketClient(ConfigSyncPacket.class);
+
+		registerPacketServer(AbilityKeyTriggerPacket.class);
 
 		//TODO:Register packets
 	}

@@ -1,2 +1,1 @@
-gradle setupdecompworkspace eclipse --refresh-dependencies
-pause
+cmd /k "gradle setupdecompworkspace eclipse --refresh-dependencies"

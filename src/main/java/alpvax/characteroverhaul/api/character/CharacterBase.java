@@ -6,21 +6,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
-import alpvax.characteroverhaul.api.ability.IAbility;
-import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
-import alpvax.characteroverhaul.api.config.Config;
-import alpvax.characteroverhaul.api.effect.ICharacterEffect;
-import alpvax.characteroverhaul.api.event.CharacterCreationEvent;
+import alpvax.characteroverhaul.api.ability.Ability;
+import alpvax.characteroverhaul.api.config.CharacterConfig;
+import alpvax.characteroverhaul.api.effect.Effect;
+import alpvax.characteroverhaul.api.effect.IEffectProvider;
+import alpvax.characteroverhaul.api.event.CharacterEvent;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
+import alpvax.characteroverhaul.api.trigger.Trigger.TriggerAttach;
+import alpvax.characteroverhaul.api.trigger.Triggerable;
+import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants.NBT;
@@ -31,26 +43,21 @@ import net.minecraftforge.common.util.Constants.NBT;
 public /*abstract/**/ class CharacterBase implements ICharacter
 {
 	private final Map<ResourceLocation, Integer> perks = new HashMap<>();
-	private final Map<ResourceLocation, SkillInstance> skills = new HashMap<>();
-	private final ImmutableMap<ResourceLocation, ICharacterModifierHandler<?>> modifiers;
-	private Map<UUID, IAbility> abilities = new HashMap<>();
-	private UUID[] abilityHotbar = new UUID[Config.numAbilities];
+	private final ImmutableMap<ResourceLocation, SkillInstance> skills;
+	//private final Map<ResourceLocation, ICharacterModifier> modifiers;
+	private Map<UUID, Effect> effects = new HashMap<>();
+	private Map<UUID, Ability> abilities = new HashMap<>();
+	private UUID[] abilityHotbar = new UUID[CharacterConfig.numAbilities];
 
 	private final ICapabilityProvider attached;
 
 	public CharacterBase(ICapabilityProvider object)
 	{
 		attached = object;
-		ImmutableMap.Builder<ResourceLocation, ICharacterModifierHandler<?>> b = ImmutableMap.builder();
-		CharacterCreationEvent event = new CharacterCreationEvent(this);
+		CharacterEvent.CharacterCreate event = new CharacterEvent.CharacterCreate(this);
 		MinecraftForge.EVENT_BUS.post(event);
-		b.putAll(event.getModifiers());
-		/*for(Map.Entry<ResourceLocation, ICharacterModifierHandler<?>> e : event.getModifiers().entrySet())
-		{
-			b.put(e);
-			ICharacterModifierHandler<?> handler = e.getValue();
-		}*/
-		modifiers = b.build();
+		skills = ImmutableMap.<ResourceLocation, SkillInstance> builder().putAll(event.getSkills().stream().collect(Collectors.toMap(Skill::getRegistryName, s -> new SkillInstance(this, s)))).build();
+		//modifiers = Maps.newHashMap(event.getModifiers());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -60,72 +67,55 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		return (T)attached;
 	}
 
-	private final IAffected getAffected()
+	@Override
+	public World getWorld()
 	{
-		return attached.getCapability(IAffected.CAPABILITY, null);
+		ICapabilityProvider o = getAttachedObject();
+		if(o instanceof Entity)
+		{
+			return ((Entity)o).getEntityWorld();
+		}
+		if(o instanceof TileEntity)
+		{
+			return ((TileEntity)o).getWorld();
+		}
+		return null;
 	}
 
 	@Override
 	public Vec3d getPosition()
 	{
-		return getAffected().getPosition();
+		ICapabilityProvider o = getAttachedObject();
+		if(o instanceof Entity)
+		{
+			return ((Entity)o).getPositionVector();
+		}
+		if(o instanceof TileEntity)
+		{
+			BlockPos pos = ((TileEntity)o).getPos();
+			return new Vec3d((pos.getX()) + 0.5D, (pos.getY()) + 0.5D, (pos.getZ()) + 0.5D);
+		}
+		return null;
 	}
 
 	@Override
 	public Vec3d getDirection()
 	{
-		return getAffected().getDirection();
-	}
-
-	@Override
-	public List<ICharacterEffect> getEffects()
-	{
-		return getAffected().getEffects();
-	}
-
-	@Override
-	public void addEffect(ICharacterEffect effect)
-	{
-		getAffected().addEffect(effect);
-	}
-
-	@Override
-	public void removeEffect(UUID id)
-	{
-		getAffected().removeEffect(id);
-	}
-
-	@Override
-	public void cloneFrom(ICharacter newCharacter)
-	{
-		for(Perk perk : Perk.REGISTRY.getValues())
+		ICapabilityProvider o = getAttachedObject();
+		if(o instanceof Entity)
 		{
-			int l = newCharacter.getPerkLevel(perk);
-			if(l != 0)
+			return ((Entity)o).getLookVec();
+		}
+		if(o instanceof TileEntity)
+		{
+			TileEntity t = ((TileEntity)o);
+			IBlockState state = t.getWorld().getBlockState(t.getPos());
+			if(state.getPropertyKeys().contains(BlockDirectional.FACING))
 			{
-				setPerkLevel(perk, l);
+				return new Vec3d(state.getValue(BlockDirectional.FACING).getDirectionVec());
 			}
 		}
-		for(Skill skill : Skill.getAllSkills())
-		{
-			SkillInstance inst = newCharacter.getSkillInstance(skill);
-			if(inst != null)
-			{
-				inst.cloneTo(getSkillInstance(skill));
-			}
-		}
-		/*for(AbilityInstance inst : abilities.values())
-		{
-			//TODO:inst.cloneTo(newCharacter);
-		}*/
-		/*for(ICharacterModifier m : modifiers.values())
-		{
-			if(m.persistAcrossDeath())
-			{
-				newCharacter.applyModifier(m);
-			}
-		}*/
-		//TODO:Complete cloning
+		return Vec3d.ZERO;
 	}
 
 	@Override
@@ -153,21 +143,18 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	private void setPerkLevel(Perk perk, int level)
 	{
 		int oldLevel = getPerkLevel(perk);
-		perks.put(perk.getRegistryName(), Integer.valueOf(level));
-		perk.onLevelChange(oldLevel, level, this);
+		CharacterEvent.AquirePerk event = new CharacterEvent.AquirePerk(this, perk, oldLevel, level);
+		if(!MinecraftForge.EVENT_BUS.post(event) && (level = event.getNewLevel()) != oldLevel)
+		{
+			perks.put(perk.getRegistryName(), Integer.valueOf(level));
+			perk.onLevelChange(oldLevel, level, this);
+		}
 	}
 
 	@Override
-	public SkillInstance getSkillInstance(Skill skill)
+	public SkillInstance getSkillInstance(@Nonnull Skill skill)
 	{
-		ResourceLocation name = skill.getRegistryName();
-		SkillInstance skillInst = skills.get(name);
-		if(skillInst == null)// && TODO:skill is not disabled
-		{
-			skillInst = new SkillInstance(this, skill);
-			skills.put(name, skillInst);
-		}
-		return skillInst;
+		return skills.get(skill.getRegistryName());
 	}
 
 	@Override
@@ -192,23 +179,48 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends ICharacterModifierHandler<?>> T getModifierHandler(ResourceLocation registryName)
+	public List<Effect> getEffects()
 	{
-		return (T)modifiers.get(registryName);
+		return new ArrayList<>(effects.values());
 	}
 
 	@Override
-	public List<IAbility> getAbilities()
+	public void addEffects(IEffectProvider provider)
 	{
-		return new ArrayList<>(abilities.values());
+		CharacterEvent.AddEffect event = new CharacterEvent.AddEffect(this, provider);
+		if(MinecraftForge.EVENT_BUS.post(event))
+		{
+			return;
+		}
+		//TODO:Add provider
+		for(Effect effect : event.getEffects())
+		{
+			addEffect(effect);
+		}
+	}
+
+	private void addEffect(Effect effect)
+	{
+		UUID id = effect.getId();
+		Preconditions.checkArgument(!effects.containsKey(id), "Already an effect with that id: %s", id);
+		notifyAttachTriggers(effect, true);
+		effects.put(id, effect);
 	}
 
 	@Override
-	public List<IAbility> getCurrentAbilities()
+	public void removeEffect(UUID id)
 	{
-		List<IAbility> list = new ArrayList<>();
+		if(effects.containsKey(id))
+		{
+			notifyAttachTriggers(effects.remove(id), false);
+		}
+	}
+
+	@Override
+	public List<Ability> getHotbarAbilities()
+	{
+		List<Ability> list = new ArrayList<>();
 		for(int i = 0; i < abilityHotbar.length; i++)
 		{
 			list.add(abilities.get(abilityHotbar[i]));
@@ -217,11 +229,44 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	}
 
 	@Override
-	public void addAbility(IAbility ability)
+	public List<Ability> getAllAbilities()
+	{
+		return Collections.unmodifiableList(new ArrayList<>(abilities.values()));
+	}
+
+	/*@Override
+	public void addAbilities(IAbilityProvider provider)
+	{
+		CharacterEvent.AddAbility event = new CharacterEvent.AddAbility(this, provider);
+		if(MinecraftForge.EVENT_BUS.post(event))
+		{
+			return;
+		}
+		//TODO:Add provider
+		for(Ability ability : event.getAbilities())
+		{
+			addAbility(ability);
+		}
+	}*/
+
+	@Override
+	public void triggerAbilityKeybind(int slot)
+	{
+		if(slot >= 0 && slot < abilityHotbar.length)
+		{
+			Ability ability = getHotbarAbilities().get(slot);
+			if(ability.hasKeybind())
+			{
+				ability.getKeybindTrigger().onKeyPressed();
+			}
+		}
+	}
+
+	private void addAbility(Ability ability)
 	{
 		UUID id = ability.getId();
 		Preconditions.checkArgument(!abilities.containsKey(id), "Already an ability with that id: %s", id);
-		ability.onAttach();
+		notifyAttachTriggers(ability, true);
 		abilities.put(id, ability);
 	}
 
@@ -230,21 +275,71 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	{
 		if(abilities.containsKey(id))
 		{
-			abilities.remove(id).onRemove();
+			notifyAttachTriggers(abilities.remove(id), false);
 		}
+	}
+
+	private void notifyAttachTriggers(Triggerable<?> t, boolean attach)
+	{
+		if(t == null)
+		{
+			return;
+		}
+		for(TriggerAttach trigger : t.getTriggers(TriggerAttach.class).values())
+		{
+			if(attach)
+			{
+				trigger.onAttach();
+			}
+			else
+			{
+				trigger.onDetach();
+			}
+		}
+	}
+
+	/*@SuppressWarnings("unchecked")
+	@Override
+	public <T extends ICharacterModifierHandler<?>> T getModifierHandler(ResourceLocation registryName)
+	{
+		return (T)modifiers.get(registryName);
+	}*/
+
+	@Override
+	public void cloneFrom(ICharacter oldCharacter)
+	{
+		for(Perk perk : Perk.REGISTRY.getValues())
+		{
+			int l = oldCharacter.getPerkLevel(perk);
+			if(l != 0)
+			{
+				setPerkLevel(perk, l);
+			}
+		}
+		for(Skill skill : Skill.getAllSkills())
+		{
+			SkillInstance inst = oldCharacter.getSkillInstance(skill);
+			if(inst != null)
+			{
+				inst.cloneTo(getSkillInstance(skill));
+			}
+		}
+		//TODO:Complete cloning
 	}
 
 	private static final class NBTKeys
 	{
 		private static final String PERKS = "Perks";
 		private static final String SKILLS = "Skills";
+		private static final String EFFECTS = "Effects";
+		private static final String ABILITIES = "Abilities";
+		private static final String UUID = "UUID";
 	}
 
 	@Override
 	public NBTTagCompound serializeNBT()
 	{
-		//Save Effects
-		NBTTagCompound nbt = (NBTTagCompound)IAffected.CAPABILITY.writeNBT(this, null);
+		NBTTagCompound nbt = new NBTTagCompound();
 		//Save Perks
 		NBTTagCompound perknbt = new NBTTagCompound();
 		for(Perk perk : Perk.REGISTRY.getValues())
@@ -269,14 +364,38 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		{
 			nbt.setTag(NBTKeys.SKILLS, skillnbt);
 		}
+		//Save Effects
+		NBTTagList effectnbt = new NBTTagList();
+		for(Effect effect : effects.values())
+		{
+			NBTTagCompound tag = effect.serializeNBT();
+			UUID id = effect.getId();
+			tag.setUniqueId(NBTKeys.UUID, id);
+			effectnbt.appendTag(tag);
+		}
+		if(!effectnbt.hasNoTags())
+		{
+			nbt.setTag(NBTKeys.EFFECTS, effectnbt);
+		}
+		//Save Abilities
+		NBTTagList abilitynbt = new NBTTagList();
+		for(Ability ability : abilities.values())
+		{
+			NBTTagCompound tag = ability.serializeNBT();
+			UUID id = ability.getId();
+			tag.setUniqueId(NBTKeys.UUID, id);
+			abilitynbt.appendTag(tag);
+		}
+		if(!abilitynbt.hasNoTags())
+		{
+			nbt.setTag(NBTKeys.ABILITIES, abilitynbt);
+		}
 		return nbt;
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt)
 	{
-		//Load Effects
-		IAffected.CAPABILITY.readNBT(this, null, nbt);
 		//Load Perks
 		if(nbt.hasKey(NBTKeys.PERKS, NBT.TAG_COMPOUND))
 		{
@@ -307,5 +426,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 				}
 			}
 		}
+		//TODO:Load Effects
+		//TODO:Load Abilities
 	}
 }

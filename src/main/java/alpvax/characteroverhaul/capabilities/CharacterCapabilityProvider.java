@@ -6,9 +6,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
-public class CharacterCapabilityProvider implements ICapabilityProvider, INBTSerializable<NBTTagCompound>
+public class CharacterCapabilityProvider implements ICapabilitySerializable<NBTTagCompound>
 {
 	private final ICharacter character;
 
