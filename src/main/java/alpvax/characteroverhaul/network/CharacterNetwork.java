@@ -22,14 +22,15 @@ public class CharacterNetwork extends NetworkWrapper
 		super(CharacterOverhaul.MOD_ID);
 	}
 
-	public void setup()
+	public static void init()
 	{
 		// register all the packets
-		registerPacketClient(ConfigSyncPacket.class);
+		instance.registerPacketClient(ConfigSyncPacket.class);
 
-		registerPacketServer(AbilityKeyTriggerPacket.class);
+		instance.registerPacket(AbilityTriggerPacket.class);
 
-		//TODO:Register packets
+		instance.registerPacketClient(AbilityChangedPacket.class);
+		instance.registerPacketClient(AbilityEquippedPacket.class);
 	}
 
 	public static void sendToAll(AbstractPacket packet)

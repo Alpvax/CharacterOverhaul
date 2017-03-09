@@ -1,18 +1,10 @@
 package alpvax.characteroverhaul.api.event;
 
-import java.util.Collections;
-import java.util.Map;
-
-import com.google.common.collect.Maps;
-
-import alpvax.characteroverhaul.api.character.ICharacter;
-import alpvax.characteroverhaul.api.character.modifier.ICharacterModifierHandler;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 public class CharacterCreationEvent extends Event
 {
-	private final ICharacter character;
+	/*private final ICharacter character;
 	private final Map<ResourceLocation, ICharacterModifierHandler<?>> handlers = Maps.newLinkedHashMap();
 	private final Map<ResourceLocation, ICharacterModifierHandler<?>> view = Collections.unmodifiableMap(handlers);
 
@@ -24,7 +16,7 @@ public class CharacterCreationEvent extends Event
 	/**
 	 * Retrieves the character that is being created, Not much state is set.
 	 */
-	public ICharacter getCharacter()
+	/*public ICharacter getCharacter()
 	{
 		return character;
 	}
@@ -35,7 +27,7 @@ public class CharacterCreationEvent extends Event
 	 * @param key The name of owner of this handler.
 	 * @param handler The Modifier handler
 	 */
-	public void addModifier(ResourceLocation key, ICharacterModifierHandler<?> handler)
+	/*public void addModifier(ResourceLocation key, ICharacterModifierHandler<?> handler)
 	{
 		if(handlers.containsKey(key))
 			throw new IllegalStateException("Duplicate Modifier Handler Key: " + key + " " + handler);
@@ -45,8 +37,8 @@ public class CharacterCreationEvent extends Event
 	/**
 	 * A unmodifiable view of the capabilities that will be attached to this object.
 	 */
-	public Map<ResourceLocation, ICharacterModifierHandler<?>> getModifiers()
+	/*public Map<ResourceLocation, ICharacterModifierHandler<?>> getModifiers()
 	{
 		return view;
-	}
+	}*/
 }

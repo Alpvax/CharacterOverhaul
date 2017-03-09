@@ -1,22 +1,34 @@
 package alpvax.characteroverhaul.api.ability;
 
+import java.util.UUID;
+
 import alpvax.characteroverhaul.api.character.ICharacter;
-import alpvax.characteroverhaul.api.trigger.Trigger.TriggerKeybind;
-import alpvax.characteroverhaul.api.trigger.Triggerable;
+import alpvax.characteroverhaul.api.effect.IEffectProvider;
+import alpvax.characteroverhaul.api.event.AbilityEvent;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class Ability extends Triggerable<Ability>
+public abstract class Ability implements INBTSerializable<NBTTagCompound>, ITickable, IEffectProvider
 {
 	//private final IAbilityProvider provider;
 	private final ICharacter character;
+	private UUID id;
+	private boolean isEquipped = false;
+
+	private boolean active = false;
+	private int cooldown = 0;
 
 	public Ability(/*IAbilityProvider provider, */ICharacter character)
 	{
 		//this.provider = provider;
 		this.character = character;
+		id = UUID.randomUUID();
 	}
 
 	/*protected final IAbilityProvider getProvider()
@@ -29,71 +41,194 @@ public abstract class Ability extends Triggerable<Ability>
 		return character;
 	}
 
+	public UUID getID()
+	{
+		return id;
+	}
+
 	public abstract ITextComponent getDisplayName();
 
 	@SideOnly(Side.CLIENT)
-	protected abstract ResourceLocation getIconTexture();
+	public abstract ResourceLocation getIconTexture();
 
-	@SideOnly(Side.CLIENT)
-	protected abstract boolean shouldRenderOnHUD();
+	public int getCooldown()
+	{
+		return cooldown;
+	}
+
+	/**
+	 * @return the cooldown of the ability in game ticks (~20 per second)
+	 */
+	public abstract int getMaxCooldown();
 
 	/**
 	 * Called when the ability is added to the character's ability hotbar.
 	 */
 	public void onEquip()
-	{}
+	{
+		isEquipped = true;
+		if(hasPassiveTrigger())
+		{
+			getCharacter().addEffect(getPassiveTrigger());
+		}
+	}
 
 	/**
 	 * Called when the ability is removed from the character's ability hotbar.
 	 */
 	public void onUnequip()
-	{}
+	{
+		isEquipped = false;
+		if(getCharacter().getEffect(getID()) != null)
+		{
+			getCharacter().removeEffect(getID());
+		}
+	}
 
 	/**
 	 * Whether the ability is currently affecting the character.
 	 */
 	public boolean isActive()
 	{
-		return isTriggered();
+		return active;
+	}
+
+	/**
+	 * Default implementation checks that the ability is equipped to the hotbar and is off cooldown.
+	 * @param isManual Whether the attempt was manual or passive.
+	 * @return whether or not the ability can trigger
+	 */
+	protected boolean canTrigger(boolean isManual)
+	{
+		return isEquipped && cooldown <= 0;
 	}
 
 	/**
 	 * Called to start the ability. Use it to add ICharacterEffects
 	 */
-	@Override
 	protected abstract void trigger();
 
 	/**
 	 * Called to stop the ability. Must reverse any effects of {@link #trigger()}.
 	 */
-	@Override
 	protected abstract void reset();
 
 	/**
-	 * Performs the function passed in when the keybind is triggered.<br>
-	 * Lambda use is recommended (Otherwise why not just subclass {@linkplain TriggerKeybind}?)<br>
-	 * Registers trigger with the key "keybind", so use that if you wish to remove the trigger.
-	 * @return this so the function can be chained.
+	 * Use this to set the cooldown of the ability.<br>
+	 * Automatically called when ability is triggered.
+	 * @param cd the number of ticks remaining for the cooldown. Negative numbers set the cooldown to the value of
+	 *            {@link #getMaxCooldown()}.<br>
+	 *            can be used to increase the cooldown above the maximum
 	 */
-	public Ability addKeybindTrigger(final Runnable keyPressHandler)
+	public final void setCooldown(int cd)
 	{
-		return addTrigger("keybind", new TriggerKeybind()
+		if(cd < 0)
 		{
-			@Override
-			public void onKeyPressed()
+			cooldown = getMaxCooldown();
+		}
+		else
+		{
+			cooldown = cd;
+		}
+	}
+
+	/**
+	 * Whether or not the ability can be manually triggered.<br>
+	 * Is used to determine whether to display the icon as activateable or passive,<br>
+	 * so should not take into account cooldown etc.
+	 */
+	public boolean hasManualTrigger()
+	{
+		return true;
+	}
+
+	/**
+	 * Call this to attempt to trigger the ability
+	 * @return
+	 */
+	public boolean attemptTrigger()
+	{
+		if(getCharacter().getWorld().isRemote)
+		{
+			//TODO:CharacterNetwork.sendToServer(new AbilityTriggerPacket(abilitySlot));
+			//return false;
+		}
+		else if(canTrigger(true))
+		{
+			AbilityEvent.Trigger event = new AbilityEvent.Trigger(getCharacter(), this);
+			if(MinecraftForge.EVENT_BUS.post(event))
 			{
-				keyPressHandler.run();
+				return false;
 			}
-		});
+			trigger();
+			cooldown = event.getCooldown();
+			return true;
+		}
+		return false;
 	}
 
-	public boolean hasKeybind()
+	/**
+	 * Used to update cooldown client side.<br>
+	 * Overide to run any other client-side code.
+	 * @param cooldown
+	 */
+	@SideOnly(Side.CLIENT)
+	public void clientTrigger(int cooldown)
 	{
-		return getTrigger("keybind") != null;
+		this.cooldown = cooldown;
 	}
 
-	public TriggerKeybind getKeybindTrigger()
+	public boolean hasPassiveTrigger()
 	{
-		return (TriggerKeybind)getTrigger("keybind");
+		return false;
+	}
+
+	protected EffectAbilityTrigger getPassiveTrigger()
+	{
+		return null;
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT()
+	{
+		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setBoolean("Active", active);
+		nbt.setUniqueId("ID", getID());
+		nbt.setInteger("Cooldown", cooldown);
+		return nbt;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt)
+	{
+		active = nbt.getBoolean("Active");
+		id = nbt.getUniqueId("ID");
+		cooldown = nbt.getInteger("Cooldown");
+	}
+
+	/**
+	 * Used to sync data to the client.
+	 * @return the data to be sent to the client
+	 */
+	public NBTTagCompound getNBTForClientSync()
+	{
+		return new NBTTagCompound();
+	}
+
+
+	/**
+	 * Used to read all synched data on the client.
+	 */
+	public void readClientData(NBTTagCompound nbt)
+	{
+	}
+
+	@Override
+	public void update()
+	{
+		if(cooldown > 0)
+		{
+			cooldown--;
+		}
 	}
 }

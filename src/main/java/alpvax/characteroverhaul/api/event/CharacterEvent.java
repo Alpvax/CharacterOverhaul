@@ -1,7 +1,6 @@
 package alpvax.characteroverhaul.api.event;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,12 +8,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import alpvax.characteroverhaul.api.ability.Ability;
 import alpvax.characteroverhaul.api.character.CharacterBase;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifier;
-import alpvax.characteroverhaul.api.effect.Effect;
-import alpvax.characteroverhaul.api.effect.IEffectProvider;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import net.minecraft.util.ResourceLocation;
@@ -63,17 +59,17 @@ public class CharacterEvent extends Event
 		private Set<Skill> skillsView = Collections.unmodifiableSet(skills);
 		private Map<ResourceLocation, ICharacterModifier> modifiers = Maps.newHashMap();
 		private Map<ResourceLocation, ICharacterModifier> modifiersView = Collections.unmodifiableMap(modifiers);
-
+	
 		public CharacterCreate(ICharacter character)
 		{
 			super(character);
 		}
-
+	
 		public void registerSkill(Skill skill)
 		{
 			skills.add(skill);
 		}
-
+	
 		public void removeSkill(Skill skill)
 		{
 			skills.remove(skill);
@@ -109,75 +105,13 @@ public class CharacterEvent extends Event
 	}
 
 	/**
-	 * AddEffect is fired when an {@linkplain IEffectProvider} is added to a character.<br>
-	 * <br>
-	 * This event is fired from {@link CharacterBase#addEffects(IEffectProvider)}.<br>
-	 * <br>
-	 * {@link #effects} contains the ArrayList of Effects that will be added to the character.<br>
-	 * <br>
-	 * This event is {@link Cancelable}.<br>
-	 * If it is canceled, the provider is not added to the character.<br>
-	 * <br>
-	 * This event does not have a result. {@link HasResult}<br>
-	 * <br>
-	 * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
-	 **/
-	@Cancelable
-	public static class AddEffect extends CharacterEvent
-	{
-		private final List<Effect> effects;
-
-		public AddEffect(ICharacter character, IEffectProvider provider)
-		{
-			super(character);
-			effects = provider.createEffects(character);
-		}
-
-		public List<Effect> getEffects()
-		{
-			return effects;
-		}
-	}
-
-	/**
-	 * AddAbility is fired when an {@linkplain IAbilityProvider} is added to a character.<br>
-	 * <br>
-	 * This event is fired from {@link CharacterBase#addAbilities(IAbilityProvider)}.<br>
-	 * <br>
-	 * {@link #abilities} contains the ArrayList of Abilities that will be added to the character.<br>
-	 * <br>
-	 * This event is {@link Cancelable}.<br>
-	 * If it is canceled, the provider is not added to the character.<br>
-	 * <br>
-	 * This event does not have a result. {@link HasResult}<br>
-	 * <br>
-	 * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
-	 **/
-	@Cancelable
-	public static class AddAbility extends CharacterEvent
-	{
-		private final List<Ability> abilities;
-
-		public AddAbility(ICharacter character, List<Ability> abilities)
-		{
-			super(character);
-			this.abilities = abilities;
-		}
-
-		public List<Ability> getAbilities()
-		{
-			return abilities;
-		}
-	}
-
-	/**
 	 * AquirePerk is fired when a character aquires a perk.<br>
 	 * <br>
 	 * This event is fired from the private method {@link CharacterBase#setPerkLevel(Perk, int)}.<br>
 	 * <br>
 	 * {@link #perk} contains the Perk that is being changed.<br>
 	 * {@link #currentLevel} contains the the current level of the perk.<br>
-	 * {@link #newLevel} contains the new level of the perk.<br>
+	 * {@link #newLevel} contains the new level of the perk. Could be lower than the current level.<br>
 	 * <br>
 	 * This event is {@link Cancelable}.<br>
 	 * If it is canceled or if the new level matches the old level, the perk is not updated.<br>

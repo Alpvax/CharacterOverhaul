@@ -1,67 +1,58 @@
 package alpvax.characteroverhaul.core.proxy;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.function.Function;
 
 import alpvax.characteroverhaul.api.character.ICharacter;
-import alpvax.characteroverhaul.api.client.gui.ICharacterCreationPage;
-import alpvax.characteroverhaul.api.client.gui.ICharacterCreationPageHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class CommonProxy
+public abstract class CommonProxy
 {
-	public void registerPre()
+	public void registerPre(FMLPreInitializationEvent event)
+	{}
+
+	public EntityPlayer getPlayerEntity(MessageContext ctx)
 	{
+		return ctx.getServerHandler().playerEntity;
 	}
 
-	@SideOnly(Side.CLIENT)
-	public final ClientProxy getClientSide()
+	/**
+	 * <strong>ONLY CALL THIS METHOD ON THE CLIENT!</strong><br>
+	 * Calls ClientObjectFactoryRegistry.create.<br>
+	 * Throws a runtime error if called on the server.
+	 * @return a new instance of the requested class.
+	 */
+	public <T> T createClientObject(String className, Class<T> objectType)
 	{
-		return (ClientProxy)this;
+		throw new RuntimeException("Tried calling client method createClientObject on server");
 	}
 
-	private final List<ICharacterCreationPageHandler> creationGuiPages = new ArrayList<>();
-
-	public List<ICharacterCreationPageHandler> getPageHandlers()
+	/**
+	 * <strong>ONLY CALL THIS METHOD ON THE CLIENT!</strong><br>
+	 * Calls Minecraft.player.getCapability(ICharacter).<br>
+	 * Throws a runtime error if called on the server.
+	 * @return the character for the client player.
+	 */
+	public ICharacter getClientCharacter()
 	{
-		return Collections.unmodifiableList(creationGuiPages);
+		throw new RuntimeException("Tried calling client method getClientCharacter on server");
 	}
 
-	public void registerCreationGUIHandler(Class<?> clazz)
+	public <T> void registerClientFactory(Class<T> objectType, String className, Function<ICharacter, T> factory)
+	{}
+
+	public void registerCreationGUIHandler(Class<?> pageHandler)
+	{}
+
+	/*public default List<ICharacterCreationPageHandler> getPageHandlers()
 	{
-		if(ICharacterCreationPageHandler.class.isAssignableFrom(clazz))
-		{
-			try
-			{
-				creationGuiPages.add((ICharacterCreationPageHandler)clazz.newInstance());
-			}
-			catch(InstantiationException | IllegalAccessException e)
-			{
-				//TODO:Log "No-arg Constructor not found for class <clazz>"
-			}
-		}
-		if(ICharacterCreationPage.class.isAssignableFrom(clazz))
-		{
-			creationGuiPages.add(new ICharacterCreationPageHandler()
-			{
-				@Override
-				public List<ICharacterCreationPage> getPages(ICharacter character)
-				{
-					try
-					{
-						return Lists.newArrayList((ICharacterCreationPage)clazz.newInstance());
-					}
-					catch(InstantiationException | IllegalAccessException e)
-					{
-						//TODO:Log "No-arg Constructor not found for class <clazz>"
-						return null;
-					}
-				}
-			});
-		}
+		return null;
 	}
+	
+	public default void registerTabGUIHandler(IMCMessage message)
+	{}
+	
+	public default void registerTabLayoutHandler(IMCMessage message)
+	{}*/
 }

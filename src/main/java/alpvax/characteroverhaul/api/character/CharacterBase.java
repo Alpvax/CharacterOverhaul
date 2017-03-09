@@ -1,10 +1,12 @@
 package alpvax.characteroverhaul.api.character;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -16,16 +18,22 @@ import com.google.common.collect.ImmutableMap;
 import alpvax.characteroverhaul.api.ability.Ability;
 import alpvax.characteroverhaul.api.config.CharacterConfig;
 import alpvax.characteroverhaul.api.effect.Effect;
-import alpvax.characteroverhaul.api.effect.IEffectProvider;
+import alpvax.characteroverhaul.api.event.AbilityEvent;
 import alpvax.characteroverhaul.api.event.CharacterEvent;
+import alpvax.characteroverhaul.api.event.EffectEvent;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
 import alpvax.characteroverhaul.api.trigger.Trigger.TriggerAttach;
 import alpvax.characteroverhaul.api.trigger.Triggerable;
+import alpvax.characteroverhaul.network.AbilityChangedPacket;
+import alpvax.characteroverhaul.network.AbilityEquippedPacket;
+import alpvax.characteroverhaul.network.AbstractPacket;
+import alpvax.characteroverhaul.network.CharacterNetwork;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -36,10 +44,18 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Basic implementation of the {@link ICharacter} interface.
  */
+@EventBusSubscriber
 public /*abstract/**/ class CharacterBase implements ICharacter
 {
 	private final Map<ResourceLocation, Integer> perks = new HashMap<>();
@@ -185,7 +201,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		return new ArrayList<>(effects.values());
 	}
 
-	@Override
+	/*@Override
 	public void addEffects(IEffectProvider provider)
 	{
 		CharacterEvent.AddEffect event = new CharacterEvent.AddEffect(this, provider);
@@ -198,14 +214,24 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		{
 			addEffect(effect);
 		}
+	}*/
+
+	@Override
+	public void addEffect(Effect effect)
+	{
+		if(!MinecraftForge.EVENT_BUS.post(new EffectEvent.Add(this, effect)))
+		{
+			UUID id = effect.getId();
+			Preconditions.checkArgument(!effects.containsKey(id), "Already an effect with that id: %s", id);
+			notifyAttachTriggers(effect, true);
+			effects.put(id, effect);
+		}
 	}
 
-	private void addEffect(Effect effect)
+	@Override
+	public Effect getEffect(UUID effectID)
 	{
-		UUID id = effect.getId();
-		Preconditions.checkArgument(!effects.containsKey(id), "Already an effect with that id: %s", id);
-		notifyAttachTriggers(effect, true);
-		effects.put(id, effect);
+		return effects.get(effectID);
 	}
 
 	@Override
@@ -213,19 +239,18 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	{
 		if(effects.containsKey(id))
 		{
-			notifyAttachTriggers(effects.remove(id), false);
+			Effect effect = effects.remove(id);
+			if(effect != null && !MinecraftForge.EVENT_BUS.post(new EffectEvent.Remove(this, effect)))
+			{
+				notifyAttachTriggers(effect, false);
+			}
 		}
 	}
 
 	@Override
-	public List<Ability> getHotbarAbilities()
+	public Ability[] getHotbarAbilities()
 	{
-		List<Ability> list = new ArrayList<>();
-		for(int i = 0; i < abilityHotbar.length; i++)
-		{
-			list.add(abilities.get(abilityHotbar[i]));
-		}
-		return Collections.unmodifiableList(list);
+		return Arrays.stream(abilityHotbar).map(u -> abilities.get(u)).toArray(Ability[]::new);
 	}
 
 	@Override
@@ -250,24 +275,28 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	}*/
 
 	@Override
-	public void triggerAbilityKeybind(int slot)
+	public void triggerAbility(int slot)
 	{
 		if(slot >= 0 && slot < abilityHotbar.length)
 		{
-			Ability ability = getHotbarAbilities().get(slot);
-			if(ability.hasKeybind())
+			Ability ability = getHotbarAbilities()[slot];
+			if(ability.hasManualTrigger())
 			{
-				ability.getKeybindTrigger().onKeyPressed();
+				ability.attemptTrigger();
 			}
 		}
 	}
 
-	private void addAbility(Ability ability)
+	public void addAbility(Ability ability)
 	{
-		UUID id = ability.getId();
-		Preconditions.checkArgument(!abilities.containsKey(id), "Already an ability with that id: %s", id);
-		notifyAttachTriggers(ability, true);
-		abilities.put(id, ability);
+		if(!MinecraftForge.EVENT_BUS.post(new AbilityEvent.Add(this, ability)))
+		{
+			UUID id = ability.getID();
+			Preconditions.checkArgument(!abilities.containsKey(id), "Already an ability with that id: %s", id);
+			ability.onEquip();
+			abilities.put(id, ability);
+			sendPacketToClient(new AbilityChangedPacket(id, ability));
+		}
 	}
 
 	@Override
@@ -275,7 +304,32 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	{
 		if(abilities.containsKey(id))
 		{
-			notifyAttachTriggers(abilities.remove(id), false);
+			Ability ability = abilities.remove(id);
+			if(ability != null && !MinecraftForge.EVENT_BUS.post(new AbilityEvent.Remove(this, ability)))
+			{
+				ability.onUnequip();
+			}
+		}
+	}
+
+	@Override
+	public void setHotbarSlot(int i, UUID id)
+	{
+		abilityHotbar[i] = id;
+		sendPacketToClient(new AbilityEquippedPacket(id, i));
+	}
+
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void updateClientAbility(UUID id, Ability ability)
+	{
+		if(ability == null)
+		{
+			abilities.remove(id);
+		}
+		else
+		{
+			abilities.put(id, ability);
 		}
 	}
 
@@ -308,7 +362,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 	@Override
 	public void cloneFrom(ICharacter oldCharacter)
 	{
-		for(Perk perk : Perk.REGISTRY.getValues())
+		for(Perk perk : Perk.getAllPerks())
 		{
 			int l = oldCharacter.getPerkLevel(perk);
 			if(l != 0)
@@ -333,7 +387,9 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		private static final String SKILLS = "Skills";
 		private static final String EFFECTS = "Effects";
 		private static final String ABILITIES = "Abilities";
-		private static final String UUID = "UUID";
+		private static final String HOTBAR = "Hotbar";
+		private static final String UUID = "ID";
+		private static final String SLOT = "Slot";
 	}
 
 	@Override
@@ -342,7 +398,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		NBTTagCompound nbt = new NBTTagCompound();
 		//Save Perks
 		NBTTagCompound perknbt = new NBTTagCompound();
-		for(Perk perk : Perk.REGISTRY.getValues())
+		for(Perk perk : Perk.getAllPerks())
 		{
 			int l = getPerkLevel(perk);
 			if(l != 0)
@@ -364,31 +420,48 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		{
 			nbt.setTag(NBTKeys.SKILLS, skillnbt);
 		}
-		//Save Effects
-		NBTTagList effectnbt = new NBTTagList();
-		for(Effect effect : effects.values())
-		{
-			NBTTagCompound tag = effect.serializeNBT();
-			UUID id = effect.getId();
-			tag.setUniqueId(NBTKeys.UUID, id);
-			effectnbt.appendTag(tag);
-		}
-		if(!effectnbt.hasNoTags())
-		{
-			nbt.setTag(NBTKeys.EFFECTS, effectnbt);
-		}
 		//Save Abilities
 		NBTTagList abilitynbt = new NBTTagList();
 		for(Ability ability : abilities.values())
 		{
 			NBTTagCompound tag = ability.serializeNBT();
-			UUID id = ability.getId();
-			tag.setUniqueId(NBTKeys.UUID, id);
+			/*UUID id = ability.getID();
+			tag.setUniqueId(NBTKeys.UUID, id);*/
 			abilitynbt.appendTag(tag);
 		}
 		if(!abilitynbt.hasNoTags())
 		{
 			nbt.setTag(NBTKeys.ABILITIES, abilitynbt);
+		}
+		//Save Hotbar
+		NBTTagList hotbarnbt = new NBTTagList();
+		for(int i = 0; i < abilityHotbar.length; i++)
+		{
+			NBTTagCompound tag = new NBTTagCompound();
+			UUID id = abilityHotbar[i];
+			if(id != null)
+			{
+				tag.setUniqueId(NBTKeys.UUID, id);
+				tag.setInteger(NBTKeys.SLOT, i);
+			}
+			hotbarnbt.appendTag(tag);
+		}
+		if(!hotbarnbt.hasNoTags())
+		{
+			nbt.setTag(NBTKeys.HOTBAR, abilitynbt);
+		}
+		//Save Effects
+		NBTTagList effectnbt = new NBTTagList();
+		for(Effect effect : effects.values())
+		{
+			NBTTagCompound tag = effect.serializeNBT();
+			/*UUID id = effect.getId();
+			tag.setUniqueId(NBTKeys.UUID, id);*/
+			effectnbt.appendTag(tag);
+		}
+		if(!effectnbt.hasNoTags())
+		{
+			nbt.setTag(NBTKeys.EFFECTS, effectnbt);
 		}
 		return nbt;
 	}
@@ -426,7 +499,86 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 				}
 			}
 		}
-		//TODO:Load Effects
-		//TODO:Load Abilities
+		//Load Abilities
+		if(nbt.hasKey(NBTKeys.ABILITIES, NBT.TAG_LIST))
+		{
+			NBTTagList abilitynbt = nbt.getTagList(NBTKeys.ABILITIES, NBT.TAG_LIST);
+			for(int i = 0; i < abilitynbt.tagCount(); i++)
+			{
+				NBTTagCompound tag = abilitynbt.getCompoundTagAt(i);
+				//TODO:Load Ability
+			}
+		}
+		//Load Hotbar
+		if(nbt.hasKey(NBTKeys.HOTBAR, NBT.TAG_LIST))
+		{
+			NBTTagList hotbarnbt = nbt.getTagList(NBTKeys.HOTBAR, NBT.TAG_LIST);
+			for(int i = 0; i < hotbarnbt.tagCount(); i++)
+			{
+				NBTTagCompound tag = hotbarnbt.getCompoundTagAt(i);
+				setHotbarSlot(tag.getInteger(NBTKeys.SLOT), tag.getUniqueId(NBTKeys.UUID));
+			}
+		}
+		//Load Effects
+		if(nbt.hasKey(NBTKeys.EFFECTS, NBT.TAG_LIST))
+		{
+			NBTTagList effectnbt = nbt.getTagList(NBTKeys.EFFECTS, NBT.TAG_LIST);
+			for(int i = 0; i < effectnbt.tagCount(); i++)
+			{
+				NBTTagCompound tag = effectnbt.getCompoundTagAt(i);
+				//TODO:Load Effect
+			}
+		}
+	}
+
+	private boolean finishedLoading = false;
+
+	private void sendPacketToClient(AbstractPacket packet)
+	{
+		if(finishedLoading && getAttachedObject() instanceof EntityPlayerMP)
+		{
+			CharacterNetwork.sendTo(packet, getAttachedObject());
+		}
+	}
+
+	private void syncAll()
+	{
+		for(Entry<UUID, Ability> e : abilities.entrySet())
+		{
+			sendPacketToClient(new AbilityChangedPacket(e.getKey(), e.getValue()));
+		}
+		for(int i = 0; i < abilityHotbar.length; i++)
+		{
+			UUID id = abilityHotbar[i];
+			if(id != null && abilities.get(id) != null)
+			{
+				sendPacketToClient(new AbilityEquippedPacket(id, i));
+			}
+		}
+	}
+
+	// *********************** Event Handlers **************************************
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public static void syncInitialData(PlayerLoggedInEvent event)
+	{
+		ICharacter character = event.player.getCapability(ICharacter.CAPABILITY, null);
+		if(character instanceof CharacterBase)
+		{
+			CharacterBase c = (CharacterBase)character;
+			c.finishedLoading = true;
+			c.syncAll();
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onRespawnPlayer(PlayerEvent.Clone event)
+	{//TODO: improve cloning
+		ICharacter oldCharacter = event.getOriginal().getCapability(ICharacter.CAPABILITY, null);
+		if(!oldCharacter.getWorld().isRemote)
+		{
+			ICharacter newCharacter = event.getEntityPlayer().getCapability(ICharacter.CAPABILITY, null);
+			newCharacter.cloneFrom(oldCharacter);
+		}
 	}
 }

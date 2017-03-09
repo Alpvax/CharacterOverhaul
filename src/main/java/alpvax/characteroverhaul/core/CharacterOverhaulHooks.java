@@ -3,35 +3,23 @@ package alpvax.characteroverhaul.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.input.Mouse;
-
 import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.ability.Ability;
 import alpvax.characteroverhaul.api.character.ICharacter;
-import alpvax.characteroverhaul.api.config.CharacterConfig;
 import alpvax.characteroverhaul.api.effect.Effect;
 import alpvax.characteroverhaul.capabilities.CharacterCapabilityProvider;
-import alpvax.characteroverhaul.client.gui.tabs.EnumCharacterTab;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
-import net.minecraftforge.client.event.GuiScreenEvent.MouseInputEvent;
-import net.minecraftforge.client.event.GuiScreenEvent.PotionShiftEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -71,24 +59,36 @@ public class CharacterOverhaulHooks
 	@SubscribeEvent
 	public void tickCharacters(WorldTickEvent event)
 	{
-		if(event.phase == Phase.START && !event.world.isRemote)
+		if(event.phase == Phase.START)
 		{
 			for(Entity e : event.world.loadedEntityList)
 			{
-				tickProvider(e);
+				tickProvider(e, event.side);
 			}
 			for(TileEntity tile : event.world.loadedTileEntityList)
 			{
-				tickProvider(tile);
+				tickProvider(tile, event.side);
 			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent
+	public void tickPlayer(ClientTickEvent event)
+	{
+		EntityPlayer player;
+		if(event.phase == Phase.START && (player = Minecraft.getMinecraft().player) != null)
+		{
+			tickProvider(player, event.side);
 		}
 	}
 
 	/**
 	 * Recursively ticks all effects and abilities of this provider, and any items it contains
 	 * @param provider
+	 * @param side
 	 */
-	private void tickProvider(ICapabilityProvider provider)
+	private void tickProvider(ICapabilityProvider provider, Side side)
 	{
 		if(provider.hasCapability(ICharacter.CAPABILITY, null))
 		{
@@ -99,11 +99,14 @@ public class CharacterOverhaulHooks
 				{
 					effect.tickEffect();
 				}
-				effect.tickTriggers();
+				if(side == Side.SERVER)
+				{
+					effect.tickTriggers();
+				}
 			}
 			for(Ability ability : character.getAllAbilities())
 			{
-				ability.tickTriggers();
+				ability.update();
 			}
 		}
 		if(provider.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
@@ -112,26 +115,15 @@ public class CharacterOverhaulHooks
 			for(int i = 0; i < items.getSlots(); i++)
 			{
 				ItemStack stack = items.getStackInSlot(i);
-				if(stack != null)
+				if(!stack.isEmpty())
 				{
-					tickProvider(stack);
+					tickProvider(stack, side);
 				}
 			}
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onRespawn(PlayerEvent.Clone event)
-	{
-		ICharacter oldCharacter = event.getOriginal().getCapability(ICharacter.CAPABILITY, null);
-		if(!oldCharacter.getWorld().isRemote)
-		{
-			ICharacter newCharacter = event.getEntityPlayer().getCapability(ICharacter.CAPABILITY, null);
-			newCharacter.cloneFrom(oldCharacter);
-		}
-	}
-
-	@SideOnly(Side.CLIENT)
+	/*@SideOnly(Side.CLIENT)
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onDrawPotions(PotionShiftEvent event)
 	{
@@ -140,31 +132,7 @@ public class CharacterOverhaulHooks
 			event.setCanceled(true);
 		}
 	}
-
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public void onRenderOverlay(RenderGameOverlayEvent.Pre event)
-	{
-		Minecraft mc = Minecraft.getMinecraft();
-		if(event.getType() == ElementType.POTION_ICONS && !CharacterConfig.client.renderPotionsOnHud)
-		{
-			event.setCanceled(true);
-			for(Effect effect : mc.player.getCapability(ICharacter.CAPABILITY, null).getEffects())
-			{
-				if(effect.shouldRenderOnHUD())
-				{
-					//TODO:renderOnHUD(event.getResolution());
-					//mc.renderEngine.bindTexture(effect.getIconTexture());
-				}
-			}
-		}
-		/*TODO:Render abilities
-		if(event.getType() == ElementType.HOTBAR)
-		{
-
-		}*/
-	}
-
+	
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onDrawInventory(DrawScreenEvent.Pre event)
@@ -175,7 +143,7 @@ public class CharacterOverhaulHooks
 			ObfuscationReflectionHelper.setPrivateValue(InventoryEffectRenderer.class, gui, false, "hasActivePotionEffects");//TODO:Obfuscated names
 		}
 	}
-
+	
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onClickPotions(MouseInputEvent.Pre event)
@@ -183,7 +151,7 @@ public class CharacterOverhaulHooks
 		if(event.getGui() instanceof InventoryEffectRenderer && CharacterConfig.client.renderPotionsInInventory)
 		{
 			InventoryEffectRenderer gui = (InventoryEffectRenderer)event.getGui();
-
+	
 			int i = Mouse.getEventX() * gui.width / gui.mc.displayWidth;
 			int j = gui.height - Mouse.getEventY() * gui.height / gui.mc.displayHeight - 1;
 			EntityPlayerSP player = gui.mc.player;
@@ -192,5 +160,5 @@ public class CharacterOverhaulHooks
 				EnumCharacterTab.EFFECTS.openGui(player);
 			}
 		}
-	}
+	}*/
 }

@@ -13,10 +13,4 @@ public class CharacterOverhaulReference
 
 	public static final ResourceLocation CAPABILITY_CHARACTER_KEY = new ResourceLocation(MOD_ID, "character");
 	public static final ResourceLocation CAPABILITY_AFFECTED_KEY = new ResourceLocation(MOD_ID, "affected");
-
-	public static final ResourceLocation PERK_REGISTRY_KEY = new ResourceLocation(MOD_ID, "perks");
-	public static final ResourceLocation PERKTREE_REGISTRY_KEY = new ResourceLocation(MOD_ID, "perktrees");
-	public static final ResourceLocation SKILL_REGISTRY_KEY = new ResourceLocation(MOD_ID, "skills");
-	public static final ResourceLocation RACE_REGISTRY_KEY = new ResourceLocation(MOD_ID, "races");
-	public static final ResourceLocation CHAR_CLASS_REGISTRY_KEY = new ResourceLocation(MOD_ID, "characterclasses");
 }

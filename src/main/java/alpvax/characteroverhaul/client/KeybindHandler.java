@@ -1,7 +1,7 @@
 package alpvax.characteroverhaul.client;
 
 import alpvax.characteroverhaul.api.config.CharacterConfig;
-import alpvax.characteroverhaul.network.AbilityKeyTriggerPacket;
+import alpvax.characteroverhaul.network.AbilityTriggerPacket;
 import alpvax.characteroverhaul.network.CharacterNetwork;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
@@ -36,7 +36,7 @@ public class KeybindHandler
 		{
 			if(abilityKeybinds[i].isPressed())
 			{
-				CharacterNetwork.sendToServer(new AbilityKeyTriggerPacket(i));
+				CharacterNetwork.sendToServer(new AbilityTriggerPacket(i));
 			}
 		}
 	}

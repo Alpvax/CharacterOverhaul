@@ -4,18 +4,21 @@ import alpvax.characteroverhaul.api.ability.Ability;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.config.CharacterConfig;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.fml.common.FMLLog;
 
-public class AbilityKeyTriggerPacket extends AbstractPacket.Threadsafe
+public class AbilityTriggerPacket extends AbstractPacket.Threadsafe
 {
 	private int slot = -1;
+	/** No effect serverside, set serverside to update client */
+	private int cooldownForClient;
 
-	public AbilityKeyTriggerPacket()
+	public AbilityTriggerPacket()
 	{}
 
-	public AbilityKeyTriggerPacket(int abilitySlot)
+	public AbilityTriggerPacket(int abilitySlot)
 	{
 		slot = abilitySlot;
 	}
@@ -23,18 +26,29 @@ public class AbilityKeyTriggerPacket extends AbstractPacket.Threadsafe
 	@Override
 	public void fromBytes(ByteBuf buf)
 	{
-		buf.writeInt(slot);
+		slot = buf.readInt();
+		cooldownForClient = buf.readInt();
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf)
 	{
-		slot = buf.readInt();
+		buf.writeInt(slot);
+		buf.writeInt(cooldownForClient);
 	}
 
 	@Override
 	public void handleClientSafe(NetHandlerPlayClient netHandler)
 	{
+		ICharacter character = Minecraft.getMinecraft().player.getCapability(ICharacter.CAPABILITY, null);
+		if(character != null)
+		{
+			Ability ability = character.getHotbarAbilities()[slot];
+			if(ability != null)
+			{
+				ability.clientTrigger(cooldownForClient);
+			}
+		}
 	}
 
 	@Override
@@ -48,10 +62,11 @@ public class AbilityKeyTriggerPacket extends AbstractPacket.Threadsafe
 		ICharacter character = netHandler.playerEntity.getCapability(ICharacter.CAPABILITY, null);
 		if(character != null)
 		{
-			Ability ability = character.getHotbarAbilities().get(slot);
-			if(ability != null && ability.hasKeybind())
+			Ability ability = character.getHotbarAbilities()[slot];
+			if(ability != null && ability.hasManualTrigger() && ability.attemptTrigger())
 			{
-				ability.getKeybindTrigger().onKeyPressed();
+				cooldownForClient = ability.getCooldown();
+				CharacterNetwork.sendTo(this, netHandler.playerEntity);
 			}
 		}
 	}

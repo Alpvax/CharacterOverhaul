@@ -2,7 +2,6 @@ package alpvax.characteroverhaul.client;
 
 import java.util.Set;
 
-import alpvax.characteroverhaul.client.gui.COConfigGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.IModGuiFactory;
@@ -20,7 +19,7 @@ public class COGuiFactory implements IModGuiFactory
 	@Override
 	public Class<? extends GuiScreen> mainConfigGuiClass()
 	{
-		return COConfigGui.class;
+		return null;//COConfigGui.class;
 	}
 
 	@Override

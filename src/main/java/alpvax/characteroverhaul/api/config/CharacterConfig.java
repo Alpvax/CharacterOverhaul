@@ -22,7 +22,7 @@ public class CharacterConfig
 
 	// Gameplay
 	@Config.Comment("The number of abilities allowed on the hotbar")
-	public static int numAbilities = 6;
+	public static int numAbilities = 9;//6;
 
 	public static Client client = new Client();
 

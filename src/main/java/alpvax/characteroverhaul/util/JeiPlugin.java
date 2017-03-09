@@ -1,47 +1,37 @@
 package alpvax.characteroverhaul.util;
 
-import java.awt.Rectangle;
-import java.util.List;
-
-import com.google.common.collect.Lists;
-
-import alpvax.characteroverhaul.api.config.Config;
-import mezz.jei.api.IJeiRuntime;
-import mezz.jei.api.IModPlugin;
+import mezz.jei.api.BlankModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
-import mezz.jei.api.gui.IAdvancedGuiHandler;
-import net.minecraft.client.renderer.InventoryEffectRenderer;
 
 @JEIPlugin
-public class JeiPlugin implements IModPlugin
+public class JeiPlugin extends BlankModPlugin
 {
 
 	@Override
 	public void register(IModRegistry registry)
 	{
-		registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler<InventoryEffectRenderer>()
+		/*registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler<InventoryEffectRenderer>()
 		{
-
+		
 			@Override
 			public Class<InventoryEffectRenderer> getGuiContainerClass()
 			{
 				return InventoryEffectRenderer.class;
 			}
-
+		
 			@Override
 			public List<Rectangle> getGuiExtraAreas(InventoryEffectRenderer guiContainer)
 			{
-				return !Config.renderPotionsInInventory ? Lists.newArrayList(new Rectangle(/*TODO:Get Rect for eact tab*/)) : null;
+				return !CharacterConfig.client.renderPotionsInInventory ? Lists.newArrayList(new Rectangle(/*TODO:Get Rect for eact tab/)) : null;
 			}
-		});
+		
+			@Override
+			public Object getIngredientUnderMouse(InventoryEffectRenderer guiContainer, int mouseX, int mouseY)
+			{
+				// TODO Auto-generated method stub
+				return null;
+			}
+		});*/
 	}
-
-	@Override
-	public void onRuntimeAvailable(IJeiRuntime jeiRuntime)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
 }

@@ -1,12 +1,12 @@
 package alpvax.characteroverhaul.api.perk;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
-import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.effect.IEffectProvider;
 import net.minecraft.client.resources.I18n;
@@ -14,7 +14,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
-import net.minecraftforge.fml.common.registry.RegistryBuilder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -103,10 +102,11 @@ public abstract class Perk extends IForgeRegistryEntry.Impl<Perk> implements IEf
 	 */
 	public abstract void onLevelChange(int oldLevel, int newLevel, ICharacter character);
 
-	/**
-	 * Change this value in order to allow for more/fewer perks.
-	 */
-	private static final int MAX_PERK_ID = 0xff;
 
-	public static final IForgeRegistry<Perk> REGISTRY = new RegistryBuilder<Perk>().setName(CharacterOverhaulReference.PERK_REGISTRY_KEY).setType(Perk.class).setIDRange(0, MAX_PERK_ID).create();
+	public static IForgeRegistry<Perk> REGISTRY = GameRegistry.findRegistry(Perk.class);
+
+	public static List<Perk> getAllPerks()
+	{
+		return REGISTRY.getValues();
+	}
 }

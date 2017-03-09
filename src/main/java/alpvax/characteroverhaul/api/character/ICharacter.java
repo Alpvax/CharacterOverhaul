@@ -7,7 +7,6 @@ import javax.annotation.Nonnull;
 
 import alpvax.characteroverhaul.api.ability.Ability;
 import alpvax.characteroverhaul.api.effect.Effect;
-import alpvax.characteroverhaul.api.effect.IEffectProvider;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
@@ -18,6 +17,8 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Classes that wish to implement this should extend {@link CharacterBase}.
@@ -56,11 +57,11 @@ public interface ICharacter extends INBTSerializable<NBTTagCompound>
 	 * @param perk the perk to retrieve the level of.
 	 * @return the level of the perk, or 0 if it isn't acquired.
 	 */
-	public int getPerkLevel(Perk perk);
+	public int getPerkLevel(@Nonnull Perk perk);
 
-	public void aquirePerk(Perk perk);
+	public void aquirePerk(@Nonnull Perk perk);
 
-	public void aquirePerk(Perk perk, int level);
+	public void aquirePerk(@Nonnull Perk perk, int level);
 
 	//public void setPerkLevel(Perk perk, int level);
 
@@ -68,43 +69,50 @@ public interface ICharacter extends INBTSerializable<NBTTagCompound>
 	 * @param skill the skill to retrieve the instance of.
 	 * @return
 	 */
-	public SkillInstance getSkillInstance(Skill skill);
+	public SkillInstance getSkillInstance(@Nonnull Skill skill);
 
 	/**
 	 * @param skill the skill to retrieve the instance of.
 	 * @return the level of the skill (ignoring experience at the current level)
 	 */
-	public int getSkillLevel(Skill skill);
+	public int getSkillLevel(@Nonnull Skill skill);
 
-	public void addSkillExperience(Skill skill, float amount);
+	public void addSkillExperience(@Nonnull Skill skill, float amount);
 
 	//public <T extends ICharacterModifierHandler<?>> T getModifierHandler(ResourceLocation registryName);
 
 	//public List<ICharacterModifierHandler<?>> getModifierHandlers();
 
+	public Effect getEffect(@Nonnull UUID effectID);
+
 	public List<Effect> getEffects();
 
-	public void addEffects(IEffectProvider provider);
+	public void addEffect(@Nonnull Effect effect);
 
-	public void removeEffect(UUID id);
+	public void removeEffect(@Nonnull UUID id);
 
-	public List<Ability> getHotbarAbilities();
+	public Ability[] getHotbarAbilities();
 
 	public List<Ability> getAllAbilities();
 
 	/**
-	 * Use to trigger the ability in the specified hotbar slot manually. Used by commands
+	 * Use to trigger the ability in the specified hotbar slot manually. Used by commands and keybinds.
 	 * @param slot
 	 */
-	public void triggerAbilityKeybind(int slot);
+	public void triggerAbility(int slot);
 
-	//public void addAbilities(IAbilityProvider provider);
+	public void addAbility(@Nonnull Ability ability);
 
-	public void removeAbility(UUID id);
+	public void removeAbility(@Nonnull UUID id);
+
+	public void setHotbarSlot(int i, UUID id);//TODO:Clean up, implement properly and document
+
+	@SideOnly(Side.CLIENT)
+	public void updateClientAbility(UUID id, Ability ability);
 
 	/**
 	 * Used to copy data from this to a new Character upon player respawn.
 	 * @param newCharacter
 	 */
-	public void cloneFrom(ICharacter newCharacter);
+	public void cloneFrom(@Nonnull ICharacter newCharacter);
 }

@@ -90,9 +90,9 @@ public class Trigger
 		}
 	};
 
-	public static abstract class TriggerKeybind extends Trigger
+	public static abstract class TriggerManual extends Trigger
 	{
-		public abstract void onKeyPressed();
+		public abstract void onInputRecieved();
 	}
 
 	/**

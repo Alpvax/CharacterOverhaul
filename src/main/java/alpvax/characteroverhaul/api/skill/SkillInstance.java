@@ -7,8 +7,7 @@ import java.util.UUID;
 import com.google.common.base.Preconditions;
 
 import alpvax.characteroverhaul.api.character.ICharacter;
-import alpvax.characteroverhaul.api.character.modifier.ICharacterModifier.ISkillModifier;
-import alpvax.characteroverhaul.api.character.modifier.ICharacterModifier.SkillExpModifier;
+import alpvax.characteroverhaul.api.skill.ISkillModifier.SkillExpModifier;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;

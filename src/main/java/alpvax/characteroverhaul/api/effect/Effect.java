@@ -28,7 +28,7 @@ public abstract class Effect extends Triggerable<Effect>
 	@SideOnly(Side.CLIENT)
 	public abstract boolean shouldRenderOnHUD();
 
-	public abstract boolean isPositiveEffect();
+	public abstract EffectType getEffectType();
 
 	public abstract boolean canBePurged();
 

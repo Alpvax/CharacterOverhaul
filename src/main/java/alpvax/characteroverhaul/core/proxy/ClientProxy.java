@@ -1,26 +1,25 @@
 package alpvax.characteroverhaul.core.proxy;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.function.Function;
 
-import com.google.common.collect.Lists;
+import javax.annotation.Nonnull;
 
 import alpvax.characteroverhaul.api.character.ICharacter;
-import alpvax.characteroverhaul.api.client.gui.ICharacterCreationPage;
-import alpvax.characteroverhaul.api.client.gui.ICharacterCreationPageHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ClientProxy implements IProxy, IResourceManagerReloadListener
+public class ClientProxy extends CommonProxy implements IResourceManagerReloadListener
 {
 	@Override
-	public void registerPre()
+	public void registerPre(FMLPreInitializationEvent event)
 	{
 		((IReloadableResourceManager)Minecraft.getMinecraft().getResourceManager()).registerReloadListener(this);
 	}
@@ -31,14 +30,38 @@ public class ClientProxy implements IProxy, IResourceManagerReloadListener
 		//TODO
 	}
 
-	private final List<ICharacterCreationPageHandler> creationGuiPages = new ArrayList<>();
+	@Override
+	public EntityPlayer getPlayerEntity(MessageContext ctx)
+	{
+		return(ctx.side.isClient() ? Minecraft.getMinecraft().player : super.getPlayerEntity(ctx));
+	}
 
+	@Override
+	public <T> T createClientObject(@Nonnull String className, @Nonnull Class<T> objectType)
+	{
+		return ClientObjectFactoryRegistry.create(className, objectType, getClientCharacter());
+	}
+
+	@Override
+	public ICharacter getClientCharacter()
+	{
+		return Minecraft.getMinecraft().player.getCapability(ICharacter.CAPABILITY, null);
+	}
+
+	@Override
+	public <T> void registerClientFactory(Class<T> objectType, String className, Function<ICharacter, T> factory)
+	{
+		ClientObjectFactoryRegistry.addFactory(objectType, className, factory);
+	}
+
+	/*private final List<ICharacterCreationPageHandler> creationGuiPages = new ArrayList<>();
+	
 	@Override
 	public List<ICharacterCreationPageHandler> getPageHandlers()
 	{
 		return Collections.unmodifiableList(creationGuiPages);
 	}
-
+	
 	@Override
 	public void registerCreationGUIHandler(Class<?> clazz)
 	{
@@ -73,7 +96,7 @@ public class ClientProxy implements IProxy, IResourceManagerReloadListener
 			});
 		}
 	}
-
+	
 	/*@Override
 	public void registerTabGUIHandler(IMCMessage message)
 	{

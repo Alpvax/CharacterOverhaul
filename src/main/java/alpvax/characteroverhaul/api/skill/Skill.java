@@ -5,12 +5,10 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
-import alpvax.characteroverhaul.api.CharacterOverhaulReference;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
-import net.minecraftforge.fml.common.registry.RegistryBuilder;
 
 /**
  * All perks must be registered with {@link GameRegistry#register(IForgeRegistryEntry) GameRegistry.register(perk)}.
@@ -39,16 +37,9 @@ public abstract class Skill extends IForgeRegistryEntry.Impl<Skill>
 	 */
 	public abstract void onLevelChange(int oldLevel, int newLevel, ICharacter character);
 
-	/**
-	 * Change this value in order to allow for more/fewer perks.
-	 */
-	private static final int MAX_SKILL_ID = 0xff;
 
-	public static final IForgeRegistry<Skill> REGISTRY = new RegistryBuilder<Skill>().setName(CharacterOverhaulReference.SKILL_REGISTRY_KEY).setType(Skill.class).setIDRange(0, MAX_SKILL_ID).create();
+	public static IForgeRegistry<Skill> REGISTRY = GameRegistry.findRegistry(Skill.class);
 
-	/**
-	 * @return a list of {@linkplain RootPerk RootPerks} (i.e. a list of perk trees).
-	 */
 	public static List<Skill> getAllSkills()
 	{
 		return REGISTRY.getValues();

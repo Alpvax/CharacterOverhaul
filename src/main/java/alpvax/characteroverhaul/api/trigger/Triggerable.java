@@ -70,8 +70,13 @@ public abstract class Triggerable<T> implements INBTSerializable<NBTTagCompound>
 	 *            {@link INBTSerializable}.
 	 * @param classFilter the class to check for instances of.
 	 */
+	@SuppressWarnings("unchecked")
 	public <U> Map<String, U> getTriggers(@Nonnull Class<U> classFilter)
 	{
+		if(classFilter.isAssignableFrom(Trigger.class))//If filter is Trigger or super, short-circuit
+		{
+			return (Map<String, U>)getTriggers();
+		}
 		return Collections.unmodifiableMap(triggers.entrySet().stream().filter(e -> classFilter.isAssignableFrom(e.getValue().getClass())).collect(Collectors.toMap(e -> e.getKey(), e -> classFilter.cast(e.getValue()))));
 	}
 
@@ -124,12 +129,10 @@ public abstract class Triggerable<T> implements INBTSerializable<NBTTagCompound>
 	}
 
 
-	//TODO:Remove UUIDs
 	private UUID id = UUID.randomUUID();
 
 	public UUID getId()
 	{
-		//XXX:Added until I work out how to keep track of Effects/Abilities
 		return id;
 	}
 }
