@@ -59,14 +59,14 @@ public class AbilityTriggerPacket extends AbstractPacket.Threadsafe
 			FMLLog.warning("Tried to trigger ability in slot %d, IndexOutOfBounds ( 0- %d).", slot, CharacterConfig.numAbilities);
 			return;
 		}
-		ICharacter character = netHandler.playerEntity.getCapability(ICharacter.CAPABILITY, null);
+		ICharacter character = netHandler.player.getCapability(ICharacter.CAPABILITY, null);
 		if(character != null)
 		{
 			Ability ability = character.getHotbarAbilities()[slot];
 			if(ability != null && ability.hasManualTrigger() && ability.attemptTrigger())
 			{
 				cooldownForClient = ability.getCooldown();
-				CharacterNetwork.sendTo(this, netHandler.playerEntity);
+				CharacterNetwork.sendTo(this, netHandler.player);
 			}
 		}
 	}

@@ -14,7 +14,7 @@ public abstract class CommonProxy
 
 	public EntityPlayer getPlayerEntity(MessageContext ctx)
 	{
-		return ctx.getServerHandler().playerEntity;
+		return ctx.getServerHandler().player;
 	}
 
 	/**
@@ -49,10 +49,10 @@ public abstract class CommonProxy
 	{
 		return null;
 	}
-	
+
 	public default void registerTabGUIHandler(IMCMessage message)
 	{}
-	
+
 	public default void registerTabLayoutHandler(IMCMessage message)
 	{}*/
 }
