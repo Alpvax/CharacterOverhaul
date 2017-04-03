@@ -2,7 +2,7 @@ package alpvax.characteroverhaul.network;
 
 import java.util.UUID;
 
-import alpvax.characteroverhaul.core.CharacterOverhaul;
+import alpvax.characteroverhaul.core.CharacterOverhaulMod;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.NetHandlerPlayServer;
@@ -46,7 +46,7 @@ public class AbilityEquippedPacket extends AbstractPacket
 			@Override
 			public void run()
 			{
-				CharacterOverhaul.proxy.getClientCharacter().setHotbarSlot(slot, abilityID);
+				CharacterOverhaulMod.proxy.getClientCharacter().setHotbarSlot(slot, abilityID);
 			}
 		});
 		return null;

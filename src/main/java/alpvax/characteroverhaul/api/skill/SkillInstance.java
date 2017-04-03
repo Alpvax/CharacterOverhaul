@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.logging.log4j.Level;
+
 import com.google.common.base.Preconditions;
 
+import alpvax.characteroverhaul.api.CharacterOverhaul;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.skill.ISkillModifier.SkillExpModifier;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,7 +29,11 @@ public class SkillInstance implements INBTSerializable<NBTTagCompound>
 
 	private final ICharacter character;
 	private final Skill skill;
+	/** The total amount of experience */
+	private float cumulativeExp;
+	/** The amount of experience this level */
 	private float experience;
+	/** The current level */
 	private int level;
 	private final Map<UUID, ISkillModifier> modifiers = new HashMap<>();
 
@@ -38,7 +45,8 @@ public class SkillInstance implements INBTSerializable<NBTTagCompound>
 	{
 		this.character = character;
 		this.skill = skill;
-		setExperience(0F);
+		addExperience(0);
+		//TODO:setExperience(0F);
 	}
 
 	public void addExp(float amount)
@@ -46,7 +54,8 @@ public class SkillInstance implements INBTSerializable<NBTTagCompound>
 		amount += baseAdd;
 		amount *= baseMult;
 		amount *= expMult;
-		setExperience(experience + amount);
+		addExperience(amount);
+		//TODO:setExperience(cumulativeExp + amount);
 	}
 
 	public int getLevel()
@@ -113,7 +122,7 @@ public class SkillInstance implements INBTSerializable<NBTTagCompound>
 	public NBTTagCompound serializeNBT()
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setFloat(NBTKeys.EXPERIENCE, experience);
+		nbt.setFloat(NBTKeys.EXPERIENCE, cumulativeExp);
 		NBTTagList list = new NBTTagList();
 		for(Map.Entry<UUID, ISkillModifier> e : modifiers.entrySet())
 		{
@@ -134,7 +143,8 @@ public class SkillInstance implements INBTSerializable<NBTTagCompound>
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt)
 	{
-		setExperience(nbt.getFloat(NBTKeys.EXPERIENCE));
+		addExperience(nbt.getFloat(NBTKeys.EXPERIENCE));
+		//TODO:setExperience(nbt.getFloat(NBTKeys.EXPERIENCE));
 		modifiers.clear();
 		if(nbt.hasKey(NBTKeys.MODIFIERS, NBT.TAG_LIST))
 		{
@@ -147,18 +157,91 @@ public class SkillInstance implements INBTSerializable<NBTTagCompound>
 		}
 	}
 
-	private void setExperience(float amount)
+	/*private boolean levelUp()
 	{
-		int newLevel = skill.getNewLevel(experience = amount);
+		if(level < skill.getMaxLevel(character))
+		{
+			experience -= skill.getExperienceForLevelUp(level++);//getExp then increase level
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean levelDown()
+	{
+		if(level > 0)
+		{
+			experience += skill.getExperienceForLevelUp(--level);//Decrease level then getExp
+			return true;
+		}
+		return false;
+	}*/
+
+	/*private void setExperience(float amount)
+	{
+		experience = cumulativeExp = amount;
+		while(experience >= skill.getExperienceForLevelUp(level))
+		int newLevel = skill.getLevelfromExperience(cumulativeExp = amount);
 		if(newLevel != level)
 		{
 			skill.onLevelChange(level, newLevel, character);
+			MinecraftForge.EVENT_BUS.post(new CharacterEvent.SkillLevelChange(character, skill, level, newLevel));
+			level = newLevel;
+		}
+	}*/
+
+	private void addExperience(float amount)
+	{
+		cumulativeExp += amount;
+		experience += amount;
+		float exp;
+		while((exp = levelUpdate(experience)) != experience)
+		{
+			experience = exp;
+			CharacterOverhaul.log(Level.INFO, "Level: %i; Experience: %f; Required: %f", level, experience, skill.getExperienceForLevelUp(level));//XXX
 		}
 	}
 
+	private float levelUpdate(float levelExp)
+	{
+		if(levelExp < 0)
+		{
+			return levelExp + skill.getExperienceForLevelUp(--level);//Decrease level then getExp
+		}
+		float next = skill.getExperienceForLevelUp(level);
+		if(levelExp < 0)
+		{
+			return levelExp - next;
+		}
+		return levelExp;
+	}
+
+	/**
+	 * @param levelExp the current experience at this level
+	 * @return +1, 0 or -1
+	 */
+	/*private int getLevelChange(float levelExp)
+	{
+		return levelExp < 0 ? -1 : levelExp > skill.getExperienceForLevelUp(level) ? 1 : 0;
+	}
+	
+	private void calculateExperience()
+	{
+		level = 0;
+		experience = cumulativeExp;
+		float f = skill.getExperienceForLevelUp(level);
+		while(experience < f)
+		{
+			experience -= f;
+			level++;
+			f = skill.getExperienceForLevelUp(level);
+		}
+	}*/
+
 	public void cloneTo(SkillInstance newInstance)
 	{
-		newInstance.setExperience(experience);
+		newInstance.addExperience(cumulativeExp);
+		//TODO:newInstance.setExperience(cumulativeExp);
 		newInstance.baseAdd = baseAdd;
 		newInstance.baseMult = baseMult;
 		newInstance.expMult = expMult;

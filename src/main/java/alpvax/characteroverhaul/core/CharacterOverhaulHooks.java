@@ -3,7 +3,7 @@ package alpvax.characteroverhaul.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import alpvax.characteroverhaul.api.CharacterOverhaulReference;
+import alpvax.characteroverhaul.api.CharacterOverhaul;
 import alpvax.characteroverhaul.api.ability.Ability;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.effect.Effect;
@@ -35,7 +35,7 @@ public class CharacterOverhaulHooks
 		Entity e = event.getObject();
 		if(e instanceof EntityPlayer && !hasCapability(event, ICharacter.CAPABILITY, null))
 		{
-			event.addCapability(CharacterOverhaulReference.CAPABILITY_CHARACTER_KEY, new CharacterCapabilityProvider(e));
+			event.addCapability(CharacterOverhaul.CAPABILITY_CHARACTER_KEY, new CharacterCapabilityProvider(e));
 		}
 	}
 

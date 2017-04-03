@@ -173,7 +173,7 @@ public class CapabilityCharacterHandler
 								inst.deserializeNBT(anbt);
 							}
 						}
-						FMLLog.warning("Character has data saved for ability %s, but no such ability exists.", id);
+						CharacterOverhaul.log(Level.WARNING, "Character has data saved for ability %s, but no such ability exists.", id);
 					}
 				}*/
 			}

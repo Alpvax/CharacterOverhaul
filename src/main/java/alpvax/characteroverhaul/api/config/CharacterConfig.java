@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import alpvax.characteroverhaul.core.CharacterOverhaul;
+import alpvax.characteroverhaul.core.CharacterOverhaulMod;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.ConfigManager;
@@ -165,9 +165,9 @@ public class CharacterConfig
 		@SubscribeEvent
 		public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event)
 		{
-			if(event.getModID().equals(CharacterOverhaul.MOD_ID))
+			if(event.getModID().equals(CharacterOverhaulMod.MOD_ID))
 			{
-				ConfigManager.load(CharacterOverhaul.MOD_ID, Config.Type.INSTANCE);
+				ConfigManager.load(CharacterOverhaulMod.MOD_ID, Config.Type.INSTANCE);
 			}
 		}
 	}

@@ -1,8 +1,14 @@
 package alpvax.characteroverhaul.core;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import alpvax.characteroverhaul.api.ability.Ability;
+import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.capabilities.CapabilityCharacterHandler;
 import alpvax.characteroverhaul.command.CharacterCommand;
 import alpvax.characteroverhaul.core.proxy.CommonProxy;
+import alpvax.characteroverhaul.core.util.ObjectFactoryRegistry;
 import alpvax.characteroverhaul.network.CharacterNetwork;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.MinecraftForge;
@@ -14,8 +20,8 @@ import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
-@Mod(modid = CharacterOverhaul.MOD_ID, version = CharacterOverhaul.VERSION, guiFactory = "alpvax.characteroverhaul.client.COGuiFactory")
-public class CharacterOverhaul
+@Mod(modid = CharacterOverhaulMod.MOD_ID, version = CharacterOverhaulMod.VERSION, guiFactory = "alpvax.characteroverhaul.client.COGuiFactory")
+public class CharacterOverhaulMod
 {
 	public static final String MOD_ID = "characteroverhaul";
 	public static final String VERSION = "@VERSION@";//CharacterOverhaulReference.MOD_VERSION;
@@ -26,7 +32,7 @@ public class CharacterOverhaul
 	public static CommonProxy proxy;
 
 	@Mod.Instance(MOD_ID)
-	public static CharacterOverhaul instance;
+	public static CharacterOverhaulMod instance;
 
 	@Metadata(MOD_ID)
 	public static ModMetadata meta;
@@ -65,14 +71,12 @@ public class CharacterOverhaul
 	{
 		for(FMLInterModComms.IMCMessage message : event.getMessages())
 		{
-			/*Matcher m = Pattern.compile("^addCustomClientObjectFactory:(\\w+)", Pattern.CASE_INSENSITIVE).matcher(message.key);
-			if(m.matches())
+			Matcher m = Pattern.compile("^registerAbilityFactory:(\\w+)", Pattern.CASE_INSENSITIVE).matcher(message.key);
+			if(m.matches() && message.isFunctionMessage())
 			{
-				if(message.isFunctionMessage())
-				{
-					message.getFunctionValue(functionFrom, functionTo)
-				}
-			}*/
+				com.google.common.base.Function<ICharacter, Ability> gfunc = message.getFunctionValue(ICharacter.class, Ability.class).get();
+				ObjectFactoryRegistry.addFactory(Ability.class, m.group(1), (c) -> gfunc.apply(c));
+			}
 			/*if("addCharacterCreationGuiPage".equalsIgnoreCase(message.key) && message.isStringMessage())
 			{
 				try

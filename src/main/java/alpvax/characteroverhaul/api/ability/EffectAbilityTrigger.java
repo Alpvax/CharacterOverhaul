@@ -11,7 +11,9 @@ public abstract class EffectAbilityTrigger extends Effect
 
 	public EffectAbilityTrigger(Ability toTrigger)
 	{
-		super(toTrigger);
+		super(toTrigger.getCharacter());
+		ability = toTrigger;
+		//super(toTrigger);
 		// TODO Auto-generated constructor stub
 	}
 

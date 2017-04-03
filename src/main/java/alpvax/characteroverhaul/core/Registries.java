@@ -1,5 +1,7 @@
 package alpvax.characteroverhaul.core;
 
+import static alpvax.characteroverhaul.core.CharacterOverhaulMod.MOD_ID;
+
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.perk.PerkTree;
 import alpvax.characteroverhaul.api.skill.Skill;
@@ -9,7 +11,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.RegistryBuilder;
 
-@EventBusSubscriber
+@EventBusSubscriber(modid = MOD_ID)
 public class Registries
 {
 	/*public static final ResourceLocation RACE_REGISTRY_KEY = new ResourceLocation(CharacterOverhaul.MOD_ID, "races");
@@ -18,9 +20,9 @@ public class Registries
 	@SubscribeEvent
 	public static void createRegistries(RegistryEvent.NewRegistry event)
 	{
-		new RegistryBuilder<Perk>().setName(new ResourceLocation(CharacterOverhaul.MOD_ID, "perks")).setType(Perk.class).setIDRange(0, 0x400).create();
-		new RegistryBuilder<PerkTree>().setName(new ResourceLocation(CharacterOverhaul.MOD_ID, "perktrees")).setType(PerkTree.class).setIDRange(0, 0xff).create();
-		new RegistryBuilder<Skill>().setName(new ResourceLocation(CharacterOverhaul.MOD_ID, "skills")).setType(Skill.class).setIDRange(0, 0xff).create();
+		new RegistryBuilder<Perk>().setName(new ResourceLocation(MOD_ID, "perks")).setType(Perk.class).setIDRange(0, 0x400).create();
+		new RegistryBuilder<PerkTree>().setName(new ResourceLocation(MOD_ID, "perktrees")).setType(PerkTree.class).setIDRange(0, 0xff).create();
+		new RegistryBuilder<Skill>().setName(new ResourceLocation(MOD_ID, "skills")).setType(Skill.class).setIDRange(0, 0xff).create();
 	}
 
 	/*@SubscribeEvent

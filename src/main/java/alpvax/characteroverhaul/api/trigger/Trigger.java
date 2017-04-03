@@ -7,11 +7,11 @@ import org.apache.logging.log4j.Level;
 
 import com.google.common.base.Preconditions;
 
+import alpvax.characteroverhaul.api.CharacterOverhaul;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -143,7 +143,7 @@ public class Trigger
 					Class<?>[] params = m.getParameterTypes();
 					if(params.length == 1 && Event.class.isAssignableFrom(params[0]))
 					{
-						FMLLog.log(Level.DEBUG, "Found method %s with single Event parameter. Should it have an @SubscribeEvent annotation?", m);
+						CharacterOverhaul.log(Level.DEBUG, "Found method %s with single Event parameter. Should it have an @SubscribeEvent annotation?", m);
 					}
 				}
 			}

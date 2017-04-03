@@ -1,5 +1,6 @@
 package alpvax.characteroverhaul.api.effect;
 
+import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.trigger.Triggerable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -8,16 +9,28 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class Effect extends Triggerable<Effect>
 {
-	private final IEffectProvider provider;
-
+	/*private final IEffectProvider provider;
+	
 	public Effect(IEffectProvider provider)
 	{
 		this.provider = provider;
 	}
-
+	
 	public final IEffectProvider getProvider()
 	{
 		return provider;
+	}*/
+
+	private final ICharacter character;
+
+	public Effect(ICharacter character)
+	{
+		this.character = character;
+	}
+
+	public final ICharacter getCharacter()
+	{
+		return character;
 	}
 
 	public abstract ITextComponent getDisplayName();

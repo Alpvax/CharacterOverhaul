@@ -1,6 +1,6 @@
 package alpvax.characteroverhaul.network;
 
-import alpvax.characteroverhaul.core.CharacterOverhaul;
+import alpvax.characteroverhaul.core.CharacterOverhaulMod;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +19,7 @@ public class CharacterNetwork extends NetworkWrapper
 
 	public CharacterNetwork()
 	{
-		super(CharacterOverhaul.MOD_ID);
+		super(CharacterOverhaulMod.MOD_ID);
 	}
 
 	public static void init()

@@ -212,15 +212,22 @@ public abstract class Ability implements INBTSerializable<NBTTagCompound>, ITick
 	 */
 	public NBTTagCompound getNBTForClientSync()
 	{
-		return new NBTTagCompound();
+		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setBoolean("Active", active);
+		nbt.setUniqueId("ID", getID());
+		nbt.setInteger("Cooldown", cooldown);
+		return nbt;
 	}
 
 
 	/**
-	 * Used to read all synched data on the client.
+	 * Used to read all synchronised data on the client.
 	 */
 	public void readClientData(NBTTagCompound nbt)
 	{
+		active = nbt.getBoolean("Active");
+		id = nbt.getUniqueId("ID");
+		cooldown = nbt.getInteger("Cooldown");
 	}
 
 	@Override

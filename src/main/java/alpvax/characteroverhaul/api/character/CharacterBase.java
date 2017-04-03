@@ -26,6 +26,7 @@ import alpvax.characteroverhaul.api.skill.Skill;
 import alpvax.characteroverhaul.api.skill.SkillInstance;
 import alpvax.characteroverhaul.api.trigger.Trigger.TriggerAttach;
 import alpvax.characteroverhaul.api.trigger.Triggerable;
+import alpvax.characteroverhaul.core.util.ObjectFactoryRegistry;
 import alpvax.characteroverhaul.network.AbilityChangedPacket;
 import alpvax.characteroverhaul.network.AbilityEquippedPacket;
 import alpvax.characteroverhaul.network.AbstractPacket;
@@ -74,6 +75,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		MinecraftForge.EVENT_BUS.post(event);
 		skills = ImmutableMap.<ResourceLocation, SkillInstance> builder().putAll(event.getSkills().stream().collect(Collectors.toMap(Skill::getRegistryName, s -> new SkillInstance(this, s)))).build();
 		//modifiers = Maps.newHashMap(event.getModifiers());
+		finishedLoading = getWorld().isRemote;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -321,7 +323,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void updateClientAbility(UUID id, Ability ability)
+	public void updateAbilityClient(UUID id, Ability ability)
 	{
 		if(ability == null)
 		{
@@ -390,6 +392,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		private static final String HOTBAR = "Hotbar";
 		private static final String UUID = "ID";
 		private static final String SLOT = "Slot";
+		private static final String CLASSNAME = "Class";
 	}
 
 	@Override
@@ -425,8 +428,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		for(Ability ability : abilities.values())
 		{
 			NBTTagCompound tag = ability.serializeNBT();
-			/*UUID id = ability.getID();
-			tag.setUniqueId(NBTKeys.UUID, id);*/
+			tag.setString(NBTKeys.CLASSNAME, ability.getClass().getName());
 			abilitynbt.appendTag(tag);
 		}
 		if(!abilitynbt.hasNoTags())
@@ -455,8 +457,7 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		for(Effect effect : effects.values())
 		{
 			NBTTagCompound tag = effect.serializeNBT();
-			/*UUID id = effect.getId();
-			tag.setUniqueId(NBTKeys.UUID, id);*/
+			tag.setString(NBTKeys.CLASSNAME, effect.getClass().getName());
 			effectnbt.appendTag(tag);
 		}
 		if(!effectnbt.hasNoTags())
@@ -502,17 +503,19 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		//Load Abilities
 		if(nbt.hasKey(NBTKeys.ABILITIES, NBT.TAG_LIST))
 		{
-			NBTTagList abilitynbt = nbt.getTagList(NBTKeys.ABILITIES, NBT.TAG_LIST);
+			NBTTagList abilitynbt = nbt.getTagList(NBTKeys.ABILITIES, NBT.TAG_COMPOUND);
 			for(int i = 0; i < abilitynbt.tagCount(); i++)
 			{
 				NBTTagCompound tag = abilitynbt.getCompoundTagAt(i);
-				//TODO:Load Ability
+				Ability ability = ObjectFactoryRegistry.create(tag.getString(NBTKeys.CLASSNAME), Ability.class, this);
+				ability.deserializeNBT(tag);
+				addAbility(ability);
 			}
 		}
 		//Load Hotbar
 		if(nbt.hasKey(NBTKeys.HOTBAR, NBT.TAG_LIST))
 		{
-			NBTTagList hotbarnbt = nbt.getTagList(NBTKeys.HOTBAR, NBT.TAG_LIST);
+			NBTTagList hotbarnbt = nbt.getTagList(NBTKeys.HOTBAR, NBT.TAG_COMPOUND);
 			for(int i = 0; i < hotbarnbt.tagCount(); i++)
 			{
 				NBTTagCompound tag = hotbarnbt.getCompoundTagAt(i);
@@ -522,16 +525,26 @@ public /*abstract/**/ class CharacterBase implements ICharacter
 		//Load Effects
 		if(nbt.hasKey(NBTKeys.EFFECTS, NBT.TAG_LIST))
 		{
-			NBTTagList effectnbt = nbt.getTagList(NBTKeys.EFFECTS, NBT.TAG_LIST);
+			NBTTagList effectnbt = nbt.getTagList(NBTKeys.EFFECTS, NBT.TAG_COMPOUND);
 			for(int i = 0; i < effectnbt.tagCount(); i++)
 			{
 				NBTTagCompound tag = effectnbt.getCompoundTagAt(i);
-				//TODO:Load Effect
+				Effect effect = ObjectFactoryRegistry.create(tag.getString(NBTKeys.CLASSNAME), Effect.class, this);
+				Effect e = effects.get(effect.getId());
+				if(e != null && effect.getClass().equals(e.getClass()))
+				{
+					e.deserializeNBT(tag);
+				}
+				else
+				{
+					effect.deserializeNBT(tag);
+					addEffect(effect);
+				}
 			}
 		}
 	}
 
-	private boolean finishedLoading = false;
+	private boolean finishedLoading;
 
 	private void sendPacketToClient(AbstractPacket packet)
 	{

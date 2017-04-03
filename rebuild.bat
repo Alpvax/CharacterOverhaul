@@ -1,4 +1,2 @@
-@echo off
-:;if /I "%COMSPEC%" == %CMDCMDLINE% "gradle setupdecompworkspace eclipse --refresh-dependencies"
-gradle setupdecompworkspace eclipse --refresh-dependencies
-if /I not "%COMSPEC%" == %CMDCMDLINE% pause
+@echo gradle setupdecompworkspace eclipse --refresh-dependencies
+@start /B /I gradle setupdecompworkspace eclipse --refresh-dependencies

@@ -1,9 +1,5 @@
 package alpvax.characteroverhaul.core.proxy;
 
-import java.util.function.Function;
-
-import javax.annotation.Nonnull;
-
 import alpvax.characteroverhaul.api.character.ICharacter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
@@ -33,25 +29,14 @@ public class ClientProxy extends CommonProxy implements IResourceManagerReloadLi
 	@Override
 	public EntityPlayer getPlayerEntity(MessageContext ctx)
 	{
-		return(ctx.side.isClient() ? Minecraft.getMinecraft().player : super.getPlayerEntity(ctx));
-	}
-
-	@Override
-	public <T> T createClientObject(@Nonnull String className, @Nonnull Class<T> objectType)
-	{
-		return ClientObjectFactoryRegistry.create(className, objectType, getClientCharacter());
+		return(ctx == null || ctx.side.isClient() ? Minecraft.getMinecraft().player : super.getPlayerEntity(ctx));
 	}
 
 	@Override
 	public ICharacter getClientCharacter()
 	{
-		return Minecraft.getMinecraft().player.getCapability(ICharacter.CAPABILITY, null);
-	}
-
-	@Override
-	public <T> void registerClientFactory(Class<T> objectType, String className, Function<ICharacter, T> factory)
-	{
-		ClientObjectFactoryRegistry.addFactory(objectType, className, factory);
+		EntityPlayer player = Minecraft.getMinecraft().player;
+		return player != null ? player.getCapability(ICharacter.CAPABILITY, null) : null;
 	}
 
 	/*private final List<ICharacterCreationPageHandler> creationGuiPages = new ArrayList<>();

@@ -6,7 +6,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import alpvax.characteroverhaul.api.ability.Ability;
-import alpvax.characteroverhaul.core.CharacterOverhaul;
+import alpvax.characteroverhaul.api.character.ICharacter;
+import alpvax.characteroverhaul.core.CharacterOverhaulMod;
+import alpvax.characteroverhaul.core.util.ObjectFactoryRegistry;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.nbt.NBTTagCompound;
@@ -29,7 +31,7 @@ public class AbilityChangedPacket extends AbstractPacket
 		this.id = id;
 		if(ability == null)
 		{
-			abilityClassName = "ability.remove";
+			abilityClassName = "";
 			nbt = null;
 		}
 		else
@@ -37,7 +39,6 @@ public class AbilityChangedPacket extends AbstractPacket
 			abilityClassName = ability.getClass().getName();
 			nbt = ability.getNBTForClientSync();
 		}
-
 	}
 
 	@Override
@@ -45,10 +46,7 @@ public class AbilityChangedPacket extends AbstractPacket
 	{
 		id = new UUID(buf.readLong(), buf.readLong());
 		abilityClassName = ByteBufUtils.readUTF8String(buf);
-		if(!abilityClassName.equals("ability.remove"))
-		{
-			nbt = ByteBufUtils.readTag(buf);
-		}
+		nbt = ByteBufUtils.readTag(buf);
 	}
 
 	@Override
@@ -57,10 +55,7 @@ public class AbilityChangedPacket extends AbstractPacket
 		buf.writeLong(id.getMostSignificantBits());
 		buf.writeLong(id.getLeastSignificantBits());
 		ByteBufUtils.writeUTF8String(buf, abilityClassName);
-		if(nbt == null || nbt.hasNoTags())
-		{
-			ByteBufUtils.writeTag(buf, nbt);
-		}
+		ByteBufUtils.writeTag(buf, nbt);
 	}
 
 	@Override
@@ -71,8 +66,16 @@ public class AbilityChangedPacket extends AbstractPacket
 			@Override
 			public void run()
 			{
-				Ability ability = CharacterOverhaul.proxy.createClientObject(abilityClassName, Ability.class);
-				CharacterOverhaul.proxy.getClientCharacter().updateClientAbility(id, ability);
+				if(abilityClassName.length() > 0)
+				{
+					ICharacter character = CharacterOverhaulMod.proxy.getClientCharacter();
+					Ability a = ObjectFactoryRegistry.create(abilityClassName, Ability.class, character);
+					if(nbt != null)
+					{
+						a.readClientData(nbt);
+					}
+					character.updateAbilityClient(id, a);
+				}
 			}
 		});
 		return null;

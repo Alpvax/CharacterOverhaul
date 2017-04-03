@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import alpvax.characteroverhaul.api.ability.Ability;
 import alpvax.characteroverhaul.api.effect.Effect;
@@ -108,7 +109,7 @@ public interface ICharacter extends INBTSerializable<NBTTagCompound>
 	public void setHotbarSlot(int i, UUID id);//TODO:Clean up, implement properly and document
 
 	@SideOnly(Side.CLIENT)
-	public void updateClientAbility(UUID id, Ability ability);
+	public void updateAbilityClient(@Nonnull UUID id, @Nullable Ability ability);
 
 	/**
 	 * Used to copy data from this to a new Character upon player respawn.

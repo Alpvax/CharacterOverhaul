@@ -13,6 +13,7 @@ import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.character.modifier.ICharacterModifier;
 import alpvax.characteroverhaul.api.perk.Perk;
 import alpvax.characteroverhaul.api.skill.Skill;
+import alpvax.characteroverhaul.api.skill.SkillInstance;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
@@ -153,6 +154,51 @@ public class CharacterEvent extends Event
 		public void setNewLevel(int newLevel)
 		{
 			this.newLevel = newLevel;
+		}
+	}
+
+	/**
+	 * SkillLevelChange is fired when a character levels up in a skill.<br>
+	 * <br>
+	 * This event is fired from {@link SkillInstance#setExperience}.<br>
+	 * <br>
+	 * {@link #skill} contains the Skill that is being changed.<br>
+	 * {@link #oldLevel} contains the the old level of the skill.<br>
+	 * {@link #newLevel} contains the new level of the skill. Could be lower than the current level.<br>
+	 * <br>
+	 * This event is not {@link Cancelable}.<br>
+	 * <br>
+	 * This event does not have a result. {@link HasResult}<br>
+	 * <br>
+	 * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+	 **/
+	public static class SkillLevelChange extends CharacterEvent
+	{
+		private final Skill skill;
+		private final int oldLevel;
+		private final int newLevel;
+
+		public SkillLevelChange(ICharacter character, Skill skill, int oldLevel, int newLevel)
+		{
+			super(character);
+			this.skill = skill;
+			this.oldLevel = oldLevel;
+			this.newLevel = newLevel;
+		}
+
+		public Skill getSkill()
+		{
+			return skill;
+		}
+
+		public int getOldLevel()
+		{
+			return oldLevel;
+		}
+
+		public int getNewLevel()
+		{
+			return newLevel;
 		}
 	}
 }

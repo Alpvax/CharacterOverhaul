@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import alpvax.characteroverhaul.api.ability.Ability;
 import alpvax.characteroverhaul.api.character.ICharacter;
-import alpvax.characteroverhaul.core.CharacterOverhaul;
+import alpvax.characteroverhaul.core.CharacterOverhaulMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -27,7 +27,7 @@ public enum HudRenderHelper
 {
 	INSTANCE(Minecraft.getMinecraft());
 
-	public static final ResourceLocation ABILITY_SLOTS = new ResourceLocation(CharacterOverhaul.MOD_ID, "textures/gui/ability_hotbar.png");
+	public static final ResourceLocation ABILITY_SLOTS = new ResourceLocation(CharacterOverhaulMod.MOD_ID, "textures/gui/ability_hotbar.png");
 
 	private final Minecraft mc;
 

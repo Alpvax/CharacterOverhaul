@@ -1,5 +1,8 @@
 package alpvax.characteroverhaul.network;
 
+import org.apache.logging.log4j.Level;
+
+import alpvax.characteroverhaul.api.CharacterOverhaul;
 import alpvax.characteroverhaul.api.ability.Ability;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.config.CharacterConfig;
@@ -7,7 +10,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraftforge.fml.common.FMLLog;
 
 public class AbilityTriggerPacket extends AbstractPacket.Threadsafe
 {
@@ -56,7 +58,7 @@ public class AbilityTriggerPacket extends AbstractPacket.Threadsafe
 	{
 		if(slot < 0 || slot > CharacterConfig.numAbilities)
 		{
-			FMLLog.warning("Tried to trigger ability in slot %d, IndexOutOfBounds ( 0- %d).", slot, CharacterConfig.numAbilities);
+			CharacterOverhaul.log(Level.WARN, "Tried to trigger ability in slot %d, IndexOutOfBounds ( 0- %d).", slot, CharacterConfig.numAbilities);
 			return;
 		}
 		ICharacter character = netHandler.player.getCapability(ICharacter.CAPABILITY, null);
