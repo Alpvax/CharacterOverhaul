@@ -1,0 +1,15 @@
+[
+{
+  "modid": "characteroverhaul",
+  "name": "Character Overhaul",
+  "description": "Abilities, skills and perks",
+  "version": "",
+  "mcversion": "",
+  "url": "https://github.com/Alpvax/CharacterOverhaul",
+  "updateUrl": "",
+  "authorList": ["Alpvax"],
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
