@@ -70,7 +70,7 @@ public class CharacterNetwork extends NetworkWrapper
 				continue;
 			}
 			EntityPlayerMP playerMP = (EntityPlayerMP)player;
-			if(world.getPlayerChunkMap().isPlayerWatchingChunk(playerMP, chunk.xPosition, chunk.zPosition))
+			if(world.getPlayerChunkMap().isPlayerWatchingChunk(playerMP, chunk.x, chunk.z))
 			{
 				CharacterNetwork.sendTo(packet, playerMP);
 			}

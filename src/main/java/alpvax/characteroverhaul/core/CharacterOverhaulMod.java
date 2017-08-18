@@ -1,5 +1,6 @@
 package alpvax.characteroverhaul.core;
 
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,8 +75,8 @@ public class CharacterOverhaulMod
 			Matcher m = Pattern.compile("^registerAbilityFactory:(\\w+)", Pattern.CASE_INSENSITIVE).matcher(message.key);
 			if(m.matches() && message.isFunctionMessage())
 			{
-				com.google.common.base.Function<ICharacter, Ability> gfunc = message.getFunctionValue(ICharacter.class, Ability.class).get();
-				ObjectFactoryRegistry.addFactory(Ability.class, m.group(1), (c) -> gfunc.apply(c));
+				Function<ICharacter, Ability> func = message.getFunctionValue(ICharacter.class, Ability.class).get();
+				ObjectFactoryRegistry.addFactory(Ability.class, m.group(1), func);
 			}
 			/*if("addCharacterCreationGuiPage".equalsIgnoreCase(message.key) && message.isStringMessage())
 			{

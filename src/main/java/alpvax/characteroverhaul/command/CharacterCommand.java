@@ -10,9 +10,11 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Throwables;
+import org.apache.logging.log4j.Level;
+
 import com.google.common.collect.Lists;
 
+import alpvax.characteroverhaul.api.CharacterOverhaul;
 import alpvax.characteroverhaul.api.character.ICharacter;
 import alpvax.characteroverhaul.api.perk.Perk;
 import net.minecraft.command.CommandBase;
@@ -358,7 +360,7 @@ public class CharacterCommand extends CommandBase
 		}
 		catch(CommandException e)
 		{
-			Throwables.propagate(e);
+			CharacterOverhaul.log(Level.ERROR, e, "Error getting tab completion options for: {}", String.join(", ", args));
 		}
 		return Collections.emptyList();
 	}

@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.RegistryBuilder;
+import net.minecraftforge.registries.RegistryBuilder;
 
 @EventBusSubscriber(modid = MOD_ID)
 public class Registries

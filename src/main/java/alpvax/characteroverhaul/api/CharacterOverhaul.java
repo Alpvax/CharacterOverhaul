@@ -1,9 +1,10 @@
 package alpvax.characteroverhaul.api;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.FMLLog;
 
 public class CharacterOverhaul
 {
@@ -17,13 +18,16 @@ public class CharacterOverhaul
 	public static final ResourceLocation CAPABILITY_CHARACTER_KEY = new ResourceLocation(MOD_ID, "character");
 	public static final ResourceLocation CAPABILITY_AFFECTED_KEY = new ResourceLocation(MOD_ID, "affected");
 
+
+	private static Logger logger = LogManager.getLogger(MOD_ID);
+
 	public static void log(Level level, String format, Object... data)
 	{
-		FMLLog.log(MOD_ID, level, format, data);
+		logger.log(level, format, data);
 	}
 
 	public static void log(Level level, Throwable ex, String format, Object... data)
 	{
-		FMLLog.log(MOD_ID, level, ex, format, data);
+		logger.log(level, String.format(format, data), ex);
 	}
 }
