@@ -31,9 +31,9 @@ public class PotionAttModSource implements IAttributeModifierSource {
     ITextComponent name = effect.getDisplayName();
     if (instance != null) {
       if (instance.getAmplifier() > 0) {
-        name.appendSibling(new TranslationTextComponent("enchantment.level." + (instance.getAmplifier() + 1)));
+        name.appendText(" ").appendSibling(new TranslationTextComponent("enchantment.level." + (instance.getAmplifier() + 1)));
       }
-      name = new TranslationTextComponent(CharacterOverhaul.MODID + "attributesource.potion", name);
+      name = new TranslationTextComponent(CharacterOverhaul.MODID + ".attributesource.potion", name);
     }
     return name;
   }
