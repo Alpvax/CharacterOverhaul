@@ -12,6 +12,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -21,7 +22,6 @@ public class SortedModifierMap {
     EquipmentAttModSource.register();
     PotionAttModSource.register();
   }*/
-  private static UnknownAttModSource unknown = new UnknownAttModSource();
 
   private final Multimap<IAttribute, ITextComponent> attMap = HashMultimap.create();
   private final Multimap<IAttributeModifierSource, ITextComponent> sourceMap = HashMultimap.create();
@@ -38,12 +38,15 @@ public class SortedModifierMap {
         });
     }));
     remaining.entries().forEach(e ->
-        put(e.getKey(), unknown, entity, e.getValue())
+        put(e.getKey(), null, entity, e.getValue())
     );
   }
 
   public void put(IAttribute attribute, IAttributeModifierSource source, LivingEntity entity, AttributeModifier modifier) {
     if (modifier.getAmount() != 0.0D) {
+      if (source == null) {
+        source = new UnknownAttModSource(modifier.getName());
+      }
       ITextComponent attName = AttributeDisplayUtil.getAttributeName(attribute);
       ITextComponent sourceName = new TranslationTextComponent(CharacterOverhaul.MODID + ".attributesource.from", source.getName(entity));
       attMap.put(attribute, AttributeDisplayUtil.getAttributeModifierText(modifier, sourceName));
@@ -60,17 +63,27 @@ public class SortedModifierMap {
   }
 
   private static class UnknownAttModSource implements IAttributeModifierSource {
+    private String source;
+    UnknownAttModSource(String source) { this.source = source; }
     @Override
     public Type getType() { return null; }
 
     @Override
     public ITextComponent getName(LivingEntity entity) {
-      return new TranslationTextComponent(CharacterOverhaul.MODID + ".attributesource.unknown");
+      return new TranslationTextComponent(CharacterOverhaul.MODID + ".attributesource.unknown", source);
     }
 
     @Override
-    public Multimap<IAttribute, AttributeModifier> getModifiers(LivingEntity entity) {
-      return null;
+    public Multimap<IAttribute, AttributeModifier> getModifiers(LivingEntity entity) { return null; }
+
+    @Override
+    public boolean equals(Object other) {
+      return other instanceof UnknownAttModSource && ((UnknownAttModSource) other).source == source;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash("UnknownAttModSource", source);
     }
   }
 }

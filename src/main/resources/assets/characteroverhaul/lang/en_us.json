@@ -8,5 +8,5 @@
   "characteroverhaul.attributesource.equipment.legs": "%s worn on their legs",
   "characteroverhaul.attributesource.equipment.chest": "%s worn on their chest",
   "characteroverhaul.attributesource.equipment.head": "%s worn on their head",
-  "characteroverhaul.attributesource.unknown": "Unknown source"
+  "characteroverhaul.attributesource.unknown": "Unknown source (%s)"
 }
