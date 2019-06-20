@@ -1,0 +1,12 @@
+{
+  "characteroverhaul.attributeinfo.summary": "%s: %d",
+  "characteroverhaul.attributesource.from": "from %s",
+  "characteroverhaul.attributesource.potion": "%s effect",
+  "characteroverhaul.attributesource.equipment.mainhand": "%s held in their main hand",
+  "characteroverhaul.attributesource.equipment.offhand": "%s held in their offhand",
+  "characteroverhaul.attributesource.equipment.feet": "%s worn on their feet",
+  "characteroverhaul.attributesource.equipment.legs": "%s worn on their legs",
+  "characteroverhaul.attributesource.equipment.chest": "%s worn on their chest",
+  "characteroverhaul.attributesource.equipment.head": "%s worn on their head",
+  "characteroverhaul.attributesource.unknown": "an unknown source"
+}
