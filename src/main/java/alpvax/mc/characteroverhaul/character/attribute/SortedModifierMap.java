@@ -42,7 +42,7 @@ public class SortedModifierMap {
     );
   }
 
-  public void put(IAttribute attribute, IAttributeModifierSource source, LivingEntity entity, AttributeModifier modifier) {
+  private void put(IAttribute attribute, IAttributeModifierSource source, LivingEntity entity, AttributeModifier modifier) {
     if (modifier.getAmount() != 0.0D) {
       if (source == null) {
         source = new UnknownAttModSource(modifier.getName());
@@ -52,6 +52,14 @@ public class SortedModifierMap {
       attMap.put(attribute, AttributeDisplayUtil.getAttributeModifierText(modifier, sourceName));
       sourceMap.put(source, AttributeDisplayUtil.getAttributeModifierText(modifier, attName));
     }
+  }
+
+  public int size() {
+    return attMap.size();
+  }
+
+  public boolean isEmpty() {
+    return attMap.isEmpty();
   }
 
   public Multimap<IAttribute, ITextComponent> groupByAttribute() {
@@ -78,7 +86,7 @@ public class SortedModifierMap {
 
     @Override
     public boolean equals(Object other) {
-      return other instanceof UnknownAttModSource && ((UnknownAttModSource) other).source == source;
+      return other instanceof UnknownAttModSource && ((UnknownAttModSource) other).source.equals(source);
     }
 
     @Override

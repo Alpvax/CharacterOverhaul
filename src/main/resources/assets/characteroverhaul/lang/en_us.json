@@ -1,5 +1,6 @@
 {
   "characteroverhaul.attributeinfo.summary": "%s: %d",
+  "characteroverhaul.attributeinfo.none": "No attribute modifiers found.",
   "characteroverhaul.attributesource.from": "from %s",
   "characteroverhaul.attributesource.potion": "%s effect",
   "characteroverhaul.attributesource.equipment.mainhand": "%s held in their main hand",

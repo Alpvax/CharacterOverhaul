@@ -3,6 +3,7 @@ package alpvax.mc.characteroverhaul;
 import alpvax.mc.characteroverhaul.character.attribute.SortedModifierMap;
 import alpvax.mc.characteroverhaul.character.attribute.source.EquipmentAttModSource;
 import alpvax.mc.characteroverhaul.character.attribute.source.PotionAttModSource;
+import alpvax.mc.characteroverhaul.character.race.RaceManager;
 import alpvax.mc.characteroverhaul.command.AttributeCommand;
 import net.minecraft.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
@@ -73,7 +74,7 @@ public class CharacterOverhaul
 
     private void processIMC(final InterModProcessEvent event)
     {
-        event.getIMCStream(method -> method == "registerAttributeModifierSource").forEach(imcMessage -> {
+        event.getIMCStream(method -> method.equals("registerAttributeModifierSource")).forEach(imcMessage -> {
             SortedModifierMap.SOURCE_FACTORIES.add(imcMessage.getMessageSupplier());
         });
     }
@@ -81,5 +82,6 @@ public class CharacterOverhaul
     @SubscribeEvent
     public void onServerStart(FMLServerStartingEvent event) {
         new AttributeCommand(event.getCommandDispatcher());
+        event.getServer().getResourceManager().addReloadListener(new RaceManager());
     }
 }
