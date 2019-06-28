@@ -4,21 +4,36 @@ import alpvax.mc.characteroverhaul.character.attribute.SortedModifierMap;
 import alpvax.mc.characteroverhaul.character.attribute.source.EquipmentAttModSource;
 import alpvax.mc.characteroverhaul.character.attribute.source.PotionAttModSource;
 import alpvax.mc.characteroverhaul.character.race.RaceManager;
+import alpvax.mc.characteroverhaul.client.ClientProxy;
 import alpvax.mc.characteroverhaul.command.AttributeCommand;
+import alpvax.mc.characteroverhaul.proxy.IProxy;
+import alpvax.mc.characteroverhaul.proxy.ServerProxy;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.Pose;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -29,6 +44,8 @@ public class CharacterOverhaul
 
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
+
+    public static IProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> ServerProxy::new);
 
     public CharacterOverhaul() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -82,6 +99,29 @@ public class CharacterOverhaul
     @SubscribeEvent
     public void onServerStart(FMLServerStartingEvent event) {
         new AttributeCommand(event.getCommandDispatcher());
+    }
+    @SubscribeEvent
+    public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
         event.getServer().getResourceManager().addReloadListener(new RaceManager());
+    }
+
+    private static Method setPose = ObfuscationReflectionHelper.findMethod(Entity.class, "func_213301_b", Pose.class);
+    static {
+        setPose.setAccessible(true);
+    }
+
+    @SubscribeEvent
+    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+                if (ClientProxy.prone.isKeyDown()) {
+                    try {
+                        setPose.invoke(event.player, Pose.SWIMMING);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        LOGGER.error("Error setting player prone: " + event.player.getDisplayNameAndUUID(), e);
+                    }
+                }
+            });
+        }
     }
 }

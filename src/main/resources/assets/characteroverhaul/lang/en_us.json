@@ -1,4 +1,5 @@
 {
+  "key.prone": "Prone",
   "characteroverhaul.attributeinfo.summary": "%s: %d",
   "characteroverhaul.attributeinfo.none": "No attribute modifiers found.",
   "characteroverhaul.attributesource.from": "from %s",
