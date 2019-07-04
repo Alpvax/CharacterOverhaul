@@ -1,14 +1,11 @@
 package alpvax.mc.characteroverhaul.character.skill;
 
-import alpvax.mc.characteroverhaul.CharacterOverhaul;
-import com.google.common.collect.Maps;
+import alpvax.mc.characteroverhaul.character.capability.CharacterCapability;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.tuple.Pair;
@@ -26,8 +23,17 @@ public class LivingEntitySkillMap implements ISkillMap {
   @Override
   public void addXP(Skill skill, float amount) {
     Pair<Integer, Float> res = ISkillMap.getXPUpdated(getLevel(skill), getXP(skill), (float) (amount * getXPMultiplier(skill)), skill::getXPForLevel);
-    levels.put(skill, res.getLeft());
-    xp.put(skill, res.getRight());
+    setLevel(skill, res.getLeft());
+    xp.put(skill, res.getRight().intValue());
+  }
+
+  private void setLevel(Skill skill, int level) {
+    int prev = levels.getOrDefault(skill, -1); // Get actual level, not computed. If non-existant, will return -1
+    if (prev < 0 || level != prev) {
+      //Should always be present, as it is attached to the charCapability
+      entity.getCapability(CharacterCapability.CHARACTER_CAPABILITY).ifPresent(skill::onLevelChange);
+    }
+    levels.put(skill, level);
   }
 
   @Override
@@ -64,7 +70,7 @@ public class LivingEntitySkillMap implements ISkillMap {
     nbt.keySet().forEach(key -> {
       Skill skill = Skill.SKILLS.get(new ResourceLocation(key));
       CompoundNBT tag = nbt.getCompound(key);
-      levels.put(skill, tag.getInt("level"));
+      setLevel(skill, tag.getInt("level"));
       xp.put(skill, tag.getFloat("xp"));
     });
   }

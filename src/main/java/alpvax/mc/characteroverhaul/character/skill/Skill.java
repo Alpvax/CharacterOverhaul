@@ -1,6 +1,7 @@
 package alpvax.mc.characteroverhaul.character.skill;
 
 import alpvax.mc.characteroverhaul.CharacterOverhaul;
+import alpvax.mc.characteroverhaul.character.ICharacter;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
@@ -60,6 +61,17 @@ public abstract class Skill {
 
   public static Skill get(ResourceLocation rl) {
     return SKILLS.get(rl);
+  }
+
+  /**
+   * Called when the character level is set to something different to what it was previously (e.g. gained enough xp to
+   * level up, or when the character is loaded).
+   *
+   * @param character the character whose level is changing. It has not changed at this point, so the old level can be
+   *                  retrieved using {@link ICharacter#getSkillLevel}.
+   */
+  public void onLevelChange(ICharacter character) {
+
   }
   /*public static final Map<String, IXPLevelGetterFactory> levelGetterFactories = Maps.newHashMap();
 
