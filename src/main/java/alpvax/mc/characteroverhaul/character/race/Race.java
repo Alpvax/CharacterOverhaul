@@ -33,16 +33,6 @@ public class Race implements IRace {
     return null;
   }
 
-  @Override
-  public CompoundNBT serializeNBT() {
-    return null;
-  }
-
-  @Override
-  public void deserializeNBT(CompoundNBT nbt) {
-
-  }
-
   static class Builder {
     private ResourceLocation name;
     private final ImmutableList.Builder<ICharacterModifier> modifiers = new ImmutableList.Builder<>();

@@ -3,6 +3,7 @@ package alpvax.mc.characteroverhaul;
 import alpvax.mc.characteroverhaul.character.capability.CharacterCapability;
 import alpvax.mc.characteroverhaul.character.modifier.ICharacterModifierType;
 import alpvax.mc.characteroverhaul.command.CharacterCommand;
+import alpvax.mc.characteroverhaul.network.PacketHandler;
 import alpvax.mc.characteroverhaul.util.attribute.SortedModifierMap;
 import alpvax.mc.characteroverhaul.util.attribute.source.EquipmentAttModSource;
 import alpvax.mc.characteroverhaul.util.attribute.source.PotionAttModSource;
@@ -49,6 +50,7 @@ public class CharacterOverhaul
         context.registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
         context.registerConfig(ModConfig.Type.SERVER, ConfigHolder.SERVER_SPEC);
          */
+        PacketHandler.register();
     }
 
     private void setup(final FMLCommonSetupEvent event)

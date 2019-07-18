@@ -20,6 +20,7 @@ import org.apache.logging.log4j.message.Message;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,7 @@ public class RaceManager extends JsonReloadListener {
       JsonObject attMods = json.getAsJsonObject("attributeModifiers");
       //builder.addModifier(new AttributeCharModType()
       return builder.build();
-    }).filter(r -> r != null).collect(ImmutableMap.toImmutableMap(IRace::id, Function.identity()));
+    }).filter(Objects::nonNull).collect(ImmutableMap.toImmutableMap(IRace::id, Function.identity()));
   }
 
 
