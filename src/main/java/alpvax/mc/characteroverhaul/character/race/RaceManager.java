@@ -50,13 +50,15 @@ public class RaceManager extends JsonReloadListener {
   public static IRace deserialize(CompoundNBT raceNBT) {
     INBT id = raceNBT.get("id");
     IRace race = null;
-    switch (Objects.requireNonNull(id).getId()) {
-      case Constants.NBT.TAG_STRING: //Single resourcelocation id
-        race = races.get(new ResourceLocation(id.getString()));
-        break;
-      case Constants.NBT.TAG_LIST: //Merged race
-        //TODO: Merged races
-        break;
+    if (id != null) {
+      switch (Objects.requireNonNull(id).getId()) {
+        case Constants.NBT.TAG_STRING: //Single resourcelocation id
+          race = races.get(new ResourceLocation(id.getString()));
+          break;
+        case Constants.NBT.TAG_LIST: //Merged race
+          //TODO: Merged races
+          break;
+      }
     }
     if (race == null) {
       race = HUMAN;
@@ -70,9 +72,11 @@ public class RaceManager extends JsonReloadListener {
   public static INBT toNBT(IRace race) {
     //TODO: Merged races
     CompoundNBT nbt =  new CompoundNBT();
-    nbt.putString("id", race.id().toString());
-    if (race instanceof INBTSerializable) {
-      nbt.put("additionalData", ((INBTSerializable)race).serializeNBT());
+    if (race != null) {
+      nbt.putString("id", race.id().toString());
+      if (race instanceof INBTSerializable) {
+        nbt.put("additionalData", ((INBTSerializable) race).serializeNBT());
+      }
     }
     return nbt;
   }
