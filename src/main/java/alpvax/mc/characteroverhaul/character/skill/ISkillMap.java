@@ -3,7 +3,9 @@ package alpvax.mc.characteroverhaul.character.skill;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.util.TriConsumer;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface ISkillMap extends INBTSerializable<CompoundNBT> {
@@ -14,6 +16,10 @@ public interface ISkillMap extends INBTSerializable<CompoundNBT> {
   float getXP(Skill skill);
 
   double getXPMultiplier(Skill skill);
+
+  default void forEach(TriConsumer<Skill, Integer, Float> consumer) {
+    Skill.SKILLS.values().forEach(skill -> consumer.accept(skill, getLevel(skill), getXP(skill)));
+  }
 
   /**
    * @param currentLevel   The current level

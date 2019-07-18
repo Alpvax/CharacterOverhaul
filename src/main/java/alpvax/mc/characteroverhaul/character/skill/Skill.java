@@ -4,20 +4,19 @@ import alpvax.mc.characteroverhaul.CharacterOverhaul;
 import alpvax.mc.characteroverhaul.character.ICharacter;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import com.google.gson.JsonObject;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-public abstract class Skill {
+public abstract class Skill extends ForgeRegistryEntry<Skill> {
   public final ResourceLocation id;
   public final IAttribute xpModifierAttribute;
   private int maxLevel;
@@ -55,6 +54,10 @@ public abstract class Skill {
   public float getXPForLevel(int level) {
     Preconditions.checkElementIndex(level, getMaxLevel(), "XP level");
     return xpGetter.apply(level);
+  }
+
+  public ITextComponent getName() {
+    return new TranslationTextComponent(Util.makeTranslationKey("skill", id));
   }
 
   static final Map<ResourceLocation, Skill> SKILLS = Maps.newHashMap();

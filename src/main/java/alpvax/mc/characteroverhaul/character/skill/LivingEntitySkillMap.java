@@ -9,10 +9,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.util.TriConsumer;
 
 public class LivingEntitySkillMap implements ISkillMap {
-  private Object2IntMap<Skill> levels = new Object2IntOpenHashMap<>();
-  private Object2FloatMap<Skill> xp = new Object2FloatOpenHashMap<>();
+  private final Object2IntMap<Skill> levels = new Object2IntOpenHashMap<>();
+  private final Object2FloatMap<Skill> xp = new Object2FloatOpenHashMap<>();
   private LivingEntity entity;
 
   public LivingEntitySkillMap(LivingEntity entity) {

@@ -4,12 +4,14 @@ import alpvax.mc.characteroverhaul.config.ConfigHandler;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,21 +53,22 @@ public class ModEventHandler {
 
   @SubscribeEvent
   public static void onRegisterItems(final RegistryEvent.Register<Item> event) {
-    /*final IForgeRegistry<Item> registry = event.getRegistry();
-    registry.registerAll(
+    final IForgeRegistry<Item> registry = event.getRegistry();
+    /*registry.registerAll(
         setup(new Item(new Item.Properties()), "example_item")
     );
 
-    // We need to go over the entire registry so that we include any potential Registry Overrides
-    for (final Block block : ForgeRegistries.BLOCKS.getValues()) {
+     */
+
+    for (final Block block : blocksToRegisterItems) {
 
       final ResourceLocation blockRegistryName = block.getRegistryName();
       Preconditions.checkNotNull(blockRegistryName, "Registry Name of Block \"" + block + "\" is null! This is not allowed!");
 
-      // Check that the blocks is from our mod, if not, continue to the next block
+      /*// Check that the blocks is from our mod, if not, continue to the next block
       if (!blockRegistryName.getNamespace().equals(ExampleMod.MODID)) {
         continue;
-      }
+      }*/
 
       // If you have blocks that don't have a corresponding ItemBlock, uncomment this code and create an Interface - or even better an Annotation - called NoAutomaticItemBlock with no methods and implement it on your blocks that shouldn't have ItemBlocks
 //			if (!(block instanceof NoAutomaticItemBlock)) {
@@ -73,15 +76,13 @@ public class ModEventHandler {
 //			}
 
       // Make the properties, and make it so that the item will be on our ItemGroup (CreativeTab)
-      final Item.Properties properties = new Item.Properties().group(ModItemGroups.MOD_ITEM_GROUP);
+      final Item.Properties properties = new Item.Properties();//.group(ModItemGroups.MOD_ITEM_GROUP);
       // Create the new BlockItem with the block and it's properties
       final BlockItem blockItem = new BlockItem(block, properties);
       // Setup the new BlockItem with the block's registry name and register it
       registry.register(setup(blockItem, blockRegistryName));
     }
     LOGGER.debug("Registered Items");
-
-     */
   }
   /*@SubscribeEvent
   public static void onRegisterTE(@Nonnull final RegistryEvent.Register<TileEntityType<?>> event) {

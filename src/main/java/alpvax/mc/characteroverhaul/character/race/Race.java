@@ -1,22 +1,13 @@
 package alpvax.mc.characteroverhaul.character.race;
 
 import alpvax.mc.characteroverhaul.character.modifier.ICharacterModifier;
-import alpvax.mc.characteroverhaul.character.modifier.ICharacterModifierSource;
-import alpvax.mc.characteroverhaul.character.modifier.ICharacterModifierType;
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Race implements IRace {
   public final ResourceLocation id;
@@ -30,6 +21,11 @@ public class Race implements IRace {
   //@Override
   public List<ICharacterModifier> getModifiers() {
     return modifiers;
+  }
+
+  @Override
+  public ResourceLocation id() {
+    return id;
   }
 
   @Override
@@ -49,7 +45,7 @@ public class Race implements IRace {
 
   static class Builder {
     private ResourceLocation name;
-    private final List<ICharacterModifier> modifiers = new ArrayList<>();
+    private final ImmutableList.Builder<ICharacterModifier> modifiers = new ImmutableList.Builder<>();
 
     public Builder(ResourceLocation name) {
       this.name = name;
@@ -67,5 +63,9 @@ public class Race implements IRace {
       AdvancementRewards advancementrewards = JSONUtils.deserializeClass(json, "rewards", AdvancementRewards.EMPTY, context, AdvancementRewards.class);
       Map<String, Criterion> map = Criterion.criteriaFromJson(JSONUtils.getJsonObject(json, "criteria"), context);
     }*/
+
+    public IRace build() {
+      return new Race(name, modifiers);
+    }
   }
 }

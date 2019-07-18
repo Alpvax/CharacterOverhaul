@@ -1,5 +1,4 @@
 {
-  "key.prone": "Prone",
   "characteroverhaul.attributeinfo.summary": "%s: %d",
   "characteroverhaul.attributeinfo.none": "No attribute modifiers found.",
   "characteroverhaul.attributesource.from": "from %s",
@@ -10,5 +9,6 @@
   "characteroverhaul.attributesource.equipment.legs": "%s worn on their legs",
   "characteroverhaul.attributesource.equipment.chest": "%s worn on their chest",
   "characteroverhaul.attributesource.equipment.head": "%s worn on their head",
-  "characteroverhaul.attributesource.unknown": "Unknown source (%s)"
+  "characteroverhaul.attributesource.unknown": "Unknown source (%s)",
+  "characteroverhaul.skill.display": "Skill %s: {level = %d, current level xp = %0.00f}"
 }

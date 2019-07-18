@@ -14,7 +14,7 @@ issueTrackerURL="http://my.issue.tracker/" #optional
 # The modid of the mod
 modId="characteroverhaul" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="${version}" #mandatory
+version="${file.jarVersion}" #mandatory
  # A display name for the mod
 displayName="Character Overhaul" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
@@ -38,7 +38,7 @@ CharacterOverhaul for MC 1.14
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[26,)" #mandatory
+    versionRange="[27,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -47,6 +47,6 @@ CharacterOverhaul for MC 1.14
 [[dependencies.characteroverhaul]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.14.2,)"
+    versionRange="[1.14,)"
     ordering="NONE"
     side="BOTH"

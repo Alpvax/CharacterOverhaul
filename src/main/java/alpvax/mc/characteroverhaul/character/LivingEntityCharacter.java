@@ -4,11 +4,9 @@ import alpvax.mc.characteroverhaul.character.modifier.ICharacterModifierSource;
 import alpvax.mc.characteroverhaul.character.race.IRace;
 import alpvax.mc.characteroverhaul.character.skill.ISkillMap;
 import alpvax.mc.characteroverhaul.character.skill.LivingEntitySkillMap;
-import alpvax.mc.characteroverhaul.character.skill.Skill;
 import com.google.common.base.Preconditions;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraft.nbt.CompoundNBT;
 import org.apache.commons.lang3.NotImplementedException;
 
 import javax.annotation.Nonnull;
@@ -45,11 +43,11 @@ public class LivingEntityCharacter implements ICharacter {
 
   @Override
   public IRace getRace() {
-    throw new NotImplementedException("TODO: Implement character modifiers");//return race;
+    return race;//TODO: Implement character races
   }
 
   @Override
   public boolean setRace(IRace race) {
-    throw new NotImplementedException("TODO: Implement character modifiers");//return false;
+    /*throw new NotImplementedException("TODO: Implement character races");/*/return false;
   }
 }
