@@ -28,9 +28,7 @@ public class SortedModifierMap {
 
   public SortedModifierMap(LivingEntity entity) {
     Multimap<IAttribute, AttributeModifier> remaining = HashMultimap.create();
-    entity.getAttributes().getAllAttributes().forEach(inst -> {
-      remaining.putAll(inst.getAttribute(),inst.getModifiers());
-    });
+    entity.getAttributes().getAllAttributes().forEach(inst -> remaining.putAll(inst.getAttribute(),inst.getModifiers()));
     SOURCE_FACTORIES.forEach(factory -> factory.get().forEach(source -> {
         source.getModifiers(entity).entries().forEach(e -> {
           put(e.getKey(), source, entity, e.getValue());

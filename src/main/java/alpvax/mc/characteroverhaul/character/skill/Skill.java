@@ -52,6 +52,7 @@ public abstract class Skill extends ForgeRegistryEntry<Skill> {
   }
 
   public float getXPForLevel(int level) {
+    //noinspection ResultOfMethodCallIgnored
     Preconditions.checkElementIndex(level, getMaxLevel(), "XP level");
     return xpGetter.apply(level);
   }
@@ -73,6 +74,8 @@ public abstract class Skill extends ForgeRegistryEntry<Skill> {
    * @param character the character whose level is changing. It has not changed at this point, so the old level can be
    *                  retrieved using {@link ICharacter#getSkillLevel}.
    */
+
+  @SuppressWarnings("EmptyMethod")
   public void onLevelChange(ICharacter character) {
 
   }

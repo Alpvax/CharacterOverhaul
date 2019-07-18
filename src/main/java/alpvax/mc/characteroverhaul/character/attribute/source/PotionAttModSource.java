@@ -43,10 +43,7 @@ public class PotionAttModSource implements IAttributeModifierSource {
     Multimap<IAttribute, AttributeModifier> result = HashMultimap.create();
     EffectInstance instance = entity.getActivePotionEffect(effect);
     if (instance != null) {
-      effect.getAttributeModifierMap().entrySet().forEach(e -> {
-        IAttribute att = e.getKey();
-        result.put(att, entity.getAttribute(att).getModifier(e.getValue().getID()));
-      });
+      effect.getAttributeModifierMap().forEach((att, modifier) -> result.put(att, entity.getAttribute(att).getModifier(modifier.getID())));
     }
     return result;
   }

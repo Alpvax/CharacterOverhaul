@@ -1,25 +1,19 @@
 package alpvax.mc.characteroverhaul;
 
 import alpvax.mc.characteroverhaul.character.capability.CharacterCapability;
-import alpvax.mc.characteroverhaul.character.modifier.ICharacterModifierType;
-import alpvax.mc.characteroverhaul.command.CharacterCommand;
 import alpvax.mc.characteroverhaul.network.PacketHandler;
 import alpvax.mc.characteroverhaul.util.attribute.SortedModifierMap;
 import alpvax.mc.characteroverhaul.util.attribute.source.EquipmentAttModSource;
 import alpvax.mc.characteroverhaul.util.attribute.source.PotionAttModSource;
 import net.minecraft.block.Blocks;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -80,7 +74,7 @@ public class CharacterOverhaul
                     SortedModifierMap.SOURCE_FACTORIES.add(imcMessage.getMessageSupplier());
                     break;
                 case "registerCharacterModifierType":
-                    ICharacterModifierType.registerType(imcMessage.<Pair<String, ICharacterModifierType>>getMessageSupplier().get());
+                    //ICharacterModifierType.registerType(imcMessage.<Pair<String, ICharacterModifierType>>getMessageSupplier().get());
                     break;
             }
         });

@@ -1,11 +1,11 @@
 package alpvax.mc.characteroverhaul.util.attribute.source;
 
+import com.google.common.collect.Multimap;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.util.text.ITextComponent;
-import com.google.common.collect.Multimap;
 
 import javax.annotation.Nullable;
 

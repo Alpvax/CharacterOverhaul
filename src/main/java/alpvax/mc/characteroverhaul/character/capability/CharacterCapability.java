@@ -9,8 +9,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 
-import javax.annotation.Nullable;
-
 public class CharacterCapability {
   @CapabilityInject(ICharacter.class)
   public static Capability<ICharacter> CHARACTER_CAPABILITY = null;
@@ -19,7 +17,6 @@ public class CharacterCapability {
     CapabilityManager.INSTANCE.register(
         ICharacter.class,
         new Capability.IStorage<ICharacter>() {
-          @Nullable
           @Override
           public INBT writeNBT(Capability<ICharacter> capability, ICharacter instance, Direction side) {
             CompoundNBT nbt = new CompoundNBT();
@@ -30,8 +27,8 @@ public class CharacterCapability {
 
           @Override
           public void readNBT(Capability<ICharacter> capability, ICharacter instance, Direction side, INBT nbt) {
-            instance.getSkills().deserializeNBT(((CompoundNBT)nbt).getCompound("skills"));
-            instance.setRace(RaceManager.deserialize(((CompoundNBT)nbt).getCompound("race")));
+            instance.getSkills().deserializeNBT(((CompoundNBT) nbt).getCompound("skills"));
+            instance.setRace(RaceManager.deserialize(((CompoundNBT) nbt).getCompound("race")));
           }
         },
         () -> null

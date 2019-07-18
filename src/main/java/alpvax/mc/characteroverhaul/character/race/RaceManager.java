@@ -1,7 +1,6 @@
 package alpvax.mc.characteroverhaul.character.race;
 
 import alpvax.mc.characteroverhaul.CharacterOverhaul;
-import alpvax.mc.characteroverhaul.character.modifier.AttributeCharModType;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,13 +15,11 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.Message;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class RaceManager extends JsonReloadListener {
   private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
@@ -49,10 +46,11 @@ public class RaceManager extends JsonReloadListener {
   }
 
 
+  @SuppressWarnings("unchecked")
   public static IRace deserialize(CompoundNBT raceNBT) {
     INBT id = raceNBT.get("id");
     IRace race = null;
-    switch (id.getId()) {
+    switch (Objects.requireNonNull(id).getId()) {
       case Constants.NBT.TAG_STRING: //Single resourcelocation id
         race = races.get(new ResourceLocation(id.getString()));
         break;

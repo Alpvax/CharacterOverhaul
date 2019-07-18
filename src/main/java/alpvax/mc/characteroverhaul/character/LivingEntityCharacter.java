@@ -6,7 +6,6 @@ import alpvax.mc.characteroverhaul.character.skill.ISkillMap;
 import alpvax.mc.characteroverhaul.character.skill.LivingEntitySkillMap;
 import com.google.common.base.Preconditions;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundNBT;
 import org.apache.commons.lang3.NotImplementedException;
 
 import javax.annotation.Nonnull;

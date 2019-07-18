@@ -35,9 +35,7 @@ public class EquipmentAttModSource implements IAttributeModifierSource {
   @Override
   public Multimap<IAttribute, AttributeModifier> getModifiers(LivingEntity entity) {
     Multimap<IAttribute, AttributeModifier> result = HashMultimap.create();
-    entity.getItemStackFromSlot(slot).getAttributeModifiers(slot).asMap().entrySet().forEach(e -> {
-      result.putAll(getAttributeByName(entity, e.getKey()), e.getValue());
-    });
+    entity.getItemStackFromSlot(slot).getAttributeModifiers(slot).asMap().forEach((e, att) -> result.putAll(getAttributeByName(entity, e), att));
     return result;
   }
 

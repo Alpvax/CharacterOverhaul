@@ -26,7 +26,7 @@ public class CharacterCommand {
   }
 
   static LiteralArgumentBuilder<CommandSource> register(Supplier<LiteralArgumentBuilder<CommandSource>> commandNode, @Nullable CommandDispatcher<CommandSource> dispatcher) {
-    LiteralArgumentBuilder builder = commandNode.get();
+    LiteralArgumentBuilder<CommandSource> builder = commandNode.get();
     System.err.println("Registering Character command: " + builder.getLiteral());
     if (dispatcher != null) {
       System.err.println("Registering Literal command: " + builder.getLiteral());

@@ -5,7 +5,6 @@ import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.util.TriConsumer;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface ISkillMap extends INBTSerializable<CompoundNBT> {

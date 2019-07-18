@@ -2,11 +2,11 @@ package alpvax.mc.characteroverhaul.character.race;
 
 import alpvax.mc.characteroverhaul.character.modifier.ICharacterModifier;
 import com.google.common.collect.ImmutableList;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Race implements IRace {
@@ -30,7 +30,7 @@ public class Race implements IRace {
 
   @Override
   public ITextComponent displayName() {
-    return null;
+    return new TranslationTextComponent(Util.makeTranslationKey("race", id()));
   }
 
   static class Builder {
